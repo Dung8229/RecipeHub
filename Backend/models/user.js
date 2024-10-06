@@ -8,26 +8,57 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true,
   },
-  username: {
-    type: DataTypes.STRING(50),
+  title: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  email: {
-    type: DataTypes.STRING(100),
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true, // Chấp nhận null
+  },
+  imageType: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  servings: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true,
   },
-  password: {
-    type: DataTypes.STRING(255),
+  readyInMinutes: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  role: {
-    type: DataTypes.STRING(20),
-    defaultValue: 'user',
+  glutenFree: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+  diets: {
+    type: DataTypes.ARRAY(DataTypes.STRING), // Mảng chứa string
+    allowNull: true,
+  },
+  vegan: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  veryHealthy: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  veryPopular: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  dishTypes: {
+    type: DataTypes.ARRAY(DataTypes.STRING), // Mảng chứa string
+    allowNull: true,
+  },
+  summary: {
+    type: DataTypes.TEXT, // Cho phép nhiều nội dung hơn STRING
+    allowNull: true,
   },
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu

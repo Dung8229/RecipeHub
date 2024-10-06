@@ -9,7 +9,9 @@ const logger = require('./utils/logger')
 const sequelize = require('./db')
 
 sequelize.authenticate() // Kiểm tra kết nối
-logger.info('Kết nối db thành công!')
+  .then(() => {
+    logger.info('Kết nối db thành công!')
+  })
 
 app.use(cors())
 
