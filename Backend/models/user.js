@@ -23,7 +23,13 @@ const User = sequelize.define('User', {
   },
   role: {
     type: DataTypes.STRING(20),
+    allowNull: false,
     defaultValue: 'user',
+  },
+  verified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
   created_at: {
     type: DataTypes.DATE,
