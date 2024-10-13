@@ -96,28 +96,7 @@ jQuery(document).ready(function($) {
         });
     };
 
-    // Xử lý thuộc tính placeholder cho trình duyệt cũ
-    if (!Modernizr.input.placeholder) {
-        $('[placeholder]').focus(function() {
-            var input = $(this);
-            if (input.val() === input.attr('placeholder')) {
-                input.val('');
-            }
-        }).blur(function() {
-            var input = $(this);
-            if (input.val() === '' || input.val() === input.attr('placeholder')) {
-                input.val(input.attr('placeholder'));
-            }
-        }).blur();
-        $('[placeholder]').parents('form').submit(function() {
-            $(this).find('[placeholder]').each(function() {
-                var input = $(this);
-                if (input.val() === input.attr('placeholder')) {
-                    input.val('');
-                }
-            });
-        });
-    }
+
 
     // Xử lý đăng nhập
     $('#login-form').on('submit', function(event) {

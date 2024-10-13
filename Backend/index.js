@@ -1,3 +1,4 @@
+// index.js
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -26,10 +27,6 @@ db.connect((err) => {
     logger.info('Kết nối DB thành công!');
 });
 
-// Thêm middleware để phân tích dữ liệu từ form
-app.use(express.json()); // Để phân tích JSON
-app.use(express.urlencoded({ extended: true })); // Để phân tích dữ liệu form URL-encoded
-
 // Thiết lập session
 app.use(session({
     secret: process.env.SESSION_SECRET, 
@@ -52,6 +49,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
-
-// Xuất kết nối db để có thể sử dụng trong các route
-module.exports = { db };
