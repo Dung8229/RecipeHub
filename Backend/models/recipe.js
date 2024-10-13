@@ -49,7 +49,7 @@ const Recipe = sequelize.define('Recipe', {
   timestamps: true, // Sử dụng timestamps để tự động thêm createdAt và updatedAt
   createdAt: 'created_at', // Tùy chỉnh tên cột createdAt
   updatedAt: 'updated_at', // Tùy chỉnh tên cột updatedAt
-  tableName: 'recipes', // Đảm bảo tên bảng là 'recipe'
+  tableName: 'recipes', // Đảm bảo tên bảng là 'recipes'
 });
 
 module.exports = Recipe
