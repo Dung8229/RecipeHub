@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: large;
+        }
+
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header div {
+            display: flex;
+            flex-direction: row;
+            /* Đặt các element nằm ngang */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            /* khoảng cách giữa các div con */
+        }
+
+        header div p {
+            margin: 0 10px;
+            /* khoảng cách giữa các thẻ <p> trong div */
+        }
+
+        header input,
+        header select {
+            margin: 0 10px;
+            /* khoảng cách giữa input và select */
+        }
+
+        main {
+            display: flex;
+        }
+
+        body {
+            font-size: larger;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin-right: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            flex-grow: 1;
+        }
+
+
+
+        nav button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fb5c00;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        nav button:hover {
+            background-color: #ff8533;
+        }
+
+        .profile-info,
+        .public-settings,
+        .saved-recipes,
+        .personal-recipes {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .recipe-card {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .recipe-card img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        .recipe-card h4 {
+            margin: 0;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #fb5c00;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff8533;
+        }
+
+        .type {
+            padding-right: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div>
+            <p>RecipeHub</p>
+            <input type="text">
+            <select id="dropDown">
+                <option>MyAccount</option>
+                <option>Log out</option>
+                <option>Personal Information</option>
+                <option>My Favourite Recipes</option>
+            </select>
+        </div>
+        <div>
+            <p>DINNER</p>
+            <p>MEALS</p>
+            <p>INGREDIENTS</p>
+            <p>OCCASIONS</p>
+            <p>CUISINES</p>
+            <p>KITCHEN TIPS</p>
+            <p>NEWS</p>
+            <p>FEATURES</p>
+            <p>ABOUT US</p>
+        </div>
+    </header>
+    <main>
+
+        <div class="sidebar">
+            <h1>Hi, username</h1>
+            <nav>
+                <button id="btn-personal-info">Personal Info</button>
+                <button id="btn-public-settings">Public Profile Settings</button>
+                <button id="btn-saved-recipes">Saved Recipes & Collections</button>
+                <button id="btn-personal-recipes">Allrecipes Personal Recipes</button>
+            </nav>
+        </div>
+
+        <div class="container">
+            <div class="profile-info active" id="content-personal-info">
+                <h2>Personal Info</h2>
+                <p>These details will be used for all the Meredith profiles associated with your email address. By
+                    filling
+                    out this information, you will receive a more personalized experience across all Meredith websites.
+                </p>
+                <p><strong>Only you can see the information on this page. It will not be displayed for other users to
+                        see.</strong></p>
+                <h3>My Basic Info</h3>
+                <form>
+                    <label for="email">Email Address*</label>
+                    <input class="type" type="email" id="email" name="email" value="your_email@recipehub.com" disabled>
+                    <p>If you'd like to update your email address, please contact Customer Service.</p>
+                    <label for="first-name">First Name</label>
+                    <input class="type" type="text" id="first-name" name="first-name">
+                    <label for="last-name">Last Name</label>
+                    <input class="type" type="text" id="last-name" name="last-name">
+                    <label for="birthday">Birthday</label>
+                    <input class="type" type="date" id="birthday" name="birthday">
+                </form>
+                <button>SAVE CHANGES</button>
+            </div>
+
+            <div class="public-settings" id="content-public-settings">
+
+                <h2>Public Profile Setting</h2>
+                <button onclick="">SAVE CHANGE</button>
+                <p>About me</p>
+                <h4>Display name</h4>
+                <input type="text">
+                <h4>Tagline</h4>
+                <input type="text">
+                <h4>Add an image</h4>
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <label for="image">Chọn ảnh:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                    <br><br>
+                    <button type="submit">Tải lên</button>
+                </form>
+            </div>
+
+            <div class="saved-recipes" id="content-saved-recipes">
+                <h2>Saved Recipes & Collections</h2>
+                <p>These are your saved recipes and collections.</p>
+                <div id="recipes-container"></div>
+
+            </div>
+
+            <div class="personal-recipes" id="content-personal-recipes">
+                <h2>Allrecipes Personal Recipes</h2>
+                <p>Here are your personal recipes from Allrecipes.</p>
+                <div id="personal-recipes-container"></div>
+            </div>
+        </div>
+
+    </main>
+    <script>
+        const buttons = document.querySelectorAll('nav button');
+        const contentSections = document.querySelectorAll('.container > div');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove 'active' class from all sections
+                contentSections.forEach(section => section.classList.remove('active'));
+
+                // Add 'active' class to the corresponding section based on button clicked
+                const sectionId = this.id.replace('btn', 'content');
+                document.getElementById(sectionId).classList.add('active');
+
+                // Nếu là nút 'Saved Recipes', hiển thị danh sách công thức đã lưu
+                if (sectionId === 'content-saved-recipes') {
+                    showSavedRecipes();
+                }
+
+                // Nếu là nút 'Personal Recipes', hiển thị danh sách công thức đã tạo
+                if (sectionId === 'content-personal-recipes') {
+                    showPersonalRecipes();
+                }
+            });
+        });
+
+        // Mảng giả lập công thức đã lưu
+        const savedRecipes = [
+            {
+                name: "Chocolate Cake",
+                image: "https://via.placeholder.com/100"
+            },
+            {
+                name: "Spaghetti Carbonara",
+                image: "https://via.placeholder.com/100"
+            }
+        ];
+
+        // Mảng giả lập công thức cá nhân của người dùng
+        const userId = 1;  // Giả lập user hiện tại
+        const allRecipes = [
+            { id: 1, user_id: 1, name: "My Special Salad", image: "https://via.placeholder.com/100" },
+            { id: 2, user_id: 2, name: "Tasty Pancakes", image: "https://via.placeholder.com/100" }
+        ];
+
+        // Lọc ra công thức của user hiện tại
+        const userRecipes = allRecipes.filter(recipe => recipe.user_id === userId);
+
+        function showSavedRecipes() {
+            const recipesContainer = document.getElementById('recipes-container');
+            recipesContainer.innerHTML = '';  // Xóa nội dung cũ
+
+            if (savedRecipes.length === 0) {
+                recipesContainer.innerHTML = '<p>Chưa có công thức nào được lưu</p>';
+            } else {
+                savedRecipes.forEach(recipe => {
+                    const recipeCard = document.createElement('div');
+                    recipeCard.classList.add('recipe-card');
+
+                    const recipeImage = document.createElement('img');
+                    recipeImage.src = recipe.image;
+                    recipeCard.appendChild(recipeImage);
+
+                    const recipeName = document.createElement('h4');
+                    recipeName.innerText = recipe.name;
+                    recipeCard.appendChild(recipeName);
+
+                    recipesContainer.appendChild(recipeCard);
+                });
+            }
+        }
+
+        function showPersonalRecipes() {
+            const personalRecipesContainer = document.getElementById('personal-recipes-container');
+            personalRecipesContainer.innerHTML = '';  // Xóa nội dung cũ
+
+            if (userRecipes.length === 0) {
+                personalRecipesContainer.innerHTML = '<p>Chưa có công thức nào</p>';
+            } else {
+                userRecipes.forEach(recipe => {
+                    const recipeCard = document.createElement('div');
+                    recipeCard.classList.add('recipe-card');
+
+                    const recipeImage = document.createElement('img');
+                    recipeImage.src = recipe.image;
+                    recipeCard.appendChild(recipeImage);
+
+                    const recipeName = document.createElement('h4');
+                    recipeName.innerText = recipe.name;
+                    recipeCard.appendChild(recipeName);
+
+                    personalRecipesContainer.appendChild(recipeCard);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

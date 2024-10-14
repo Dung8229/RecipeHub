@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New & Improved Chicken Parmesan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header div {
+            display: flex;
+            flex-direction: row;
+            /* Đặt các element nằm ngang */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            /* khoảng cách giữa các div con */
+        }
+
+        header div p {
+            margin: 0 10px;
+            /* khoảng cách giữa các thẻ <p> trong div */
+        }
+
+        header input,
+        header select {
+            margin: 0 10px;
+            /* khoảng cách giữa input và select */
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .recipe-title {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .rating,
+        .reviews,
+        .comments,
+        .photos {
+            display: inline-block;
+            margin-right: 10px;
+            color: #888;
+        }
+
+        .description {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .author-date {
+            color: #555;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .nufa {
+            display: flex;
+        }
+
+        .nufa-c {
+            padding-right: 30px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 50px;
+        }
+
+        .container1 {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .social-media {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .social-media li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .social-media a {
+            color: #333;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <p>RecipeHub</p>
+            <input type="text">
+            <select id="dropDown">
+                <option>MyAccount</option>
+                <option>Log out</option>
+                <option>Personal Information</option>
+                <option>My Favourite Recipes</option>
+            </select>
+        </div>
+        <div>
+            <p>DINNER</p>
+            <p>MEALS</p>
+            <p>INGREDIENTS</p>
+            <p>OCCASIONS</p>
+            <p>CUISINES</p>
+            <p>KITCHEN TIPS</p>
+            <p>NEWS</p>
+            <p>FEATURES</p>
+            <p>ABOUT US</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="recipe-title">New & Improved Chicken Parmesan</h1>
+        <span class="rating">4.7 (80)</span>
+        <span class="reviews">61 REVIEWS</span>
+        <span class="comments">32 PHOTOS</span>
+        <p class="description">I love chicken parm, especially when it's made with fresh mozzarella, which almost never
+            is in restaurants. Of course, at home we can use the real stuff, but it can be pricey. So I tried something
+            new--a cheese spread using ricotta fortified with sharp shredded cheddar.</p>
+        <p class="author-date">By John Mitzewich | Updated on September 28, 2023</p>
+        <button>Save Recipe</button>
+        <button>Rate</button>
+        <button>Print</button>
+        <button>Share</button>
+        <hr>
+        <div class="ingredient">
+            <h3>INGREDIENTS</h3>
+            <pre>
+                    ½ pound ground pork
+
+                    ½ pound lean ground beef
+
+                    ½ cup minced onion
+
+                    1 (28 ounce) can crushed tomatoes
+
+                    1 (8 ounce) can tomato sauce
+
+                    2 tablespoons chopped fresh parsley, divided
+
+                    1 clove garlic, crushed
+
+                    1 ½ teaspoons dried basil
+
+                    1 ½ teaspoons salt
+
+                    ½ teaspoon dried oregano
+
+                    ⅛ teaspoon white sugar
+
+                    1 (16 ounce) package lasagna noodles
+
+                    1 pound small-curd cottage cheese
+
+                    ¾ cup grated Parmesan cheese
+
+                    3 large eggs
+
+                    2 teaspoons salt
+
+                    ¼ teaspoon ground black pepper
+
+                    1 (16 ounce) package shredded mozzarella cheese
+                </pre>
+        </div>
+        <hr>
+        <div class="directionk">
+            <h3>Direction</h3>
+            <h4>Step 1</h4>
+            <p>Combine pork and ground beef in a large, deep skillet over medium-high heat; cook and stir until browned
+                and crumbly, 5 to 7 minutes. Add onion and cook until translucent, about 5 minutes.</p>
+            <h4>Step 2</h4>
+            <p>Stir in crushed tomatoes, tomato sauce, 1 tablespoon fresh parsley, garlic, basil, salt, oregano, and
+                sugar. Reduce heat to medium-low and simmer, stirring occasionally, for 30 minutes.</p>
+            <h4>Step 3</h4>
+            <p>While the sauce is simmering, bring a large pot of lightly salted water to a boil. Cook lasagna noodles
+                in the boiling water, stirring occasionally, until tender yet firm to the bite, 8 to 10 minutes. Drain
+                and set aside.</p>
+            <h4>Step 4</h4>
+            <p>While the noodles are cooking, preheat the oven to 375 degrees F (190 degrees C).</p>
+            <h4>Step 5</h4>
+            <p>Mix cottage cheese, Parmesan cheese, eggs, remaining 1 tablespoon fresh parsley, salt, and pepper in a
+                large bowl until combined.</p>
+            <h4>Step 6</h4>
+            <p>Assemble lasagna: Spread a spoon or two of sauce over the bottom of a 9x13-inch baking dish just to to
+                coat it. Place two layers of noodles over the sauce to cover. Layer with 1/2 of the cheese mixture, 1/2
+                of the remaining sauce, and 1/2 of the mozzarella cheese. Repeat layers once more using the remaining
+                noodles, cheese mixture, sauce, and mozzarella. Cover the baking dish with aluminum foil.</p>
+            <h4>Step 7</h4>
+            <p>Bake in the preheated oven for 30 to 40 minutes. Remove the foil and bake until cheese is golden brown, 5
+                to 10 more minutes.
+            </p>
+            <h4>Step 8</h4>
+            <p>Remove from the oven and let stand for 10 minutes before cutting and serving.</p>
+        </div>
+        <button>I MADE IT</button>
+        <button>PRINT</button>
+        <hr>
+        <div class="nutrition-fact">
+            <h3>Nutrition Facts</h3>
+            <div class="nufa">
+                <div class="nufa-c">
+                    <p>638</p>
+                    <p>Calories</p>
+                </div>
+                <div class="nufa-c">
+                    <p>27g</p>
+                    <p>Fat</p>
+                </div>
+                <div class="nufa-c">
+                    <p>54g</p>
+                    <p>Carbs</p>
+                </div>
+                <div class="nufa-c">
+                    <p>46g</p>
+                    <p>Protein</p>
+                </div>
+            </div>
+        </div>
+        <div class="review">
+            <h3>Reviews(310)</h3>
+        </div>
+    </div>
+    <footer>
+        <footer>
+            <div class="container1">
+                <div class="row">
+                    <div class="col">
+                        <img src="logo.png" alt="RecipeHub">
+                        <p>Đăng ký nhận bản tin</p>
+                        <button>NEWSLETTERS</button>
+                        <ul class="social-media">
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-pinterest-p"></i></a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+                            <li><a href="#"><i class="fab fa-tiktok"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <h3>DINNERS</h3>
+                        <ul>
+                            <li><a href="#">MEALS</a></li>
+                            <li><a href="#">INGREDIENTS</a></li>
+                            <li><a href="#">OCCASIONS</a></li>
+                            <li><a href="#">CUISINES</a></li>
+                            <li><a href="#">KITCHEN TIPS</a></li>
+                            <li><a href="#">NEWS</a></li>
+                            <li><a href="#">FEATURES</a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <h3>ABOUT US</h3>
+                        <ul>
+                            <li><a href="#">Anti-Racism Pledge</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Product Vetting</a></li>
+                            <li><a href="#">Advertise</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <img src="trust-seal.png" alt="Trust seal">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </footer>
+</body>
+
+</html>
