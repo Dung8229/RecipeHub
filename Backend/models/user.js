@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize')
+const { DataTypes, Sequelize } = require('sequelize')
 const sequelize = require('../db')
 
 // Định nghĩa model cho bảng users
