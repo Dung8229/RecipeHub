@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require('sequelize')
+const { DataTypes } = require('sequelize')
 const sequelize = require('../db')
 
 // Định nghĩa model cho bảng users
@@ -8,18 +8,49 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true,
   },
-  username: {
-    type: DataTypes.STRING(50),
+  title: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  email: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    unique: true,
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true, // Chấp nhận null
   },
-  password: {
-    type: DataTypes.STRING(255),
+  imageType: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  servings: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  readyInMinutes: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  glutenFree: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  diets: {
+    type: DataTypes.ARRAY(DataTypes.STRING), // Mảng chứa string
+    allowNull: true,
+  },
+  vegan: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  veryHealthy: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  veryPopular: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
   role: {
     type: DataTypes.STRING(20),
