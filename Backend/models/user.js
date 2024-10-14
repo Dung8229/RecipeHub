@@ -52,13 +52,19 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: false,
   },
-  dishTypes: {
-    type: DataTypes.ARRAY(DataTypes.STRING), // Mảng chứa string
-    allowNull: true,
+  role: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'user',
   },
-  summary: {
-    type: DataTypes.TEXT, // Cho phép nhiều nội dung hơn STRING
-    allowNull: true,
+  verified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
   },
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
