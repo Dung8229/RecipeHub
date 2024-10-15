@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('../db')
-
+const db = require('../mysql');
 // Định nghĩa model cho bảng users
 const User = sequelize.define('User', {
   id: {

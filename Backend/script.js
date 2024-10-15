@@ -102,8 +102,8 @@ jQuery(document).ready(function($) {
     $('#login-form').on('submit', function(event) {
         event.preventDefault(); // Ngăn chặn việc gửi form mặc định
 
-        var email = $('#login-email').val();
-        var password = $('#login-password').val();
+        var email = $('#signin-email').val();
+        var password = $('#signin-password').val();
 
         // Gửi yêu cầu đến server
         $.ajax({
