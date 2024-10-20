@@ -5,11 +5,11 @@ const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 const User = require('../models/user')
 
-// usersRouter.get('/', async (request, response) => {
-//   const users = await User.findAll() // Lấy tất cả người dùng
+usersRouter.get('/', async (request, response) => {
+  const users = await User.findAll() // Lấy tất cả người dùng
 
-//   response.json(users)
-// })
+  response.json(users)
+})
 
 usersRouter.get('/:id', middleware.authenticateJWT, async (request, response) => {
   try {

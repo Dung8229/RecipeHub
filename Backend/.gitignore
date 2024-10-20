@@ -1,2 +1,5 @@
 node_modules
 .env
+get_ingredient_db.js
+get_ingredient.js
+get_database.js
