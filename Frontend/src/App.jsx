@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import recipeService from './services/recipes'
+import userService from './services/users'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 
@@ -70,7 +70,7 @@ const App = () => {
   const [latestUser, setLatestUser] = useState('')
 
   useEffect(() => {
-    recipeService
+    userService
       .getAll()
       .then(
         users => {
@@ -89,7 +89,7 @@ const App = () => {
         {/* <Route path="/login" element={<LoginPage />} /> */}
 
         {/* Route cho trang chi tiết công thức */}
-        {/* <Route path="/recipes/:id/information" element={<RecipeInformation />} /> */}
+        {/* <Route path="/recipes/:id/information" element={<RecipeInformation id={}/>} /> */}
       </Routes>
     </Router>
   );

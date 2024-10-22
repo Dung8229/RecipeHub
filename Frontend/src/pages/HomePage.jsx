@@ -1,11 +1,13 @@
+// Code cũ
+
 import Recipe from "../components/Recipe"
 
 const HomePage = ({recipes, user}) => {
   return (
     <div>
-      <p>Welcome latest user <mark>{user}</mark></p>
+      <p className="underline text-primary">Welcome latest user <mark>{user}</mark></p>
       <h1>Recipes</h1>
-      <ul>
+      <div>
         {recipes.map(recipe => 
           <Recipe 
             key={recipe.id}
@@ -15,7 +17,7 @@ const HomePage = ({recipes, user}) => {
             imageType={recipe.imageType}/>
           )
         }
-      </ul>
+      </div>
     </div>
   )
 }

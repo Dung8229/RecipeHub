@@ -1,3 +1,5 @@
+// Code cũ
+
 const Recipe = ({ id, title, imageUrl }) => {
   return (
     <li>
