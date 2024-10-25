@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react'
 import recipeService from './services/recipes'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-
+import RecipeManage from './pages/RecipeManage';
+import Header from './pages/Header';
+import Profile from './pages/Profile';
+import RecipeContestDetail from './pages/RecipeContestDetail';
+import RecipeDetail from './pages/RecipeDetail';
+import './styles/styles.css'
 const recipes = [
   {
     "id": 715415,
@@ -84,13 +89,32 @@ const App = () => {
       <Routes>
         {/* Route cho trang chủ */}
         <Route path="/" element={<HomePage recipes={recipes} user={latestUser} />} />
-        
+
         {/* Route cho trang login */}
         {/* <Route path="/login" element={<LoginPage />} /> */}
 
         {/* Route cho trang chi tiết công thức */}
+        <Route path="/trangcongthuc" element={
+          <>
+            <Header />
+            <RecipeDetail />
+          </>
+        }
+        />
         {/* <Route path="/recipes/:id/information" element={<RecipeInformation />} /> */}
-      </Routes>
+        <Route path="/manage" element={<RecipeManage />} />
+        <Route path="/myprofile" element={
+          <>
+            <Header />
+            <Profile />
+
+          </>
+        }
+        />
+        <Route path="/trangbaithi" element={<RecipeContestDetail />} />
+
+      </ Routes>
+
     </Router>
   );
 }
