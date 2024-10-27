@@ -1,6 +1,6 @@
 import React from 'react';
-import Navbar from './components/Navbar';
-import UserList from './components/UserList';
+import Navbar from '../components/admin_components/Navbar';
+import UserList from '../components/admin_components/UserList';
 
 function AdminManageUsersPage() {
   return (
