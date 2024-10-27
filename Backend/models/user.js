@@ -1,43 +1,49 @@
+
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('../db')
 const db = require('../mysql');
 // Định nghĩa model cho bảng users
+
+const { verify } = require('jsonwebtoken');
+
+
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-  },
-  username: {
-    type: DataTypes.STRING(50),
     allowNull: false,
   },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
   email: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
   password: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   role: {
-    type: DataTypes.STRING(20),
+    type: DataTypes.ENUM('admin', 'user'),
     allowNull: false,
     defaultValue: 'user',
   },
-  verified: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-  },
   created_at: {
     type: DataTypes.DATE,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
   },
+  verified: {
+    type: DataTypes.BOOLEAN
+  }
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
-  timestamps: false, // Nếu bảng không có cột createdAt, updatedAt
+  timestamps: false
 });
 
-module.exports = User
+module.exports = User;

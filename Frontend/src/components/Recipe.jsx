@@ -1,4 +1,6 @@
-const Recipe = ({ id, title, imageUrl, imageType }) => {
+// Code cũ
+
+const Recipe = ({ id, title, imageUrl }) => {
   return (
     <li>
       <span>{id}</span>

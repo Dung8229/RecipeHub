@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import Recipe from "./components/Recipe"
-import recipeService from './services/recipes'
+import userService from './services/users'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 
 const recipes = [
   {
@@ -69,7 +70,7 @@ const App = () => {
   const [latestUser, setLatestUser] = useState('')
 
   useEffect(() => {
-    recipeService
+    userService
       .getAll()
       .then(
         users => {
@@ -79,22 +80,20 @@ const App = () => {
   })
 
   return (
-    <div>
-      <p>Welcome latest user <mark>{latestUser}</mark></p>
-      <h1>Recipes</h1>
-      <ul>
-        {recipes.map(recipe => 
-          <Recipe 
-            key={recipe.id}
-            id={recipe.id}
-            title={recipe.title}
-            imageUrl={recipe.image}
-            imageType={recipe.imageType}/>
-          )
-        }
-      </ul>
-    </div>
-  )
+    <Router>
+      <Routes>
+        {/* Route cho trang chủ */}
+        <Route path="/" element={<HomePage recipes={recipes} user={latestUser} />} />
+        
+        {/* Route cho trang login */}
+        {/* <Route path="/login" element={<LoginPage />} /> */}
+
+        {/* Route cho trang chi tiết công thức */}
+        {/* <Route path="/recipes/:id/information" element={<RecipeInformation id={}/>} /> */}
+        
+      </Routes>
+    </Router>
+  );
 }
 
 export default App
