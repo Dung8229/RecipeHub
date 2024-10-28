@@ -45,6 +45,7 @@ export default {
         h2: '24px', // Tiêu đề phụ
         body: '16px', // Văn bản chính
         button: '18px', // Nút bấm
+        xxs: '0.5rem',
       },
       // Góc bo tròn
       borderRadius: {
