@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
-const { verify } = require('jsonwebtoken');
+const Recipe = require('./recipe');
 
 const User = sequelize.define('User', {
   id: {
@@ -40,5 +40,7 @@ const User = sequelize.define('User', {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
   timestamps: false
 });
+
+// User.hasMany(Recipe, { foreignKey: 'userId' });
 
 module.exports = User;

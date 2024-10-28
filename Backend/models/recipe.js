@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../db')
+const User = require('./user')
 
 const Recipe = sequelize.define('Recipe', {
   id: {
@@ -10,6 +11,10 @@ const Recipe = sequelize.define('Recipe', {
   userId: {
     type: DataTypes.STRING,
     allowNull: false,
+    references: {
+      model: User,
+      key: 'id',
+    },
   },
   title: {
     type: DataTypes.STRING,

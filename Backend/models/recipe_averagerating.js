@@ -15,6 +15,7 @@ const RecipeAverageRating = sequelize.define('RecipeAverageRating', {
       model: Recipe, // Tên bảng tham chiếu
       key: 'id',
     },
+    onDelete: 'CASCADE',
   },
   averageUserRating: {
     type: DataTypes.DECIMAL(3, 1),
@@ -22,10 +23,6 @@ const RecipeAverageRating = sequelize.define('RecipeAverageRating', {
   },
   totalUserRatings: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
-  },
-  averageJudgeRating: {
-    type: DataTypes.DECIMAL(3, 1),
     defaultValue: 0,
   },
 }, {
