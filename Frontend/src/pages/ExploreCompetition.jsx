@@ -1,7 +1,7 @@
-import Nav from "../components/Nav"
-import NavItem from "../components/NavItem"
-import List from "../components/List"
-import ListItemCompetition from "../components/ListItemCompetition"
+import Nav from "../components/competition_components/Nav"
+import NavItem from "../components/competition_components/NavItem"
+import List from "../components/competition_components/List"
+import ListItemCompetition from "../components/competition_components/ListItemCompetition"
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import competitionService from '../services/competitions'
