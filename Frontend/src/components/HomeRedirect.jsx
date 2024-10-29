@@ -5,7 +5,7 @@ function HomeRedirect() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        navigate('/api/home');
+        navigate('/home');
     }, [navigate]);
 
     return null; // Không cần hiển thị gì vì sẽ tự động chuyển hướng

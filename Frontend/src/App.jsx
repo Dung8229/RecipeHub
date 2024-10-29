@@ -12,25 +12,25 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
-        <Route path="/api/home" element={<HomePage/>} />
-        {/* <Route path="/api/register" element={<RegisterPage />} />
-        <Route path="/api/login" element={<LoginPage />} />
-        <Route path="/api/recipes" element={<ExploreRecipesPage />} />
-/api/recipes/:id/information
-/api/profile
-/api/recipes/create
-/api/recipes/my-recipes/:id/edit
-/api/recipes/my-recipes
-/api/recipes/saved
-/api/shopping-list
-/api/competitions/:id/information
-/api/competitions/submit
-/api/admin/dashboard/recipes
-/api/admin/dashboard/comments
-/api/admin/competitions */}
-        <Route path="/api/competitions/open" element={<ExploreCompetitionPage/>} />
-        <Route path="/api/competitions/closed" element={<ExploreCompetitionPage/>} />
-        <Route path="/api/admin/dashboard/user" element={<AdminManageUsersPage />} />
+        <Route path="/home" element={<HomePage/>} />
+        {/* <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/recipes" element={<ExploreRecipesPage />} />
+        /recipes/:id/information
+        /profile
+        /recipes/create
+        /recipes/my-recipes/:id/edit
+        /recipes/my-recipes
+        /recipes/saved
+        /shopping-list
+        /competitions/:id/information
+        /competitions/submit
+        /admin/dashboard/recipes
+        /admin/dashboard/comments
+        /admin/competitions */}
+        <Route path="/competitions/open" element={<ExploreCompetitionPage/>} />
+        <Route path="/competitions/closed" element={<ExploreCompetitionPage/>} />
+        <Route path="/admin/dashboard/user" element={<AdminManageUsersPage />} />
       </Routes>
     </Router>
   );
