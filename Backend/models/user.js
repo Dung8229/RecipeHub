@@ -1,4 +1,5 @@
 
+
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('../db')
 const db = require('../mysql');
@@ -6,6 +7,8 @@ const db = require('../mysql');
 
 const { verify } = require('jsonwebtoken');
 
+
+const Recipe = require('./recipe');
 
 const User = sequelize.define('User', {
   id: {
@@ -40,10 +43,20 @@ const User = sequelize.define('User', {
   },
   verified: {
     type: DataTypes.BOOLEAN
-  }
+  },
+  googleId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  facebookId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
   timestamps: false
 });
+
+// User.hasMany(Recipe, { foreignKey: 'userId' });
 
 module.exports = User;
