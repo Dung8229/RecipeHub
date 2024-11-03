@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import ExploreCompetitionPage from './pages/ExploreCompetition';
 import AdminManageUsersPage from './pages/AdminManageUsersPage';
 import HomeRedirect from './components/HomeRedirect';
+import CompetitionDetailPage from './pages/CompetitionDetail';
 // import RegisterPage from './pages/Register'
 
 const App = () => {
@@ -23,12 +24,12 @@ const App = () => {
         /recipes/my-recipes
         /recipes/saved
         /shopping-list
-        /competitions/:id/information
         /competitions/submit
         /admin/dashboard/recipes
         /admin/dashboard/comments
         /admin/competitions */}
-        <Route path="/competitions/open" element={<ExploreCompetitionPage/>} />
+        <Route path="/competitions/:id/information" element={<CompetitionDetailPage />} />
+        <Route path="/competitions/open" element={<ExploreCompetitionPage />} />
         <Route path="/competitions/closed" element={<ExploreCompetitionPage/>} />
         <Route path="/admin/dashboard/user" element={<AdminManageUsersPage />} />
       </Routes>

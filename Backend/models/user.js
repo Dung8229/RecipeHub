@@ -41,6 +41,6 @@ const User = sequelize.define('User', {
   timestamps: false
 });
 
-// User.hasMany(Recipe, { foreignKey: 'userId' });
+// User.hasMany(CompetitionEntry, { foreignKey: 'userId' });
 
 module.exports = User;

@@ -19,6 +19,10 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  detailDescription: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
   startDate: {
     type: DataTypes.DATE,
     allowNull: false,

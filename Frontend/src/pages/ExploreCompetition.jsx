@@ -16,10 +16,6 @@ const ExploreCompetitionPage = () => {
   // Hàm để lấy tất cả các cuộc thi
   const fetchCompetitions = async () => {
     try {
-      // Gọi service để lấy tất cả dữ liệu cuộc thi
-      const data = await competitionService.getAll(); 
-      console.log('Fetched competitions:', data);
-  
       // Phân loại cuộc thi thành open và closed
       const dataOpen = await competitionService.getAll("open"); // Chờ kết quả từ API
       setOpenComps(dataOpen); // Thiết lập state cho open competitions

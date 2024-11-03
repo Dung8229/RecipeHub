@@ -36,4 +36,9 @@ const RecipeRating = sequelize.define('RecipeRating', {
   updatedAt: 'updated_at',
 });
 
+User.hasMany(RecipeRating, { foreignKey: 'userId' });
+RecipeRating.belongsTo(User, { foreignKey: 'userId' });
+Recipe.hasMany(RecipeRating, { foreignKey: 'recipeId' });
+RecipeRating.belongsTo(Recipe, { foreignKey: 'recipeId' });
+
 module.exports = RecipeRating
