@@ -5,13 +5,10 @@ import AdminManageUsersPage from './pages/AdminManageUsersPage';
 import ExploreRecipesPage from './pages/ExploreRecipes';
 import LoginRegisterPage from './pages/Login-Register';
 
-
-
 const App = () => {
   return (
     <Router>
       <Routes>
-
         <Route path="/" element={<HomePage/>} />
         <Route path="/recipes/search" element={<ExploreRecipesPage/>} />
         <Route path="/login" element={<LoginRegisterPage/>} />
