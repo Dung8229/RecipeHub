@@ -6,6 +6,7 @@ const app = express()
 const cors = require('cors')
 const usersRouter = require('./controllers/users')
 
+
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -55,6 +56,7 @@ app.get('/auth/facebook/callback', (req, res, next) => {
     })(req, res, next);
 });
 app.use('/api/users', usersRouter)
+
 
 app.use('/api/recipes', recipesRouter)
 

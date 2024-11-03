@@ -1,25 +1,20 @@
-// Code cũ
-
-import Recipe from "../components/Recipe"
-
-const HomePage = ({recipes, user}) => {
+import React from 'react';
+import Header from '../components/Header';
+import ContestBanner from '../components/ContestBanner';
+import RecipeSection from '../components/RecipeSection';
+import Footer from '../components/Footer';
+function HomePage() {
   return (
     <div>
-      <p className="underline text-primary">Welcome latest user <mark>{user}</mark></p>
-      <h1>Recipes</h1>
-      <div>
-        {recipes.map(recipe => 
-          <Recipe 
-            key={recipe.id}
-            id={recipe.id}
-            title={recipe.title}
-            imageUrl={recipe.image}
-            imageType={recipe.imageType}/>
-          )
-        }
-      </div>
+      <Header />
+      <main className='pt-32'>
+        <ContestBanner />
+        <RecipeSection title= "Trending Recipes" />
+        <RecipeSection title= "Most Popular Recipes" />
+      </main>
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;

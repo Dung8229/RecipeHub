@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize')
+const { DataTypes, Sequelize } = require('sequelize')
 const sequelize = require('../db')
-const Competition = requie('./competition')
+const Competition = require('./competition')
 const User = require('./user')
 
 const CompetitionParticipant = sequelize.define('CompetitionParticipant', {
@@ -26,8 +26,9 @@ const CompetitionParticipant = sequelize.define('CompetitionParticipant', {
     },
   },
   submissionTime: {
-    type: DataTypes.TIMESTAMP,
+    type: DataTypes.DATE,
     allowNull: false,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
   },
 }, {
   tableName: 'competition_participant',

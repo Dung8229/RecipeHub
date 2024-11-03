@@ -1,12 +1,16 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const RecipeTag = require('../models/recipe_tag');
-const RecipeIngredientCategory = require('../models/ingredient_category');
-const { Sequelize } = require('sequelize');
-const { compare } = require('bcrypt');
+const Recipe = require('../models/recipe');
+const User = require('../models/user');
 const recipeRouter = express.Router();
-const Recipes = require('../models/recipes_all'); 
+const defineAssociations = require('../models/defineAssociations')
+const RecipeTag = require('../models/recipe_tag')
+const RecipeIngredientCategory = require('../models/ingredient_category')
+const RecipeIngredient = require('../models/recipe_ingredient')
+const Ingredient = require('../models/ingredient')
+const { Sequelize } = require('sequelize')
 
+defineAssociations()
 // Hàm để xác định độ khó dựa trên readyInMinutes và servings
 const calculateDifficulty = (readyInMinutes, servings) => {
   if (readyInMinutes <= 15 && servings <= 2) {
@@ -61,33 +65,38 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
     [Op.and]: [] // Sử dụng Op.and để kết hợp các điều kiện
   };
 
-  // Thêm điều kiện tìm kiếm theo searchTerm
+  // Tách searchTerm thành mảng các từ khóa
   if (searchTerm) {
-    whereClause[Op.and].push({
-      [Op.or]: [
-        {
-          title: {
-            [Op.like]: `%${searchTerm}%`
+    const searchTerms = searchTerm.split(/[\s,]+/).filter(Boolean); // Tách bằng dấu cách hoặc dấu phẩy
+
+    // Thêm điều kiện tìm kiếm cho từng từ khóa
+    searchTerms.forEach(term => {
+      whereClause[Op.and].push({
+        [Op.or]: [
+          {
+            title: {
+              [Op.like]: `%${term}%`
+            }
+          },
+          {
+            '$RecipeTags.tag$': {
+              [Op.like]: `%${term}%`
+            }
+          },
+          {
+            '$Ingredients.name$': {
+              [Op.like]: `%${term}%`
+            }
           }
-        },
-        {
-          tag: {
-            [Op.like]: `%${searchTerm}%`
-          }
-        },
-        {
-          ingredient_name: {
-            [Op.like]: `%${searchTerm}%`
-          }
-        }
-      ]
+        ]
+      });
     });
   }
 
   // Nếu có tham số category, thêm vào whereClause
   if (category) {
     whereClause[Op.and].push({
-      tag: {
+      '$RecipeTags.tag$': {
         [Op.like]: `%${category}%`
       }
     });
@@ -96,7 +105,7 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
   // Nếu có tham số ingredient, thêm vào whereClause
   if (ingredient) {
     whereClause[Op.and].push({
-      ingredient_name: {
+      '$Ingredients.name$': {
         [Op.like]: `%${ingredient}%`
       }
     });
@@ -113,23 +122,38 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
   }
 
   // Truy vấn công thức với JOIN
-  const recipes = await Recipes.findAll({
+  const recipes = await Recipe.findAll({
     where: whereClause,
-    attributes: [
-      'recipe_id', 'title', 'recipe_image', 'readyInMinutes', 'servings',
-      'isSubmission', 'tag', 'ingredient_name', 'ingredient_image', 'userId'
+    include: [
+      {
+        model: User, // Tham chiếu đến model User
+        attributes: ['username'] // Chỉ lấy trường username
+      },
+      {
+        model: RecipeTag, // Tham chiếu đến model RecipeTag
+        attributes: ['tag'] // Chỉ lấy trường tag
+      },
+      {
+        model: Ingredient,
+        attributes: ['name']
+      }
     ],
-    group: ['recipe_id'],  // Nhóm các bản ghi theo recipe_id
-    distinct: true 
+    attributes: ['id', 'title', 'image', 'readyInMinutes', 'servings'],
   });
 
   // Thêm giá trị difficulty vào từng công thức
   const recipesWithDifficulty = recipes.map(recipe => ({
     ...recipe.get(), // Lấy tất cả các thuộc tính của recipe
-    difficulty: difficulty || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
+    difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
   }));
 
+  // Lọc theo độ khó nếu có
+  if (difficulty) {
+    return recipesWithDifficulty.filter(recipe => recipe.difficulty === difficulty);
+  }
+
   return recipesWithDifficulty;
+
 };
 
 // Route tìm kiếm công thức
