@@ -1,9 +1,6 @@
 const User = require('./models/user')
 const Recipe = require('./models/recipe')
 const { Sequelize } = require('sequelize')
-const defineAssociations = require('./models/defineAssociations')
-
-defineAssociations()
 
 async function getRecipes() {
     try {

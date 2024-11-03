@@ -70,14 +70,17 @@ function defineAssociations() {
     foreignKey: 'ingredientId',
   });
 
-  User.belongsToMany(Recipe, {
-    through: Favourites,
-    foreignKey: 'userId',
-  });
-  Recipe.belongsToMany(User, {
-      through: Favourites,
-      foreignKey: 'recipeId',
-  });
+  // User.belongsToMany(Recipe, {
+  //   through: Favourites,
+  //   foreignKey: 'userId',
+  //   as: 'UserFavourites' // Đảm bảo alias không bị trùng lặp
+  // });
+
+  // Recipe.belongsToMany(User, {
+  //     through: Favourites,
+  //     foreignKey: 'recipeId',
+  //     as: 'RecipeUsers' // Alias khác để tránh xung đột
+  // });
 
   Competition.belongsToMany(User, {
     through: CompetitionEntry,

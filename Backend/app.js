@@ -1,12 +1,10 @@
-// Component chính của web
 const config = require('./utils/config')
 const express = require('express')
 require('express-async-error')
 const app = express()
 const cors = require('cors')
 const usersRouter = require('./controllers/users')
-
-
+const competitionsRouter = require('./controllers/competitions')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -15,6 +13,7 @@ const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
+
 sequelize.authenticate()
     .then(() => {
         logger.info('Kết nối DB thành công!');
@@ -61,11 +60,10 @@ app.get('/auth/facebook/callback', (req, res, next) => {
         return res.redirect('http://localhost:5173'); // Chuyển hướng về trang chủ
     })(req, res, next);
 });
+
 app.use('/api/users', usersRouter)
-
-
 app.use('/api/recipes', recipesRouter)
-
+app.use('/api/competitions', competitionsRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
