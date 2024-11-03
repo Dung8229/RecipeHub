@@ -14,7 +14,4 @@ function isPasswordStrong(password) {
         hasSpecialChars
     );
 }
-
-module.exports = {
-    isPasswordStrong
-};
+export { isPasswordStrong }

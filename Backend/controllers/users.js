@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const { isPasswordStrong } = require('../utils/password-utils');
+
 const jwt = require('jsonwebtoken');
 
 // Đăng ký người dùng mới
@@ -15,11 +15,6 @@ usersRouter.post('/register', async (req, res) => {
         // Kiểm tra email có trùng không
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) return res.status(400).json({ error: 'Email already exists' });
-
-        // Kiểm tra độ mạnh của mật khẩu
-        if (!isPasswordStrong(password)) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters long, include uppercase, lowercase, numbers, and special characters.' });
-        }
 
         // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
