@@ -82,10 +82,10 @@ export default {
         },
         'star': {
           "0%": {
-            transform: "translateY(100vh) scale(1)",
+            transform: "translateY(100vh) scale(3)",
           },
           "100%": {
-            transform: "translateY(-10vh) scale(0)",
+            transform: "translateY(0vh) scale(1)",
           },
         }
       },
@@ -93,6 +93,11 @@ export default {
         progress: 'progress 2s ease-out forwards',
         gradientMove: 'gradientMove 10s linear infinite',
         blob: "blob 7s infinite",
+        star10: "star 10s linear infinite",
+        star11: "star 11s linear infinite",
+        star12: "star 12s linear infinite",
+        star13: "star 13s linear infinite",
+        star14: "star 14s linear infinite",
         star15: "star 15s linear infinite",
         star16: "star 16s linear infinite",
         star17: "star 17s linear infinite",

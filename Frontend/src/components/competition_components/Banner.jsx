@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const Banner = ({title, image, description, detailDescription, startDate, endDate}) => {
+  const now = new Date()
   const [isDetailVisible, setDetailVisible] = useState(false)
 
   const toggleDetail = () => {
@@ -27,11 +28,13 @@ const Banner = ({title, image, description, detailDescription, startDate, endDat
           >
             Learn More
           </button>
-          <button 
-            className="bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full"
-          >
-            Enter Contest
-          </button>
+          {endDate > now && (
+            <button
+              className="bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full"
+            >
+              Enter Contest
+            </button>
+          )}
         </div>
       </div>
     </div>

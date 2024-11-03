@@ -53,9 +53,13 @@ const LeaderboardItem = ({ rank, username, recipeTitle, recipeImage, totalVotes,
           <h4 className="text-md italic">by {username}</h4>
         </div>
       </div>
-      <div className="flex flex-col items-end">
-        <span className="text-sm">Votes: {totalVotes}</span>
-        <span className="text-sm">Score: {score}</span>
+      <div className="flex flex-col items-end bg-gray-100 p-2 rounded-lg shadow-md space-y-1">
+        <span className="text-xs font-medium text-gray-700">
+          {totalVotes} votes
+        </span>
+        <span className="text-xs font-medium text-green-700">
+          {score} points
+        </span>
       </div>
     </div>
   );

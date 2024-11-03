@@ -3,7 +3,7 @@ import competitionService from '../services/competitions'
 import Banner from '../components/competition_components/Banner'
 import ProgressBar from '../components/competition_components/ProgressBar'
 import Leaderboard from '../components/competition_components/Leaderboard'
-import LeaderboardItem from '../components/competition_components/LeaderboardItem'
+import WinnerAnnouncement from '../components/competition_components/WinnerAnnouncement'
 import { useParams } from 'react-router-dom'
 
 const CompetitionDetailPage = () => {
@@ -40,7 +40,6 @@ const CompetitionDetailPage = () => {
 
   return (
     <div className="mx-auto flex">
-      {/* Phần nội dung chính */}
       <div className="flex-1 p-4">
         <Banner 
           title={competition?.title || 'No Title'} 
@@ -52,19 +51,12 @@ const CompetitionDetailPage = () => {
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'}
         />
-        {/* <Leaderboard>
-          {leaderboardData.map((item, index) => (
-            <LeaderboardItem
-              key={index}
-              rank={item.rank}
-              username={item.username}
-              recipeTitle={item.recipeTitle}
-              recipeImage={item.recipeImage}
-              totalVotes={item.totalVotes}
-              score={item.score}
-            />
-          ))}
-        </Leaderboard> */}
+        <WinnerAnnouncement 
+          username="John Doe" 
+          profilePic="path/to/profile-pic.jpg" 
+          recipeTitle="Best Chocolate Cake" 
+          recipeImage="path/to/recipe-image.jpg" 
+        />
         <Leaderboard entries={leaderboardData} />
       </div>
     </div>
