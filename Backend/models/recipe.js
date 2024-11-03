@@ -50,6 +50,10 @@ const Recipe = sequelize.define('Recipe', {
     allowNull: false,
     defaultValue: DataTypes.NOW, // Tự động cập nhật thời gian khi sửa đổi
   },
+  difficulty: {
+    type: DataTypes.ENUM('beginer', 'intermediate', 'advanced','expert','masterchef'), // Định nghĩa độ khó
+    allowNull: false,
+  },
 }, {
   timestamps: true, // Sử dụng timestamps để tự động thêm createdAt và updatedAt
   createdAt: 'created_at', // Tùy chỉnh tên cột createdAt
