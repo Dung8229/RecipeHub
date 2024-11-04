@@ -1,10 +1,10 @@
+// Gọi api liên quan recipe từ backend
 import axios from 'axios'
 
-const baseUrl = '/api/users'
+const baseUrl = '/api/recipes'
 
-const getAll = async () => {
-  const request = axios.get(baseUrl)
+export const getDinnerRecipes = async () => {
+  const request = axios.get(`${baseUrl}/dinner`)
   return request.then(response => response.data)
 }
 
-export default { getAll }

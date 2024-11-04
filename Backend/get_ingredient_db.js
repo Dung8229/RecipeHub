@@ -2,7 +2,7 @@ const axios = require('axios');
 const Ingredient = require('./models/ingredient')
 const IngredientCategory = require('./models/ingredient_category')
 const IngredientNutrition = require('./models/ingredient_nutrition')
-const IngredientCaloricbreakdown = require('./models/ingredietn_caloricbreakdown')
+const IngredientCaloricbreakdown = require('./models/ingredient_caloricbreakdown')
 
 const API_KEY = '22dbdb3252d3488fa93c58cb226f78e4';
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import recipeService from './services/recipes'
+import userService from './services/users'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RecipeManage from './pages/RecipeManage';
@@ -72,18 +72,6 @@ const recipes = [
 ]
 
 const App = () => {
-  const [latestUser, setLatestUser] = useState('')
-
-  useEffect(() => {
-    recipeService
-      .getAll()
-      .then(
-        users => {
-          setLatestUser(users[users.length - 1].username)
-        }
-      )
-  })
-
   return (
     <Router>
       <Routes>
