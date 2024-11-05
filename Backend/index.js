@@ -38,10 +38,7 @@ app.use(passport.session());
 
 // Phục vụ các file tĩnh từ thư mục hiện tại
 app.use(express.static(path.join(__dirname)));
-// Đường dẫn gốc để phục vụ file index.html
-app.get('/', (req, res) => {
-    res.send('<h1>Mọi công thức mà bạn tìm</h1> Đi tới http://localhost:3000/api/users để xem users');
-});
+
 // Thiết lập PORT
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

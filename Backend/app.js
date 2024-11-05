@@ -22,7 +22,6 @@ sequelize.authenticate()
         logger.error('Kết nối DB thất bại:', err);
     });
 
-logger.info('Kết nối db thành công!')
 // Serve static files
 app.use(express.static('public'));
 // Phục vụ các file tĩnh từ thư mục hiện tại
@@ -32,6 +31,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use(middleware.requestLogger)
+
 // Route cho xác thực Google
 app.get('/auth/google', setupGoogleAuth);
 // Route callback cho Google

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { isPasswordStrong } from '../../../Backend/utils/password-utils';
+import { isPasswordStrong } from '../../../Backend/utils/password-utils'
 
 const LoginRegister = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,6 +32,9 @@ const LoginRegister = () => {
         return response.json();
       })
       .then((data) => {
+        // Khi người dùng đăng nhập thành công
+        localStorage.setItem('authToken', data.token); // Lưu token
+        localStorage.setItem('userLogin', JSON.stringify(data.userLogin)); // Lưu username nếu cần
 
         window.location.href = 'http://localhost:5173';
       })

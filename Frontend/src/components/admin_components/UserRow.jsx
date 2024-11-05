@@ -6,6 +6,9 @@ import { deleteUser } from '../../services/users';
 const UserRow = ({ user, setUsers }) => {
   const handleDelete = async () => {
     try {
+      const confirmation = window.confirm('Are you sure you want to delete this user?');
+      if (!confirmation) return;
+
       await deleteUser(user.id);
       setUsers(prevUsers => prevUsers.filter(u => u.id !== user.id));
       alert('User deleted successfully');

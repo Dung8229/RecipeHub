@@ -47,7 +47,7 @@ usersRouter.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, userlogin.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
-        const token = jwt.sign({ id: userlogin.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: userlogin.id, role: userlogin.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token, userlogin });
     } catch (error) {
         logger.error('Error during login:', error);
@@ -78,18 +78,18 @@ usersRouter.post('/', async (req, res) => {
 
 
 // API xóa người dùng dựa trên ID
-usersRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params;
+// usersRouter.delete('/:id', async (req, res) => {
+//     const { id } = req.params;
 
-    try {
-        const deleted = await User.destroy({ where: { id } });
-        if (!deleted) return res.status(404).json({ error: 'User not found' });
-        return res.status(204).send(); // Trả về 204 No Content
-    } catch (error) {
-        logger.error('Error deleting user:', error);
-        return res.status(500).json({ error: 'Failed to delete user' });
-    }
-});
+//     try {
+//         const deleted = await User.destroy({ where: { id } });
+//         if (!deleted) return res.status(404).json({ error: 'User not found' });
+//         return res.status(204).send(); // Trả về 204 No Content
+//     } catch (error) {
+//         logger.error('Error deleting user:', error);
+//         return res.status(500).json({ error: 'Failed to delete user' });
+//     }
+// });
 
 // Lấy tất cả người dùng
 usersRouter.get('/', async (req, res) => {
@@ -145,7 +145,7 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
 });
 
 // Xóa người dùng (dành cho admin)
-usersRouter.delete('/:userId', async (req, res) => {
+usersRouter.delete('/:userId', middleware.authenticateJWT, middleware.authorizeAdmin, async (req, res) => {
   const { userId } = req.params;
   try {
       const user = await User.findByPk(userId);
