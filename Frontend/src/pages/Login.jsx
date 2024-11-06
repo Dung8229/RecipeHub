@@ -139,12 +139,12 @@ const SocialLoginOptions = () => (
   <div className="flex justify-between w-full">
     <a href="http://localhost:3000/auth/facebook" 
       className="w-[48%] h-[63px] bg-[#1877f2] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#1665d8] transition-colors">
-      <i className="fa fa-facebook mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
+      <i className="fa-brands fa-facebook-f mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
       FACEBOOK
     </a>
     <a href="http://localhost:3000/auth/google"
       className="w-[48%] h-[63px] bg-[#db4437] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#c53929] transition-colors">
-      <i className="fa fa-google mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
+      <i className="fa-brands fa-google mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
       GOOGLE
     </a>
   </div>
