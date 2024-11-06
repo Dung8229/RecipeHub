@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 
 import ExploreRecipesPage from './pages/ExploreRecipes';
-import LoginRegisterPage from './pages/Login-Register';
+import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register';
 
 
 
@@ -15,9 +16,8 @@ const App = () => {
 
         <Route path="/" element={<HomePage/>} />
         <Route path="/recipes/search" element={<ExploreRecipesPage/>} />
-        <Route path="/login" element={<LoginRegisterPage/>} />
-
-
+        <Route path="/login" element={<LoginPage/>} />
+        <Route path="/register" element={<RegisterPage/>} />
         <Route path="/home" element={<HomePage/>} />
         {/* <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
