@@ -285,4 +285,55 @@ recipesRouter.get('/highlighted', async (req, res) => {
   }
 });
 
+// API liên quan cho page Create.jsx
+// API 1: Lấy danh sách nguyên liệu
+recipesRouter.get('/ingredients', async (req, res) => {
+  try {
+    const ingredients = await Ingredient.findAll();
+    res.json(ingredients);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching ingredients', error });
+  }
+});
+
+// API 2: Tạo công thức nấu ăn mới
+recipesRouter.post('/create', async (req, res) => {
+  const { userId, title, image, imageType, summary, readyInMinutes, servings, difficulty, ingredients } = req.body;
+
+  try {
+      // Tạo công thức mới
+      const recipe = await Recipe.create({
+      userId, title, image, imageType, summary, readyInMinutes, servings, difficulty
+      });
+
+      // Thêm nguyên liệu vào công thức
+      if (ingredients && ingredients.length > 0) {
+      for (const ingredient of ingredients) {
+          await RecipeIngredient.create({
+          recipeId: recipe.id,
+          ingredientId: ingredient.ingredientId,
+          amount: ingredient.amount,
+          unit: ingredient.unit,
+          });
+      }
+      }
+
+      res.status(201).json(recipe);
+  } catch (error) {
+      res.status(500).json({ message: 'Error creating recipe', error });
+  }
+});
+
+// API 3: Kiểm tra tính hợp lệ của URL ảnh
+recipesRouter.post('/validate-image-url', async (req, res) => {
+  const { url } = req.body;
+
+  try {
+      const response = await axios.get(url);
+      res.json({ valid: response.status === 200 });
+  } catch (error) {
+      res.json({ valid: false, message: 'Invalid image URL', error });
+  }
+});
+
 module.exports = recipeRouter;

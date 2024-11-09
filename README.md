@@ -1,0 +1,4 @@
+- Chưa hoàn thiện phần add ingredients
+- Upload ảnh với thư viện Multer ok
+- Giao diện các phần khác ok
+- API liên quan không biết còn thiếu gì ko?

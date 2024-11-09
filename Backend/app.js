@@ -68,5 +68,45 @@ app.use('/api/competitions', competitionsRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
+// Nhớ 'CTRL + /' phần dưới để dùng và 'npm install multer' nhé!
+
+// const multer = require('multer');
+// const path = require('path');
+// // Set ảnh
+// // Set storage engine for multer
+// const storage = multer.diskStorage({
+//     destination: './uploads/',
+//     filename: (req, file, cb) => {
+//       cb(null, `${Date.now()}-${file.originalname}`);
+//     },
+//   });
+  
+//   // Init upload with multer
+//   const upload = multer({
+//     storage: storage,
+//     limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+//     fileFilter: (req, file, cb) => {
+//       const fileTypes = /jpeg|jpg|png/;
+//       const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+//       const mimetype = fileTypes.test(file.mimetype);
+  
+//       if (mimetype && extname) {
+//         return cb(null, true);
+//       } else {
+//         cb('Error: Images Only!');
+//       }
+//     },
+//   }).single('image');
+  
+//   // Route to handle image upload
+//   app.post('/upload', (req, res) => {
+//     upload(req, res, (err) => {
+//       if (err) {
+//         return res.status(400).json({ error: err });
+//       }
+//       res.status(200).json({ filePath: `/uploads/${req.file.filename}` });
+//     });
+//   });
+//   // Set ảnh
 
 module.exports = app;
