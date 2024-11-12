@@ -1,14 +1,16 @@
 const competitionsRouter = require('express').Router()
 const Sequelize = require('sequelize')
+const axios = require('axios')
 const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 
-const { getAllCompetitions } = require('../services/competition'); // Giả định bạn có một service để lấy dữ liệu
+const { getAllCompetitions } = require('../services/competition');
 const Competition = require('../models/competition');
 const CompetitionEntry = require('../models/competition_entry')
 const User = require('../models/user')
 const Recipe = require('../models/recipe')
-const RecipeRating = require('../models/recipe_rating')
+const RecipeRating = require('../models/recipe_rating');
+const { response } = require('express');
 
 competitionsRouter.get('/', async (request, response) => {
     try {
@@ -17,9 +19,11 @@ competitionsRouter.get('/', async (request, response) => {
 
         // Kiểm tra trạng thái và lấy dữ liệu tương ứng
         if (status === 'open') {
-            competitions = await getAllCompetitions(true); // Lấy các cuộc thi đang mở
+          competitions = await getAllCompetitions('open'); // Lấy các cuộc thi đang mở
         } else if (status === 'closed') {
-            competitions = await getAllCompetitions(false); // Lấy các cuộc thi đã đóng
+            competitions = await getAllCompetitions('closed'); // Lấy các cuộc thi đã đóng
+        } else if (status === 'upcoming') {
+            competitions = await getAllCompetitions('upcoming'); // Lấy các cuộc thi sắp mở
         } else {
             competitions = await getAllCompetitions(); // Lấy tất cả các cuộc thi
         }
@@ -43,6 +47,47 @@ competitionsRouter.get('/', async (request, response) => {
     }
 })
 
+// Route để tạo một competition mới
+competitionsRouter.post('/', async (req, res) => {
+  const {
+    title,
+    image, // Đã có đường dẫn ảnh từ frontend
+    description,
+    detailDescription,
+    startDate,
+    endDate,
+    prize,
+  } = req.body;
+
+  try {
+    // Tạo một bản ghi mới trong database
+    const newCompetition = await Competition.create({
+      title,
+      image, // Lưu đường dẫn ảnh vào trường image
+      description,
+      detailDescription,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      prize,
+    });
+
+    // Thêm thông tin về timeLeft
+    const now = new Date()
+    const timeLeft = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24))); // Tính số ngày còn lại
+    // Thêm thông tin về timeLeft vào đối tượng trả về
+    const newCompetitionWithTimeLeft = {
+      ...newCompetition.toJSON(), // Chuyển đối tượng Sequelize thành đối tượng JSON
+      timeLeft, // Thêm timeLeft vào response
+    };
+
+    // Trả về response thành công với thông tin competition mới
+    res.status(201).json(newCompetitionWithTimeLeft);
+  } catch (error) {
+    console.error('Error creating competition:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 competitionsRouter.get('/:id', async (request, response) => {
     try {
         const { id } = request.params
@@ -57,6 +102,29 @@ competitionsRouter.get('/:id', async (request, response) => {
         response.status(500).json({ error: 'An error occurred' })
     }
 })
+
+competitionsRouter.delete('/:id', async (request, response) => {
+  const { id } = request.params; // Lấy id từ URL params
+
+  try {
+    // Tìm kiếm cuộc thi với ID tương ứng
+    const competition = await Competition.findByPk(id);
+
+    // Nếu không tìm thấy cuộc thi
+    if (!competition) {
+      return response.status(404).json({ message: 'Competition not found' });
+    }
+
+    // Xóa cuộc thi
+    await competition.destroy();
+
+    // Trả về phản hồi thành công
+    response.status(200).json({ message: 'Competition deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting competition:', error);
+    response.status(500).json({ message: 'Server error' });
+  }
+});
 
 competitionsRouter.get('/:id/leaderboard', async (request, response) => {
   try {
@@ -113,7 +181,12 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
 
     leaderboard.sort((a, b) => b.score - a.score);
 
-    response.json(leaderboard);
+    const winner = leaderboard[0] // Người chiến thắng
+
+    response.json({
+      winner: winner,
+      leaderboard: leaderboard
+    })
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     response.status(500).json({ message: 'Đã xảy ra lỗi khi lấy dữ liệu leaderboard.' });

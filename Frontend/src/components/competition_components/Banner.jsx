@@ -13,14 +13,14 @@ const Banner = ({title, image, description, detailDescription, startDate, endDat
 
   return (
   <div> 
-    <div className="relative w-full p-4">
+    <div className="relative w-full">
       <img 
-        className="w-full max-w-4xl mx-auto object-cover rounded-lg" 
+        className="w-full mx-auto max-h-64 md:max-h-80 object-cover" 
         src={image} 
         alt="Competition Image" 
       />
-      <div className="absolute inset-0 flex flex-col justify-end items-center mb-8">
-        <h1 className="text-black font-bold text-4xl sm:text-5xl md:text-6xl">{title}</h1>
+      <div className="absolute max-w-6xl mx-auto inset-0 flex flex-col justify-end items-center mb-8">
+        <h1 className="text-white font-bold text-4xl sm:text-5xl md:text-6xl">{title}</h1>
         <div className="mt-4 flex gap-4">
           <button 
             className="bg-primary hover:bg-primaryHover text-white font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full"
@@ -38,7 +38,7 @@ const Banner = ({title, image, description, detailDescription, startDate, endDat
         </div>
       </div>
     </div>
-    <div className="flex justify-center items-center cursor-pointer bg-green-500" onClick={toggleDetail}>
+    <div className="flex justify-center items-center cursor-pointer bg-blue-900" onClick={toggleDetail}>
       <span className={`text-center text-sm sm:text-base md:text-lg text-white transition-all duration-300 ease-in-out ${isDetailVisible ? '' : 'hover:underline'}`}>
         {isDetailVisible ? detailDescription : description}
       </span>

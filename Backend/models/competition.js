@@ -31,6 +31,10 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  prize: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
 }, {
   tableName: 'competitions',
   timestamps: true, // Tự động thêm createdAt và updatedAt

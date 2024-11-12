@@ -19,6 +19,7 @@
     "express-async-error": "^0.0.2",
     "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.11.3",
     "passport": "^0.7.0",
