@@ -36,7 +36,7 @@ const ProgressBar = ({ startDate, endDate }) => {
   const progressPercentage = Math.min(100,((totalDays - timeLeft) / totalDays) * 100);
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full p-4 max-w-6xl mx-auto">
       <p className="text-lg font-bold mb-2">Progress</p>
       <div className="flex justify-between text-xs mb-1">
         <span>{new Date(startDate).toLocaleDateString()}</span>

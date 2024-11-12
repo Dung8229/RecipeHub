@@ -37,8 +37,11 @@ function defineAssociations() {
   Recipe.hasMany(RecipeInstruction, { foreignKey: 'recipeId' });
   RecipeInstruction.belongsTo(Recipe, { foreignKey: 'recipeId' });
 
-  Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
-  Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
+  // RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+  // Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+
+  // Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
+  // Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
 
   Recipe.hasMany(RecipeComment, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
   RecipeComment.belongsTo(Recipe, { foreignKey: 'recipeId' });

@@ -5,6 +5,7 @@ const app = express()
 const cors = require('cors')
 const usersRouter = require('./controllers/users')
 const competitionsRouter = require('./controllers/competitions')
+const imageUploadRouter = require('./controllers/imageUpload')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -64,6 +65,10 @@ app.get('/auth/facebook/callback', (req, res, next) => {
 app.use('/api/users', usersRouter)
 app.use('/api/recipes', recipesRouter)
 app.use('/api/competitions', competitionsRouter)
+app.use('/api/image', imageUploadRouter)
+
+// Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

@@ -17,7 +17,13 @@ const ListItemCompetition = ({ competition }) => {
               <dt className="sr-only">Time left</dt>
               <dd className="text-red-500 font-bold">
                 <FontAwesomeIcon icon={faClock} />
-                {competition.timeLeft > 0 ? ` ${competition.timeLeft} days left` : ' Closed'}              
+                {new Date(competition.startDate) > new Date() ? (
+                  ` Open in ${Math.ceil((new Date(competition.startDate) - new Date()) / (1000 * 60 * 60 * 24))} days`
+                ) : competition.timeLeft > 0 ? (
+                  ` ${competition.timeLeft} days left`
+                ) : (
+                  ' Closed'
+                )}
               </dd>
             </div>
             <div className="w-full font-normal justify-between">
