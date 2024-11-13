@@ -6,7 +6,8 @@ import RecipeManage from './pages/RecipeManage';
 import Header from './pages/Header';
 import Profile from './pages/Profile';
 import RecipeContestDetail from './pages/RecipeContestDetail';
-import RecipeDetail from './pages/RecipeDetail';
+import RecipeDetail from './pages/Recipes';
+
 import './styles/styles.css'
 const recipes = [
   {
@@ -76,8 +77,8 @@ const App = () => {
     <Router>
       <Routes>
         {/* Route cho trang chủ */}
-        <Route path="/" element={<HomePage recipes={recipes} user={latestUser} />} />
-
+        <Route path="/" element={<HomePage recipes={recipes} />} />
+        {/* user={latestUser}  */}
         {/* Route cho trang login */}
         {/* <Route path="/login" element={<LoginPage />} /> */}
 
@@ -89,7 +90,8 @@ const App = () => {
           </>
         }
         />
-        {/* <Route path="/recipes/:id/information" element={<RecipeInformation />} /> */}
+        {/* <Route path="/recipes/favourite" element={<Favourite />} /> */}
+        <Route path="/recipes/:id/information" element={<RecipeDetail />} />
         <Route path="/manage" element={<RecipeManage />} />
         <Route path="/myprofile" element={
           <>

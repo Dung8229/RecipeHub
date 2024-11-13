@@ -57,4 +57,21 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (request, response) =>
   }
 })
 
+//Lấy yêu thích
+// usersRouter.get('/:userId/favourites', ')
+
+// usersRouter.get('/:userId/favourutites/:recipeId') {
+//   try {
+//     const { userId, recipeId } = req.params;
+//     const favourite = await Favourites.findOne({ where: { userId, recipeId } });
+//     if (favourite) {
+//         res.json({ isFavourite: true });
+//     } else {
+//         res.json({ isFavourite: false });
+//     }
+// } catch (error) {
+//     res.status(500).json({ error: 'Something went wrong' });
+// }
+// }
+
 module.exports = usersRouter

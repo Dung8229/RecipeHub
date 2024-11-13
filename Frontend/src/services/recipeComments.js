@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const baseUrl = '/api/recipeComments';
 
-export const getRecipeComment = async (recipeId) => {
+export const getRecipeComments = async (recipeId) => {
     const response = await axios.get(`${baseUrl}/recipe/${recipeId}`);
     return response.data;
 };

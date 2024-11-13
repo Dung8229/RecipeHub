@@ -1,15 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const RecipeInstruction = require('../models/recipe_instruction');
-//Add route liên quan đến ID công thức
-// Route để lấy tất cả các bước hướng dẫn cua công thức id
-router.get('recipes/:id', async (req, res) => {
+
+// Route để lấy tất cả các bước hướng dẫn của một công thức nấu ăn theo ID
+router.get('/:id/instructions', async (req, res) => {
     try {
-        const instruction = await RecipeInstruction.findByPk(req.params.id);
-        if (instruction) {
-            res.json(instruction);
+        const recipeId = req.params.id;
+        const instructions = await RecipeInstruction.findAll({
+            where: { recipeId }
+        });
+        if (instructions.length > 0) {
+            console.log('Instructions found');
+            res.json(instructions);
         } else {
-            res.status(404).json({ error: 'Instruction not found' });
+            console.log('Instructions not found');
+            res.status(404).json({ error: 'Instructions not found' });
         }
     } catch (error) {
         res.status(500).json({ error: 'Something went wrong' });

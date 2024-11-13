@@ -7,7 +7,7 @@ router.get('/:id', async (req, res) => {
     try {
         const recipeId = req.params.id;
         const recipe = await Recipe.findByPk(recipeId, {
-            attributes: ['id', 'userId', 'title', 'image', 'imageType', 'summary', 'readyInMinutes', 'servings', 'createdAt', 'updatedAt'],
+            attributes: ['id', 'userId', 'title', 'image', 'imageType', 'summary', 'readyInMinutes', 'servings'],
         });
         if (recipe) {
             res.json(recipe);

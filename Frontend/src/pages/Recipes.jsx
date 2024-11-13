@@ -6,7 +6,7 @@ import { getRecipeIngredients } from '../services/recipeIngredients';
 import { getRecipeComments, addComment } from '../services/recipeComments';
 import { getRecipeRatings } from '../services/recipeRatings';
 import { getRecipeById } from '../services/recipes';
-import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites.js';
+import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites';
 
 const Recipes = () => {
     const { id } = useParams();
@@ -22,24 +22,28 @@ const Recipes = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const recipeData = await getRecipeById(id);
-            setRecipe(recipeData);
+            try {
+                const recipeData = await getRecipeById(id);
+                setRecipe(recipeData);
 
-            const instructionsData = await getRecipeInstructions(id);
-            setInstructions(instructionsData);
+                const instructionsData = await getRecipeInstructions(id);
+                setInstructions(instructionsData);
 
-            const ingredientsData = await getRecipeIngredients(id);
-            setIngredients(ingredientsData);
+                const ingredientsData = await getRecipeIngredients(id);
+                setIngredients(ingredientsData);
 
-            const commentsData = await getRecipeComments(id);
-            setComments(commentsData);
+                const commentsData = await getRecipeComments(id);
+                setComments(commentsData);
 
-            const ratingsData = await getRecipeRatings(id);
-            setRatings(ratingsData.ratings);
-            setAverageRating(ratingsData.averageRating);
+                const ratingsData = await getRecipeRatings(id);
+                setRatings(ratingsData.ratings);
+                setAverageRating(ratingsData.averageRating);
 
-            const isFav = await checkFavourite(userId, id);
-            setIsFavourite(isFav);
+                const isFav = await checkFavourite(userId, id);
+                setIsFavourite(isFav);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         };
 
         fetchData();
@@ -68,12 +72,12 @@ const Recipes = () => {
         <div>
             <h1>{recipe.title}</h1>
             {recipe.image && <img src={recipe.image} alt={recipe.title} />}
-            <p>{recipe.summary}</p>
+            <p dangerouslySetInnerHTML={{ __html: recipe.summary }}></p>
             <h2>Instructions</h2>
             <ul>
                 {instructions.map(instruction => (
                     <li key={instruction.id}>
-                        Step {instruction.stepNumber}: {instruction.description}
+                        Step {instruction.stepNumber}: {instruction.content}
                     </li>
                 ))}
             </ul>
