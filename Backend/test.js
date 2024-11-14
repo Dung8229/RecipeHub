@@ -1,9 +1,9 @@
 const User = require('./models/user')
 const Recipe = require('./models/recipe')
+const RecipeIngredient = require('./models/recipe_ingredient')
+const Ingredient = require('./models/ingredient')
+const RecipeComment = require('./models/recipe_comment')
 const { Sequelize } = require('sequelize')
-const defineAssociations = require('./models/defineAssociations')
-
-defineAssociations()
 
 async function getRecipes() {
     try {
@@ -35,9 +35,70 @@ async function getRecipes() {
     }
 }
 
+async function getIngredientsOfRecipe(recipeId) {
+    try {
+        const ingredients = await RecipeIngredient.findAll({
+            where: { recipeId },
+            include: [
+                {
+                    model: Ingredient,
+                    attributes: ['name', 'image'], // Các thuộc tính của Ingredient mà bạn muốn lấy
+                },
+            ],
+            attributes: ['amount', 'unit', 'original'], // Các thuộc tính của RecipeIngredient mà bạn muốn lấy
+        });
+
+        const result = ingredients.map(ingredient => ({
+            amount: ingredient.amount,
+            unit: ingredient.unit,
+            original: ingredient.original,
+            ingredient: {
+                name: ingredient.Ingredient.name,
+                image: ingredient.Ingredient.image,
+            },
+        }));
+
+        return result;
+    } catch (error) {
+        console.error('Error fetching ingredients:', error);
+        throw error;
+    }
+}
+
+async function getCommentsOfRecipe(recipeId) {
+    try {
+        const comments = await RecipeComment.findAll({
+            where: { recipeId },
+            include: [
+                {
+                    model: User,
+                    attributes: ['username'],
+                },
+            ],
+            attributes: ['commentText'],
+        });
+
+        const result = comments.map(comment => ({
+            commentText: comment.commentText,
+            username: comment.User.username,
+        }));
+
+        return result;
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        throw error;
+    }
+}
+
 // Gọi hàm và in ra kết quả
-getRecipes().then(recipes => {
-    console.log(recipes);
+getIngredientsOfRecipe(100000).then(ingredients => {
+    console.log(ingredients);
+}).catch(err => {
+    console.error(err);
+});
+
+getCommentsOfRecipe(100000).then(comments => {
+    console.log(comments);
 }).catch(err => {
     console.error(err);
 });

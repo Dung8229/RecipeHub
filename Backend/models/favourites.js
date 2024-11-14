@@ -4,7 +4,7 @@ const User = require('./user')
 const Recipe = require('./recipe')
 
 const Favourites = sequelize.define('Favourites', {
-    favouriteId: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -35,5 +35,9 @@ const Favourites = sequelize.define('Favourites', {
     tableName: 'favourites',
     timestamps: false, // Chỉ cần createdAt cho mục yêu thích
 });
+Favourites.belongsTo(Recipe, { foreignKey: 'recipeId' });
+Recipe.hasMany(Favourites, { foreignKey: 'recipeId' });
 
+Favourites.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Favourites, { foreignKey: 'userId' });
 module.exports = Favourites;

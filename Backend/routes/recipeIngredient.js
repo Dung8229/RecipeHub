@@ -11,7 +11,13 @@ router.get('/:id/ingredients', async (req, res) => {
         console.log(`Fetching ingredients for recipeId: ${recipeId}`);
         const ingredients = await RecipeIngredient.findAll({
             where: { recipeId },
-
+            include: [
+                {
+                    model: Ingredient,
+                    attributes: ['name', 'image'], // Các thuộc tính của Ingredient
+                }
+            ],
+            attributes: ['amount', 'unit', 'original'], // Các thuộc tính của RecipeIngredient
         });
         if (ingredients.length > 0) {
             res.json(ingredients);

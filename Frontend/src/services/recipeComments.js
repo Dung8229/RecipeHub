@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const baseUrl = '/api/recipeComments';
+const baseUrl = '/api/';
 
 export const getRecipeComments = async (recipeId) => {
-    const response = await axios.get(`${baseUrl}/recipe/${recipeId}`);
+    const response = await axios.get(`${baseUrl}/recipes/${recipeId}/comments`);
     return response.data;
 };
 

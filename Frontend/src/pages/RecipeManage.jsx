@@ -1,45 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getMyRecipes } from '../services/myRecipes';
 import '../styles/styles.css'; // Đường dẫn tới tệp CSS chính của bạn
 
 const RecipeManage = () => {
-    const recipes = [
-        {
-            name: "Coconut curry chicken",
-            ingredients: "5 ingredients · 20 minutes",
-            image:
-                "https://cdn.usegalileo.ai/sdxl10/0879a680-7c13-4c42-98c3-53d99d06141d.png",
-        },
-        {
-            name: "Peanut butter cookies",
-            ingredients: "3 ingredients · 10 minutes",
-            image:
-                "https://cdn.usegalileo.ai/stability/b6b92e0d-177b-4f21-adc1-27c473c675b0.png",
-        },
-        {
-            name: "Avocado toast",
-            ingredients: "4 ingredients · 15 minutes",
-            image:
-                "https://cdn.usegalileo.ai/stability/a0dd10ea-2379-4619-8b9a-c88fc089a293.png",
-        },
-        {
-            name: "Spaghetti carbonara",
-            ingredients: "6 ingredients · 25 minutes",
-            image:
-                "https://cdn.usegalileo.ai/stability/f2d8e777-f557-4aff-9466-e8f84726824e.png",
-        },
-        {
-            name: "Chicken pot pie",
-            ingredients: "7 ingredients · 30 minutes",
-            image:
-                "https://cdn.usegalileo.ai/stability/2a000ecd-89d8-4820-8187-e1f91b017c7d.png",
-        },
-        {
-            name: "Grilled cheese sandwich",
-            ingredients: "2 ingredients · 5 minutes",
-            image:
-                "https://cdn.usegalileo.ai/stability/6d96e92e-86ce-43e7-8b67-7dad14500151.png",
-        },
-    ];
+
+    const [recipes, setRecipes] = useState([]);
+    const userId = 1; // Giả sử userId là 1, bạn có thể thay thế bằng giá trị thực tế
+    useEffect(() => {
+        const fetchUserRecipes = async () => {
+            try {
+                const userRecipes = await getMyRecipes(userId);
+                setRecipes(userRecipes);
+            } catch (error) {
+                console.error('Error fetching user recipes:', error);
+            }
+        };
+
+        fetchUserRecipes();
+    }, [userId]);
+
+
 
     return (
         <div className="relative flex size-full min-h-screen flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden">
@@ -77,8 +58,8 @@ const RecipeManage = () => {
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-full bg-cover rounded-lg" style={{ backgroundImage: `url(${recipe.image})` }}></div>
                                 <div>
-                                    <p className="text-[#1c130d] text-base font-medium">{recipe.name}</p>
-                                    <p className="text-[#9c6d49] text-sm">{recipe.ingredients}</p>
+                                    <p className="text-[#1c130d] text-base font-medium">{recipe.title}</p>
+                                    <p className="text-[#9c6d49] text-sm">{recipe.readyInMinutes} minutes to finish</p>
                                 </div>
                             </div>
                             <button className="text-base font-medium">Edit</button>

@@ -25,11 +25,11 @@ const RecipeIngredient = sequelize.define('RecipeIngredient', {
       key: 'id',
     },
   },
-  amount: { 
+  amount: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  unit: { 
+  unit: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -41,5 +41,10 @@ const RecipeIngredient = sequelize.define('RecipeIngredient', {
   tableName: 'recipe_ingredient',
   timestamps: false
 });
+
+RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+RecipeIngredient.belongsTo(Recipe, { foreignKey: 'recipeId' })
+Recipe.hasMany(RecipeIngredient, { foreignKey: 'recipeId' })
 
 module.exports = RecipeIngredient

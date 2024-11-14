@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const RecipeInstruction = require('../models/recipe_instruction');
-
+const RecipeIngredient = require('../models/recipe_ingredient');
 // Route để lấy tất cả các bước hướng dẫn của một công thức nấu ăn theo ID
 router.get('/:id/instructions', async (req, res) => {
     try {

@@ -7,6 +7,7 @@ import Header from './pages/Header';
 import Profile from './pages/Profile';
 import RecipeContestDetail from './pages/RecipeContestDetail';
 import RecipeDetail from './pages/Recipes';
+import Favourite from './pages/Favourite';
 
 import './styles/styles.css'
 const recipes = [
@@ -91,8 +92,10 @@ const App = () => {
         }
         />
         {/* <Route path="/recipes/favourite" element={<Favourite />} /> */}
+
         <Route path="/recipes/:id/information" element={<RecipeDetail />} />
         <Route path="/manage" element={<RecipeManage />} />
+        <Route path="/favourite" element={<Favourite />} />
         <Route path="/myprofile" element={
           <>
             <Header />

@@ -4,7 +4,7 @@ const RecipeRating = require('../models/recipe_rating');
 const User = require('../models/user');
 
 // Route để lấy tất cả các đánh giá của một công thức nấu ăn và tính toán đánh giá trung bình
-router.get('/recipes/:id/ratings', async (req, res) => {
+router.get('/:id/ratings', async (req, res) => {
     try {
         const recipeId = req.params.id;
         const ratings = await RecipeRating.findAll({
