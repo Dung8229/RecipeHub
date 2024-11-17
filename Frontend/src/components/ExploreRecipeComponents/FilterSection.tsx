@@ -23,7 +23,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     item.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Hiển thị 6 items đầu tiên hoặc tất cả nếu showAll = true
+  // Hiển thị 8 items đầu tiên hoặc tất cả nếu showAll = true
   const displayedItems = showAll ? filteredItems : filteredItems.slice(0, 8);
 
   return (
