@@ -7,6 +7,7 @@ import ExploreRecipesPage from './pages/ExploreRecipes';
 import LoginRegisterPage from './pages/Login-Register';
 import ExploreCompetitionPage from './pages/ExploreCompetition';
 import AdminManageCompetitionPage from './pages/AdminManageCompetitionPage';
+import AdminManageACompetitionPage from './pages/AdminManageACompetitionPage';
 
 const App = () => {
   return (
@@ -30,6 +31,8 @@ const App = () => {
         <Route path="/admin">
           <Route path="dashboard/users" element={<AdminManageUsersPage />} />
           <Route path="competitions" element={<AdminManageCompetitionPage />} />
+          <Route path="competitions/:id/information" element={<AdminManageACompetitionPage />} />
+          <Route path=":id/winner" element={<AdminManageACompetitionPage />} />
         </Route>
 
         {/* Các route bổ sung được nhóm theo module (comment) */}
