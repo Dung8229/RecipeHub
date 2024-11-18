@@ -22,30 +22,38 @@ const AdminCompetitionListItem = ({ competition, removeCompetition }) => {
   };
 
   return (
-    <article className="flex items-center justify-between p-4 bg-yellow-50 border rounded-md hover:border-primary transition-all duration-300">
-      {/* Hình ảnh bên trái */}
-      <img
-        src={competition.image}
-        alt={`${competition.title} thumbnail`}
-        className="w-20 h-20 rounded-md object-cover flex-none"
-      />
-      
-      {/* Phần thông tin bên phải ảnh */}
-      <div className="flex-1 pl-4">
-        <h2 className="text-lg font-semibold text-slate-900">{competition.title}</h2>
-        <p className="text-sm text-slate-500">
-          {competition.endDate ? `Ends on ${new Date(competition.endDate).toLocaleDateString()}` : 'No end date'}
-        </p>
-      </div>
+    <div className="relative group">
+      {/* Toàn bộ article là một link */}
+      <Link
+        to={`/admin/competitions/${competition.id}/information`}
+        className="block p-4 bg-yellow-50 border rounded-md hover:border-primary transition-all duration-300"
+      >
+        <article className="flex items-center">
+          {/* Hình ảnh */}
+          <img
+            src={competition.image}
+            alt={`${competition.title} thumbnail`}
+            className="w-20 h-20 rounded-md object-cover flex-none"
+          />
+          
+          {/* Phần thông tin bên phải ảnh */}
+          <div className="flex-1 pl-4">
+            <h2 className="text-lg font-semibold text-slate-900">{competition.title}</h2>
+            <p className="text-sm text-slate-500">
+              {competition.endDate ? `Ends on ${new Date(competition.endDate).toLocaleDateString()}` : 'No end date'}
+            </p>
+          </div>
+        </article>
+      </Link>
 
-      {/* Nút "Delete" bên phải */}
+      {/* Nút "Delete" */}
       <button
         onClick={() => handleDelete(competition.id)}
-        className="ml-4 px-3 py-1 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600"
+        className="absolute top-4 right-4 px-3 py-1 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 group-hover:opacity-100 opacity-0 transition-opacity duration-300"
       >
         Delete
       </button>
-    </article>
+    </div>
   );
 };
 

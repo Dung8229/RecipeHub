@@ -103,6 +103,37 @@ competitionsRouter.get('/:id', async (request, response) => {
     }
 })
 
+// Route cập nhật thông tin cuộc thi
+competitionsRouter.put('/:id', async (request, response) => {
+  const { id } = request.params;
+  const { title, image, description, detailDescription, startDate, endDate, prize } = request.body;
+
+  try {
+    // Kiểm tra xem cuộc thi có tồn tại không
+    const competition = await Competition.findByPk(id);
+    if (!competition) {
+      return response.status(404).json({ error: 'Competition not found' });
+    }
+
+    // Cập nhật thông tin cuộc thi
+    await competition.update({
+      title,
+      image,
+      description,
+      detailDescription,
+      startDate,
+      endDate,
+      prize,
+    });
+
+    // Trả về phản hồi thành công cùng với dữ liệu cuộc thi đã cập nhật
+    response.status(200).json(competition);
+  } catch (error) {
+    console.error('Error updating competition:', error);
+    response.status(500).json({ error: 'Failed to update competition' });
+  }
+});
+
 competitionsRouter.delete('/:id', async (request, response) => {
   const { id } = request.params; // Lấy id từ URL params
 
@@ -142,6 +173,7 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
         {
           model: Recipe,
           attributes: ['title', 'image', 'id'], // Thêm id để dùng trong truy vấn
+          required: true
         },
       ],
     });
@@ -166,7 +198,7 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
 
       const average = averageRating ? parseFloat(averageRating.averageRating) : 0;
 
-      // Tính score với công thức tùy chỉnh (vd: trung bình nhân với log(1 + totalVotes))
+      // Tính score với công thức trung bình * log(1 + totalVotes)
       const score = totalVotes === 0 ? 0 : average * Math.log(1 + totalVotes);
 
       return {
@@ -192,5 +224,149 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
     response.status(500).json({ message: 'Đã xảy ra lỗi khi lấy dữ liệu leaderboard.' });
   }
 });
+
+// Lấy danh sách người tham gia một cuộc thi (pagination)
+competitionsRouter.get('/:id/participants', async (req, res) => {
+  const { id } = req.params;
+  const { page = 1, limit = 10 } = req.query; // Mặc định page = 1, limit = 10
+
+  try {
+    const offset = (page - 1) * limit; // Tính toán vị trí bắt đầu
+
+    // Truy vấn lấy participants
+    const { count, rows: participants } = await User.findAndCountAll({
+      attributes: ['id', 'username'],
+      include: [
+        {
+          model: CompetitionEntry,
+          required: true,
+          where: { competitionId: id },
+          include: [
+            {
+              model: Recipe,
+              attributes: ['id', 'title'],
+            },
+          ],
+        },
+      ],
+      limit: parseInt(limit, 10), // Số lượng participant trên 1 trang
+      offset: parseInt(offset, 10), // Bắt đầu từ participant nào
+    });
+
+    res.status(200).json({
+      participants,
+      total: count, // Tổng số participants
+      totalPages: Math.ceil(count / limit), // Tổng số trang
+      currentPage: parseInt(page, 10),
+    });
+  } catch (error) {
+    console.error('Error fetching participants:', error);
+    res.status(500).json({ error: 'An error occurred while fetching participants.' });
+  }
+});
+
+// Thêm người tham gia
+competitionsRouter.post('/:id/participants', async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const entry = await CompetitionEntry.create({
+      competitionId: id,
+      userId,
+    });
+
+    res.status(201).json(entry);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error adding participant');
+  }
+});
+
+// Xóa người tham gia
+competitionsRouter.delete('/:id/participants/:userId', async (req, res) => {
+  const { id, userId } = req.params;
+
+  try {
+    await CompetitionEntry.destroy({
+      where: { competitionId: id, userId },
+    });
+
+    res.status(204).send(); // No content
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error deleting participant');
+  }
+});
+
+// Lấy bài thi (pagination)
+competitionsRouter.get('/:id/submissions', async (req, res) => {
+  const { id } = req.params; // ID của cuộc thi
+  const { page = 1, limit = 10 } = req.query; // Mặc định page = 1, limit = 10
+
+  try {
+    const offset = (page - 1) * limit; // Tính toán vị trí bắt đầu
+
+    // Truy vấn lấy submissions
+    const { count, rows: submissions } = await CompetitionEntry.findAndCountAll({
+      where: { competitionId: id },
+      limit: parseInt(limit, 10), // Số lượng bài thi trên 1 trang
+      offset: parseInt(offset, 10), // Bắt đầu từ bài thi nào
+      include: [
+        {
+          model: Recipe, // Thông tin về công thức
+          attributes: ['id', 'image', 'title'], // Chỉ lấy id, image, và title của Recipe
+          required: true,
+        },
+        {
+          model: User, // Thông tin về người tham gia
+          attributes: ['id', 'username'], // Lấy id và username của người dùng
+        },
+      ],
+    });
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      submissions: submissions.map(submission => ({
+        submissionId: submission.Recipe.id,
+        image: submission.Recipe.image,
+        recipeTitle: submission.Recipe.title,
+        username: submission.User.username,
+      })),
+      total: count, // Tổng số submissions
+      totalPages, // Tổng số trang
+      currentPage: parseInt(page, 10), // Trang hiện tại
+    });
+  } catch (error) {
+    console.error('Error fetching submissions:', error);
+    res.status(500).json({ error: 'An error occurred while fetching submissions.' });
+  }
+});
+
+// Xóa bài thi khỏi cuộc thi
+competitionsRouter.delete('/:id/submissions/:submissionId', async (req, res) => {
+  const { id, submissionId } = req.params;
+
+  try {
+    const entry = await CompetitionEntry.findOne({
+      where: { competitionId: id, submissionId },
+    });
+
+    if (!entry) {
+      return res.status(404).send('Submission not found');
+    }
+
+    entry.submissionId = null; // Hủy liên kết bài thi
+    await entry.save();
+
+    res.status(204).send(); // No content
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error deleting submission');
+  }
+});
+
 
 module.exports = competitionsRouter;

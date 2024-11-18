@@ -10,7 +10,12 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
-      }
+      },
+      '/uploads': {
+        target: 'http://localhost:3000',  // Chỉ ra địa chỉ của backend
+        changeOrigin: true,               // Thay đổi origin của yêu cầu
+        secure: false,                    // Nếu backend sử dụng HTTP thay vì HTTPS
+      },
     }
   }
 })
