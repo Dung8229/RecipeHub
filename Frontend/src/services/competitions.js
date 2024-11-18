@@ -179,17 +179,10 @@ const deleteParticipant = async (competitionId, userId) => {
 
 // Lấy tất bài dự thi
 const getSubmissions = async (competitionId, page = 1, limit = 10) => {
-  console.log(`Calling API with competitionId: ${competitionId}, page: ${page}, limit: ${limit}`);
-  const url = `${baseUrl}/${competitionId}/submissions`
-  console.log(url)
   try {
-    console.log('ok')
     const response = await axios.get(`${baseUrl}/${competitionId}/submissions`, {
       params: { page, limit },
     });
-
-    // In ra response để kiểm tra
-    console.log('API Response:', response.data);
 
     return response.data;
   } catch (error) {

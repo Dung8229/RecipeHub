@@ -330,7 +330,7 @@ competitionsRouter.get('/:id/submissions', async (req, res) => {
 
     res.status(200).json({
       submissions: submissions.map(submission => ({
-        submissionId: submission.id,
+        submissionId: submission.Recipe.id,
         image: submission.Recipe.image,
         recipeTitle: submission.Recipe.title,
         username: submission.User.username,

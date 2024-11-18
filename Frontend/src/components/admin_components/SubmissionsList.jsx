@@ -26,18 +26,33 @@ const SubmissionsList = ({ competitionId }) => {
     setCurrentPage(page);
   };
 
+  const handleRemove = async (submissionId) => {
+    const confirmation = window.confirm('Are you sure you want to remove this submission from this competition?');
+    if (!confirmation) return;
+  
+    try {
+      await competitionService.deleteSubmission(competitionId, submissionId);
+      alert('User removed!');
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.filter((s) => s.submissionId !== submissionId)
+      );
+    } catch (error) {
+      console.error('Error removing submission:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Submission List</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         {submissions.map((submission) => (
-          <SubmissionListItem key={submission.submissionId} submission={submission} />
+          <SubmissionListItem key={submission.submissionId} submission={submission} handleRemove={handleRemove} />
         ))}
       </div>
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
   );
 };
-
 
 export default SubmissionsList
