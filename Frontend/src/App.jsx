@@ -4,10 +4,13 @@ import AdminManageUsersPage from './pages/AdminManageUsersPage';
 import HomeRedirect from './components/HomeRedirect';
 import CompetitionDetailPage from './pages/CompetitionDetail';
 import ExploreRecipesPage from './pages/ExploreRecipes';
-import LoginRegisterPage from './pages/Login-Register';
 import ExploreCompetitionPage from './pages/ExploreCompetition';
 import AdminManageCompetitionPage from './pages/AdminManageCompetitionPage';
 import AdminManageACompetitionPage from './pages/AdminManageACompetitionPage';
+import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register';
+import ShoppingList from './pages/ShoppingList';
+
 
 const App = () => {
   return (
@@ -17,7 +20,9 @@ const App = () => {
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recipes/search" element={<ExploreRecipesPage />} />
-        <Route path="/login" element={<LoginRegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/shopping-list" element={<ShoppingList />} />
         
         {/* Các route của competitions */}
         <Route path="/competitions">
@@ -34,14 +39,6 @@ const App = () => {
           <Route path="competitions/:id/information" element={<AdminManageACompetitionPage />} />
           <Route path=":id/winner" element={<AdminManageACompetitionPage />} />
         </Route>
-
-        {/* Các route bổ sung được nhóm theo module (comment) */}
-        
-        {/* Xác thực người dùng */}
-        {/* 
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        */}
 
         {/* Quản lý công thức nấu ăn */}
         {/* 

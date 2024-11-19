@@ -1,5 +1,5 @@
 const usersRouter = require('express').Router();
-const sequelize = require('../db');
+const db = require('../db');
 const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');
@@ -121,7 +121,9 @@ usersRouter.get('/:id', middleware.authenticateJWT, async (req, res) => {
 usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     const { id } = req.params;
     const body = req.body;
-
+    if (req.user.role !== 'admin' && req.user.id !== parseInt(id)) {
+        return res.status(403).json({ error: 'Not authorized' });
+    }
     try {
         const user = await User.findOne({ where: { id } });
         if (!user) {

@@ -13,7 +13,7 @@ const RecipeIngredientCategory = require('../models/ingredient_category')
 const RecipeIngredient = require('../models/recipe_ingredient')
 const Ingredient = require('../models/ingredient')
 const { Sequelize } = require('sequelize')
-
+const RecipeRating = require('../models/recipe_rating')
 defineAssociations()
 // Hàm để xác định độ khó dựa trên readyInMinutes và servings
 const calculateDifficulty = (readyInMinutes, servings) => {
@@ -64,7 +64,7 @@ recipeRouter.get('/filter-data', async (req, res) => {
 });
 
 // Hàm tìm kiếm công thức
-const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, difficulty }) => {
+const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, difficulty, sortBy }) => {
   const whereClause = {
     [Op.and]: [] // Sử dụng Op.and để kết hợp các điều kiện
   };
@@ -125,30 +125,75 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
     });
   }
 
-  // Truy vấn công thức với JOIN
+  // Thêm order cho truy vấn
+  let order = [];
+  switch (sortBy) {
+    case 'newest':
+      order.push(['created_at', 'DESC']);
+      break;
+    case 'oldest':
+      order.push(['created_at', 'ASC']);
+      break;
+    case 'rating':
+      order.push(['rating', 'DESC']);
+      break;
+    case 'az':
+      order.push(['title', 'ASC']);
+      break;
+    case 'za':
+      order.push(['title', 'DESC']);
+      break;
+    default:
+      order.push(['created_at', 'DESC']);
+  }
+
+  // Truy vấn công thức với JOIN và order
   const recipes = await Recipe.findAll({
     where: whereClause,
     include: [
       {
-        model: User, // Tham chiếu đến model User
-        attributes: ['username'] // Chỉ lấy trường username
+        model: User,
+        attributes: []
       },
       {
-        model: RecipeTag, // Tham chiếu đến model RecipeTag
-        attributes: ['tag'] // Chỉ lấy trường tag
+        model: RecipeTag,
+        attributes: ['tag']
       },
       {
         model: Ingredient,
         attributes: ['name']
+      },
+      {
+        model: RecipeRating,
+        attributes: [],
+        required: false
       }
     ],
-    attributes: ['id', 'title', 'image', 'readyInMinutes', 'servings'],
+    attributes: [
+      'id', 
+      'title', 
+      'image', 
+      'readyInMinutes', 
+      'servings', 
+      'created_at',
+      [Sequelize.col('User.username'), 'username'],
+      [
+        Sequelize.fn(
+          'COALESCE',
+          Sequelize.fn('AVG', Sequelize.col('RecipeRatings.rating')),
+          0
+        ),
+        'rating'
+      ]
+    ],
+    group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
+    order: order
   });
 
   // Thêm giá trị difficulty vào từng công thức
   const recipesWithDifficulty = recipes.map(recipe => ({
-    ...recipe.get(), // Lấy tất cả các thuộc tính của recipe
-    difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
+    ...recipe.get(),
+    difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown'
   }));
 
   // Lọc theo độ khó nếu có
@@ -162,12 +207,12 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
 
 // Route tìm kiếm công thức
 recipeRouter.get('/search', async (req, res) => {
-  const { searchTerm, category, ingredient, cookingTime, difficulty } = req.query;
+  const { searchTerm, category, ingredient, cookingTime, difficulty, sortBy } = req.query;
 
-  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime, difficulty });
+  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime, difficulty, sortBy });
 
   try {
-    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime, difficulty });
+    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime, difficulty, sortBy });
     return res.json(recipes);
   } catch (error) {
     console.error('Error searching recipes:', error);
