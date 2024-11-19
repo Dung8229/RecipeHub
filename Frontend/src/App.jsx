@@ -37,7 +37,7 @@ const App = () => {
           <Route path="dashboard/users" element={<AdminManageUsersPage />} />
           <Route path="competitions" element={<AdminManageCompetitionPage />} />
           <Route path="competitions/:id/information" element={<AdminManageACompetitionPage />} />
-          <Route path=":id/winner" element={<AdminManageACompetitionPage />} />
+          <Route path="competitions/:id/manageWinner" element={<AdminManageACompetitionPage />} />
         </Route>
 
         {/* Quản lý công thức nấu ăn */}

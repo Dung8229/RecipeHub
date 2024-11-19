@@ -13,7 +13,7 @@ const RecipeIngredientCategory = require('../models/ingredient_category')
 const RecipeIngredient = require('../models/recipe_ingredient')
 const Ingredient = require('../models/ingredient')
 const { Sequelize } = require('sequelize')
-const RecipeRating = require('../models/recipe_rating')
+
 defineAssociations()
 // Hàm để xác định độ khó dựa trên readyInMinutes và servings
 const calculateDifficulty = (readyInMinutes, servings) => {
