@@ -12,8 +12,17 @@ const ExploreRecipes = () => {
     ingredient: '',
     cookingTime: '',
     difficulty: '',
-    searchTerm: ''
+    searchTerm: '',
+    sortBy: 'newest'
   });
+
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'az', label: 'A-Z' },
+    { value: 'za', label: 'Z-A' }
+  ];
 
   const handleViewMore = () => {
     setShowAllRecipes(!showAllRecipes);
@@ -22,15 +31,9 @@ const ExploreRecipes = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get('/api/recipes/search', { 
-        params: { 
-          searchTerm: filters.searchTerm, 
-          category: filters.category,
-          ingredient: filters.ingredient,
-          cookingTime: filters.cookingTime,
-          difficulty: filters.difficulty
-        } 
+        params: filters
       });
-      setRecipes(response.data); // Cập nhật danh sách món ăn
+      setRecipes(response.data);
     } catch (error) {
       console.error('Error searching recipes:', error);
     }
@@ -39,7 +42,14 @@ const ExploreRecipes = () => {
   const handleFilterChange = (filterType, value) => {
     setFilters(prevFilters => ({
       ...prevFilters,
-      [filterType]: value
+      [filterType]: prevFilters[filterType] === value ? '' : value
+    }));
+  };
+
+  const handleSortChange = (value) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      sortBy: value
     }));
   };
 
@@ -50,17 +60,28 @@ const ExploreRecipes = () => {
     }));
   };
 
+  useEffect(() => {
+    handleSearch();
+  }, [filters]);
+
   return (
     <div className="w-full min-h-screen bg-white">
       <Header />
-      <main className="container mx-auto px-6 py-5 flex">
+      <main className="container mx-auto px-6 py-5 flex flex-col md:flex-row gap-6">
         <Sidebar 
-          onFilterChange={handleFilterChange} 
-          onSearch={handleSearch} 
-          onInputChange={handleInputChange} 
-          searchTerm={filters.searchTerm} // Truyền searchTerm vào Sidebar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onSortChange={handleSortChange}
+          onSearch={handleSearch}
+          onInputChange={handleInputChange}
+          searchTerm={filters.searchTerm}
+          sortOptions={sortOptions}
         />
-        <RecipeList recipes={recipes} showAllRecipes={showAllRecipes} onViewMore={handleViewMore} />
+        <RecipeList 
+          recipes={recipes} 
+          showAllRecipes={showAllRecipes} 
+          onViewMore={handleViewMore} 
+        />
       </main>
     </div>
   );

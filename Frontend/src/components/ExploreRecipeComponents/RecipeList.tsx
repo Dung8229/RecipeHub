@@ -7,7 +7,7 @@ interface Recipe {
   readyInMinutes: number;
   difficulty: string;
   rating: number;
-  userId: string;
+  username: string;
 }
 
 interface RecipeListProps {
@@ -18,7 +18,10 @@ interface RecipeListProps {
 
 const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onViewMore }) => {
   const displayedRecipes = showAllRecipes ? recipes : recipes.slice(0, 8);
-
+  const formatRating = (rating: any): string => {
+    const numRating = Number(rating);
+    return !isNaN(numRating) ? numRating.toFixed(1) : '0.0';
+  };
   return (
     <div className="w-3/4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -27,9 +30,21 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onView
             <img src={recipe.image} alt={recipe.title} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-2">{recipe.title}</h3>
-              <p className="text-sm text-[#8a7060]">{recipe.readyInMinutes} min · {recipe.rating} ★</p>
-              <p className="text-sm text-[#8a7060]">{recipe.difficulty}</p>
-              <p className="text-sm text-[#8a7060]">By {recipe.userId}</p>
+              <div className="space-y-1">
+                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                  <i className="fas fa-clock"></i> {recipe.readyInMinutes} min
+                </p>
+                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                  <i className="fas fa-chart-line"></i> {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
+                </p>
+
+                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                  <i className="fas fa-user"></i> By {recipe.username}
+                </p>
+                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                  <i className="fas fa-star text-yellow-500"></i> {formatRating(recipe.rating)}
+                </p>
+              </div>
             </div>
           </div>
         ))}

@@ -4,45 +4,58 @@ import SearchBar from './SearchBar';
 import axios from 'axios';
 
 interface SidebarProps {
+  filters: {
+    category: string;
+    ingredient: string;
+    cookingTime: string;
+    difficulty: string;
+    searchTerm: string;
+    sortBy: string;
+  };
   onFilterChange: (filterType: string, value: string) => void;
-  onSearch: (data: any) => void;
+  onSortChange: (value: string) => void;
+  onSearch: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   searchTerm: string;
+  sortOptions: Array<{ value: string; label: string; }>;
 }
 
 interface FilterData {
   categories: string[];
   ingredients: string[];
   difficulties: string[];
-  cookingTimes: { label: string; value: string }[];
+  cookingTimes: { label: string; value: string; }[];
 }
 
-interface ImportMetaEnv {
-  VITE_API_URL: string;
-}
+const defaultFilters = {
+  category: '',
+  ingredient: '',
+  cookingTime: '',
+  difficulty: '',
+  searchTerm: '',
+  sortBy: 'newest'
+};
 
-declare global {
-  interface ImportMeta {
-    env: ImportMetaEnv;
-  }
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onInputChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  filters = defaultFilters, // Thêm giá trị mặc định cho filters
+  onFilterChange, 
+  onSortChange,
+  onSearch, 
+  onInputChange,
+  searchTerm,
+  sortOptions 
+}) => {
   const [filterData, setFilterData] = useState<FilterData>({
     categories: [],
     ingredients: [],
     difficulties: [],
     cookingTimes: []
   });
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Thêm state cho searchTerm
-
-  const API_URL = import.meta.env.VITE_API_URL || '/api';
 
   useEffect(() => {
     const fetchFilterData = async () => {
       try {
-        const response = await axios.get('/api/recipes/filter-data'); // Đảm bảo URL này đúng
+        const response = await axios.get('http://localhost:3000/api/recipes/filter-data');
         setFilterData(response.data);
       } catch (error) {
         console.error('Error fetching filter data:', error);
@@ -52,90 +65,70 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onInputChan
     fetchFilterData();
   }, []);
 
-  useEffect(() => {
-    onSearch(selectedItems); // Gọi onSearch với selectedItems khi chúng thay đổi
-  }, [selectedItems]); // Theo dõi selectedItems
-  useEffect(() => {
-    onSearch(searchTerm); // Gọi onSearch với searchTerm khi nó thay đổi
-  }, [searchTerm]); // Theo dõi searchTerm
-
-  const handleSelectItem = (item: string) => {
-    if (!selectedItems.includes(item)) {
-      setSelectedItems(prev => [...prev, item]);
-      if (filterData.categories.includes(item)) {
-        onFilterChange('category', item);
-      } else if (filterData.ingredients.includes(item)) {
-        onFilterChange('ingredient', item);
-      } else if (filterData.difficulties.includes(item)) {
-        onFilterChange('difficulty', item);
-      } else {
-        const selectedTime = filterData.cookingTimes.find(ct => ct.label === item);
-        if (selectedTime) {
-          onFilterChange('cookingTime', selectedTime.value);
-        }
-      }
-    }
-  };
-
-  const handleRemoveItem = (item: string) => {
-    setSelectedItems(prev => prev.filter(i => i !== item));
-    if (filterData.categories.includes(item)) {
-      onFilterChange('category', '');
-    } else if (filterData.ingredients.includes(item)) {
-      onFilterChange('ingredient', '');
-    } else if (filterData.difficulties.includes(item)) {
-      onFilterChange('difficulty', '');
-    } else {
-      onFilterChange('cookingTime', '');
-    }
-  };
-
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/recipes/search`, { 
-        params: { searchTerm } 
-      });
-      // Cập nhật danh sách món ăn ở component cha
-      onSearch(response.data); // Gọi onSearch với kết quả tìm kiếm
-    } catch (error) {
-      console.error('Lỗi khi tìm kiếm công thức:', error);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value); // Cập nhật giá trị searchTerm
-    onInputChange(e); // Gọi hàm từ props để cập nhật searchTerm
-  };
-
   return (
-    <aside className="w-1/4 pr-6">
-      <SearchBar 
-        selectedItems={selectedItems} 
-        onRemoveItem={handleRemoveItem} 
-        onSearch={handleSearch}
-        onInputChange={handleInputChange} // Đảm bảo rằng prop này được truyền đúng
-        searchTerm={searchTerm}
-      />
-      <FilterSection
-        title="Categories"
-        items={filterData.categories}
-        onSelectItem={handleSelectItem}
-      />
-      <FilterSection
-        title="Ingredients"
-        items={filterData.ingredients}
-        onSelectItem={handleSelectItem}
-      />
-      <FilterSection
-        title="Difficulty"
-        items={filterData.difficulties}
-        onSelectItem={handleSelectItem}
-      />
-      <FilterSection
-        title="Cooking Time"
-        items={filterData.cookingTimes.map(ct => ct.label)}
-        onSelectItem={handleSelectItem}
-      />
+    <aside className="w-full md:w-1/4 mb-6 md:mb-0">
+      <div className="sticky top-4">
+        <SearchBar 
+          searchTerm={searchTerm}
+          onInputChange={onInputChange}
+          onSearch={onSearch}
+        />
+
+        {/* Sort Options */}
+        <div className="mb-6">
+          <h3 className="text-lg font-bold mb-2">Sort By</h3>
+          <select 
+            value={filters.sortBy}
+            onChange={(e) => onSortChange(e.target.value)}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            {sortOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <FilterSection
+          title="Categories"
+          items={filterData.categories}
+          selectedValue={filters.category}
+          filterType="category"
+          onSelectItem={onFilterChange}
+        />
+
+        <FilterSection
+          title="Ingredients"
+          items={filterData.ingredients}
+          selectedValue={filters.ingredient}
+          filterType="ingredient"
+          onSelectItem={onFilterChange}
+        />
+
+        <FilterSection
+          title="Difficulty"
+          items={filterData.difficulties}
+          selectedValue={filters.difficulty}
+          filterType="difficulty"
+          onSelectItem={onFilterChange}
+        />
+
+        <FilterSection
+          title="Cooking Time"
+          items={filterData.cookingTimes.map(ct => ct.label)}
+          selectedValue={filters.cookingTime ? 
+            filterData.cookingTimes.find(ct => ct.value === filters.cookingTime)?.label || '' 
+            : ''}
+          filterType="cookingTime"
+          onSelectItem={(_, label) => {
+            const timeOption = filterData.cookingTimes.find(ct => ct.label === label);
+            if (timeOption) {
+              onFilterChange('cookingTime', timeOption.value);
+            }
+          }}
+        />
+      </div>
     </aside>
   );
 };
