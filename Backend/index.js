@@ -11,21 +11,21 @@ const app = require('./app'); // Đảm bảo import đúng file
 dotenv.config();
 
 // Kết nối đến MySQL
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
+// const db = mysql.createConnection({
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+// });
 
 // Kiểm tra kết nối đến DB
-db.connect((err) => {
-    if (err) {
-        logger.error('Kết nối DB thất bại!');
-        throw err;
-    }
-    logger.info('Kết nối DB thành công!');
-});
+// db.connect((err) => {
+//     if (err) {
+//         logger.error('Kết nối DB thất bại!');
+//         throw err;
+//     }
+//     logger.info('Kết nối DB thành công!');
+// });
 
 // Thiết lập session
 app.use(session({

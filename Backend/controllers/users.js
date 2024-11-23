@@ -47,8 +47,17 @@ usersRouter.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, userlogin.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
-        const token = jwt.sign({ id: userlogin.id, role: userlogin.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, userlogin });
+        // Tạo JWT token
+        const token = jwt.sign(
+          { 
+            id: userlogin.id, 
+            username: userlogin.username, 
+            role: userlogin.role 
+          }, 
+          process.env.JWT_SECRET, 
+          { expiresIn: '1h' } // Token hết hạn sau 1 giờ
+        );
+        res.json({ token });
     } catch (error) {
         logger.error('Error during login:', error);
         return res.status(500).json({ error: 'Failed to log in' });

@@ -31,6 +31,8 @@ const Login = () => {
         return response.json();
       })
       .then((data) => {
+        // Lưu token vào localStorage
+        localStorage.setItem('token', data.token);
         window.location.href = 'http://localhost:5173';
       })
       .catch((error) => {

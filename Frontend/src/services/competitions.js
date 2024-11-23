@@ -186,7 +186,6 @@ const getSubmissions = async (competitionId, page = 1, limit = 10) => {
 
     return response.data;
   } catch (error) {
-    console.log('blah')
     console.error('Error fetching submissions:', error);
     throw error;
   }
@@ -202,6 +201,38 @@ const deleteSubmission = async (competitionId, submissionId) => {
   }
 };
 
+const addParticipant = async (competitionId) => {
+  const token = window.localStorage.getItem('token');
+  // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra
+  const config = {
+      headers: { Authorization: `Bearer ${token}` },
+  }
+
+  try {
+    const response = await axios.post(`${baseUrl}/${competitionId}/participants`, {}, config)
+  } catch (error) {
+    console.error('Error add new participant:', error);
+    throw error;
+  }
+}
+
+const checkIsRegistered = async (competitionId) => {
+  try {
+    const token = window.localStorage.getItem('token'); // Lấy token từ localStorage
+
+    const response = await axios.get(`${baseUrl}/${competitionId}/isRegister`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+
+    return response.data.registered; // Trả về trạng thái đăng ký (true/false)
+  } catch (error) {
+    console.error('Error checking registration status:', error);
+    return false; // Nếu có lỗi, coi như chưa đăng ký
+  }
+};
+
 export default { 
   getAll, 
   getDetail, 
@@ -213,4 +244,6 @@ export default {
   deleteParticipant,
   getSubmissions,
   deleteSubmission,
+  addParticipant,
+  checkIsRegistered,
 }
