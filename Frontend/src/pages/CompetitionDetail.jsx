@@ -15,7 +15,7 @@ const CompetitionDetailPage = () => {
 
   const fetchCompetitionDetail = async () => {
     try {
-      const data = await competitionService.getDetail(id); // Gọi dịch vụ với id
+      const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
       console.log("fetched data:", data)
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
       setIsCompOver(new Date(data.endDate) < new Date());
@@ -46,10 +46,12 @@ const CompetitionDetailPage = () => {
     <div className="mx-auto flex">
       <div className="flex-1">
         <Banner 
+          competitionId={id}
           title={competition?.title || 'No Title'} 
           image={competition?.image || 'default-image.jpg'} 
           description={competition?.description || 'No Description'} 
-          detailDescription={competition?.detailDescription || 'No Detail Description'} 
+          detailDescription={competition?.detailDescription || 'No Detail Description'}
+          endDate={competition?.endDate || 'No end date'} 
         />
         <ProgressBar
           startDate={competition?.startDate || 'No start date'}

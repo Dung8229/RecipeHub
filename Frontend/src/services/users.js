@@ -15,7 +15,7 @@ export const getUsers = async () => {
 
 // Xóa người dùng
 export const deleteUser = async (userId) => {
-    const token = window.localStorage.getItem('authToken');
+    const token = window.localStorage.getItem('token');
     // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
     const config = {
         headers: { Authorization: `Bearer ${token}` },

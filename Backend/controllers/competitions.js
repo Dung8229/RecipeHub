@@ -266,20 +266,55 @@ competitionsRouter.get('/:id/participants', async (req, res) => {
 });
 
 // Thêm người tham gia
-competitionsRouter.post('/:id/participants', async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.body;
+competitionsRouter.post('/:id/participants', middleware.authenticateJWT, async (req, res) => {
+  const { id } = req.params; // competitionId từ URL
+  const { id: userId } = req.user; // userId từ middleware (thông tin người dùng đã giải mã từ token)
 
   try {
+    // Kiểm tra xem người dùng đã đăng ký chưa
+    const existingEntry = await CompetitionEntry.findOne({
+      where: { competitionId: id, userId },
+    });
+
+    if (existingEntry) {
+      // Nếu đã có bản ghi, trả về lỗi
+      return res.status(409).json({ message: 'User has already registered for this competition.' });
+    }
+
+    // Nếu chưa có bản ghi, thêm người tham gia vào cuộc thi
     const entry = await CompetitionEntry.create({
       competitionId: id,
       userId,
     });
 
-    res.status(201).json(entry);
+    res.status(201).json(entry); // Trả về bản ghi vừa tạo
   } catch (error) {
     console.error(error);
     res.status(500).send('Error adding participant');
+  }
+});
+
+// Kiểm tra xem người dùng đã đăng ký chưa
+competitionsRouter.get('/:competitionId/isRegister', middleware.authenticateJWT, async (req, res) => {
+  const { competitionId } = req.params; // competitionId từ URL
+  const userId = req.user.id; // Lấy userId từ JWT (middleware đã giải mã)
+
+  try {
+    // Tìm bản ghi đăng ký với competitionId và userId
+    const existingEntry = await CompetitionEntry.findOne({
+      where: { competitionId, userId },
+    });
+
+    if (existingEntry) {
+      // Nếu đã đăng ký, trả về true
+      return res.status(200).json({ registered: true });
+    } else {
+      // Nếu chưa đăng ký, trả về false
+      return res.status(200).json({ registered: false });
+    }
+  } catch (error) {
+    console.error('Error checking registration status:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -367,6 +402,5 @@ competitionsRouter.delete('/:id/submissions/:submissionId', async (req, res) => 
     res.status(500).send('Error deleting submission');
   }
 });
-
 
 module.exports = competitionsRouter;
