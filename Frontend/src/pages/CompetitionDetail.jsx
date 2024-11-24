@@ -16,10 +16,9 @@ const CompetitionDetailPage = () => {
   const fetchCompetitionDetail = async () => {
     try {
       const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
-      console.log("fetched data:", data)
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
+      console.log('Competition data:', data)
       setIsCompOver(new Date(data.endDate) < new Date());
-      console.log(competition)
     } catch (error) {
       console.error('Error fetching competition details:', error);
     }
@@ -28,18 +27,25 @@ const CompetitionDetailPage = () => {
   const fetchCompetitionLeaderboard = async () => {
     try {
       const data = await competitionService.getLeaderboard(id)
-      console.log("fetched data:", data)
       setLeaderboardData(data.leaderboard)
       setWinner(data.winner)
-      console.log(leaderboardData)
     } catch (error) {
       console.error('Error fetching competition leaderboard:', error);
+    }
+  }
+
+  const fetchCompetitionWinner = async () => {
+    try {
+      const data = await competitionService.getWinner(id)
+    } catch (error) {
+      console.error('No winner set yet:', error);
     }
   }
 
   useEffect(() => {
     fetchCompetitionDetail(); // Gọi hàm khi component được mount
     fetchCompetitionLeaderboard()
+    fetchCompetitionWinner()
   }, [id]);
 
   return (
@@ -51,6 +57,7 @@ const CompetitionDetailPage = () => {
           image={competition?.image || 'default-image.jpg'} 
           description={competition?.description || 'No Description'} 
           detailDescription={competition?.detailDescription || 'No Detail Description'}
+          startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'} 
         />
         <ProgressBar
@@ -60,7 +67,7 @@ const CompetitionDetailPage = () => {
         {isCompetitionOver && winner ? (
         <WinnerAnnouncement
           username={winner.username}
-          profilePic="path/to/profile-pic.jpg"
+          profilePic={winner.userImage}
           recipeTitle={winner.recipeTitle}
           recipeImage={winner.recipeImage}
           totalVotes={winner.totalVotes}

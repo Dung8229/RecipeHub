@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import competitionService from '../../services/competitions'
+import tokenService from '../../services/token'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +11,7 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
   const navigate = useNavigate()
   const [isRegistered, setIsRegistered] = useState(false); // Trạng thái đăng ký
   const [isDetailVisible, setDetailVisible] = useState(false);
+  const [userData, setUserData] = useState(null)
 
   const toggleDetail = () => {
     setDetailVisible(!isDetailVisible);
@@ -33,13 +35,48 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
     }
   };
 
+  // Hàm hủy đăng ký cuộc thi
+  const handleUnregister = async () => {
+    const confirmUnregister = window.confirm("Are you sure you want to unregister from this competition?");
+
+    if (!confirmUnregister) {
+      return;
+    }
+
+    try {
+      const response = await competitionService.unregister(competitionId); // Gọi API hủy đăng ký
+      console.log('Successfully unregistered:', response); // Log phản hồi thành công
+      setIsRegistered(false); // Cập nhật trạng thái đăng ký ở frontend
+    } catch (error) {
+      // Hiển thị thông báo lỗi hoặc xử lý lỗi chi tiết hơn
+      alert(`Failed to unregister: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
   useEffect(() => {
     const fetchRegistrationStatus = async () => {
-      const registered = await competitionService.checkIsRegistered(competitionId); // Gọi API
-      setIsRegistered(registered); // Cập nhật trạng thái đăng ký
+      try {
+        const registered = await competitionService.checkIsRegistered(competitionId); // Gọi API
+        setIsRegistered(registered); // Cập nhật trạng thái đăng ký
+      } catch (error) {
+        console.error('Error fetching registration status:', error.message);
+      }
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const token = tokenService.getToken();
+        if (!token) return; // Nếu không có token, không cần gọi API
+  
+        const userInfo = await tokenService.getUserInfo();
+        setUserData(userInfo); // Cập nhật thông tin người dùng
+      } catch (error) {
+        console.error('Error fetching user info:', error.message);
+      }
+    };
+  
     fetchRegistrationStatus();
+    fetchUserInfo();
   }, [competitionId]);
 
   return (
@@ -63,15 +100,27 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
               Learn More
             </button>
             {new Date(endDate) > now && (
-              <button
-                className={`font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full 
-                  ${isRegistered ? 'bg-green-500 text-white cursor-not-allowed' : 
-                  'bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900'}`}
-                onClick={handleEnterContest}
-                disabled={isRegistered}
-              >
-                {isRegistered ? 'Registered!' : 'Enter Contest'}
-              </button>
+              <>
+                <button
+                  className={`font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full 
+                    ${isRegistered 
+                      ? 'bg-red-500 text-white hover:bg-red-600' 
+                      : 'bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900'}`}
+                  onClick={isRegistered ? handleUnregister : handleEnterContest}
+                >
+                  {isRegistered ? 'Unregister' : 'Register'}
+                </button>
+
+                {/* Hiển thị nút "Submit Entry" nếu đã đăng ký */}
+                {isRegistered && new Date(startDate) <= now && (
+                  <button
+                    className="bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full"
+                    onClick={() => navigate(`/competitions/${competitionId}/submit`)}
+                  >
+                    Submit Entry
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

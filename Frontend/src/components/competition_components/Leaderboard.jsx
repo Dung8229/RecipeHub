@@ -44,7 +44,7 @@ const Leaderboard = ({ entries }) => {
             recipeImage={entry.recipeImage}
             totalVotes={entry.totalVotes}
             score={entry.score}
-            onClick={() => window.location.href = `/recipe/${entry.id}`}
+            onClick={() => window.location.href = `/recipe/${entry.recipeId}`}
           />
         ))}
       </ul>

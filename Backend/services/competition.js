@@ -1,4 +1,5 @@
-const Competition = require('../models/competition'); // Giả định bạn đã định nghĩa mô hình Competition
+const Competition = require('../models/competition');
+const CompetitionEntry = require('../models/competition_entry');
 const { Sequelize } = require('sequelize');
 
 async function getAllCompetitions(status = null) {
@@ -24,6 +25,35 @@ async function getAllCompetitions(status = null) {
     return competitions;
 }
 
+async function unregisterParticipant(competitionId, userId) {
+    // Tìm bản ghi của người dùng trong bảng competition_entry
+    const entry = await CompetitionEntry.findOne({
+      where: {
+        competitionId,
+        userId,
+      },
+    });
+  
+    if (!entry) {
+      // Không tìm thấy bản ghi tham gia
+      console.log('No entry found')
+      return false;
+    }
+  
+    // Xóa bản ghi
+    await CompetitionEntry.destroy({
+      where: {
+        competitionId,
+        userId,
+      },
+    });
+
+    console.log("entry found")
+  
+    return true; // Hủy đăng ký thành công
+}
+
 module.exports = {
     getAllCompetitions,
+    unregisterParticipant,
 };

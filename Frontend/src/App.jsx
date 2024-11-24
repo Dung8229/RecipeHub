@@ -34,10 +34,14 @@ const App = () => {
         
         {/* Các route của admin */}
         <Route path="/admin">
-          <Route path="dashboard/users" element={<AdminManageUsersPage />} />
+          <Route path="dashboard">
+            <Route path="users" element={<AdminManageUsersPage />} />
+          </Route>
           <Route path="competitions" element={<AdminManageCompetitionPage />} />
-          <Route path="competitions/:id/information" element={<AdminManageACompetitionPage />} />
-          <Route path="competitions/:id/manageWinner" element={<AdminManageACompetitionPage />} />
+          <Route path="competitions/:id">
+            <Route path="information" element={<AdminManageACompetitionPage />} />
+            <Route path="winner" element={<AdminManageACompetitionPage />} />
+          </Route>
         </Route>
 
         {/* Quản lý công thức nấu ăn */}

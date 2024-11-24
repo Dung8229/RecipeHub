@@ -6,18 +6,21 @@ import competitionService from '../services/competitions'
 import AdminManageCompetitionForm from "../components/admin_components/AdminManageCompetitionForm";
 import ParticipantsList from "../components/admin_components/ParticipantsList";
 import SubmissionsList from "../components/admin_components/SubmissionsList";
+import WinnerList from "../components/admin_components/WinnerList"
 
 const AdminManageACompetitionPage = () => {
   const [activeItem, setActiveItem] = useState(location.pathname);
   const { id } = useParams(); // Lấy id từ URL
   const [title, setTitle] = useState("")
+  const [winner, setWinner] = useState(null); // Thêm state winner
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCompetitionTitle = async () => {
       try {
         const competition = await competitionService.getDetail(id); // Gọi API với id
-        setTitle(competition.title); // Cập nhật title vào state
+        setTitle(competition.title);
+        setWinner(competition.winner);
       } catch (error) {
         console.error("Error fetching competition details:", error);
       }
@@ -29,6 +32,10 @@ const AdminManageACompetitionPage = () => {
   const handleNavItemClick = (href) => {
     setActiveItem(href); // Cập nhật activeItem
     navigate(href); // Điều hướng
+  };
+
+  const handleWinnerSelected = (selectedWinner) => {
+    setWinner(selectedWinner); // Cập nhật winner khi chọn
   };
 
   return (
@@ -59,6 +66,11 @@ const AdminManageACompetitionPage = () => {
             <AdminManageCompetitionForm id={id} />
             <ParticipantsList competitionId={id} />
             <SubmissionsList competitionId={id} />
+          </div>
+        )}
+        {activeItem === `/admin/competitions/${id}/winner` && (
+          <div>
+            <WinnerList competitionId={id} onWinnerSelected={handleWinnerSelected} />
           </div>
         )}
       </div>

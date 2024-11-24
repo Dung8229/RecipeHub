@@ -6,6 +6,7 @@ const cors = require('cors')
 const usersRouter = require('./controllers/users')
 const competitionsRouter = require('./controllers/competitions')
 const imageUploadRouter = require('./controllers/imageUpload')
+const tokenRouter = require('./controllers/token')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -66,6 +67,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/recipes', recipesRouter)
 app.use('/api/competitions', competitionsRouter)
 app.use('/api/image', imageUploadRouter)
+app.use('/api/token', tokenRouter)
 
 // Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

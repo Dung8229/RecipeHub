@@ -34,6 +34,9 @@ const Competition = sequelize.define('Competition', {
   prize: {
     type: DataTypes.INTEGER,
     allowNull: false
+  },
+  winnerRecipeId: {
+    type: DataTypes.INTEGER,
   }
 }, {
   tableName: 'competitions',
