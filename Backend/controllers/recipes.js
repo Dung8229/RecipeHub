@@ -13,6 +13,7 @@ const RecipeIngredientCategory = require('../models/ingredient_category')
 const RecipeIngredient = require('../models/recipe_ingredient')
 const Ingredient = require('../models/ingredient')
 const { Sequelize } = require('sequelize')
+const RecipeInstruction = require('../models/recipe_instruction');
 
 defineAssociations()
 // Hàm để xác định độ khó dựa trên readyInMinutes và servings
@@ -177,18 +178,46 @@ recipeRouter.get('/search', async (req, res) => {
 
 // Lấy các công thức dinner
 const getDinnerRecipes = async (req, res) => {
-    try {
-      const dinnerRecipes = await Recipe.findAll({
-        where: { category: 'dinner' }
-      });
-      res.json(dinnerRecipes);
-    } catch (error) {
-      console.error('Error fetching dinner recipes:', error);
-      res.status(500).json({ message: 'Server Error' });
-    }
-  };
+  try {
+    const dinnerRecipes = await Recipe.findAll({
+      where: { 
+        '$RecipeTags.tag$': 'dinner' 
+      },
+      include: [
+        {
+          model: RecipeTag,
+          attributes: ['tag']
+        },
+        {
+          model: User,
+          attributes: ['username']
+        },
+        {
+          model: RecipeAverageRating,
+          attributes: ['averageUserRating']
+        }
+      ],
+      attributes: [
+        'id', 
+        'title', 
+        'image', 
+        'readyInMinutes', 
+        'servings'
+      ]
+    });
 
-recipesRouter.get('/dinner', getDinnerRecipes);
+    if (!dinnerRecipes.length) {
+      return res.status(404).json({ message: 'Không tìm thấy công thức dinner nào' });
+    }
+
+    res.json(dinnerRecipes);
+  } catch (error) {
+    console.error('Error fetching dinner recipes:', error);
+    res.status(500).json({ error: 'Lỗi khi lấy công thức dinner' });
+  }
+};
+
+recipeRouter.get('/dinner', getDinnerRecipes);
 
 // GET /api/recipes/:recipeId - Lấy thông tin công thức, đánh giá và bình luận
 recipesRouter.get('/:recipeId', async (req, res) => {
@@ -284,5 +313,289 @@ recipesRouter.get('/highlighted', async (req, res) => {
       res.status(500).json({ error: 'Server error' });
   }
 });
+
+// GET /api/recipes/ingredients - Lấy tất cả nguyên liệu
+recipesRouter.get('/ingredients', async (req, res) => {
+  try {
+      // Lấy danh sách ingredients và số lượng công thức sử dụng
+      const ingredients = await Ingredient.findAll({
+          include: [{
+              model: RecipeIngredient,
+              attributes: []  // Không lấy thông tin chi tiết của RecipeIngredient
+          }],
+          attributes: [
+              'id',
+              'name',
+              'image',
+              [sequelize.fn('COUNT', sequelize.col('RecipeIngredients.id')), 'recipeCount']
+          ],
+          group: ['Ingredient.id'],
+          order: [
+              ['name', 'ASC']  // Sắp xếp theo tên
+          ]
+      });
+
+      res.json(ingredients);
+  } catch (error) {
+      console.error('Lỗi khi lấy danh sách nguyên liệu:', error);
+      res.status(500).json({ 
+          error: 'Lỗi khi lấy danh sách nguyên liệu',
+          details: error.message 
+      });
+  }
+});
+
+// POST /api/recipes - Tạo công thức mới
+recipesRouter.post('/', async (req, res) => {
+  const {
+      title,
+      image,
+      summary,
+      readyInMinutes,
+      servings,
+      difficulty,
+      ingredients,
+      instructions,
+      tags,
+      userId // Lấy từ token authentication
+  } = req.body;
+
+  try {
+      // Tạo transaction để đảm bảo tính nhất quán của dữ liệu
+      const result = await sequelize.transaction(async (t) => {
+          // 1. Tạo công thức cơ bản
+          const recipe = await Recipe.create({
+              userId,
+              title,
+              image,
+              summary,
+              readyInMinutes,
+              servings,
+              difficulty
+          }, { transaction: t });
+
+          // 2. Tạo hoặc tìm ingredients và liên kết với công thức
+          const ingredientPromises = ingredients.map(async (ing) => {
+              // Tìm hoặc tạo ingredient
+              const [ingredient] = await Ingredient.findOrCreate({
+                  where: { name: ing.name },
+                  defaults: { name: ing.name },
+                  transaction: t
+              });
+
+              // Tạo liên kết recipe-ingredient với amount và unit
+              await RecipeIngredient.create({
+                  recipeId: recipe.id,
+                  ingredientId: ingredient.id,
+                  amount: ing.amount,
+                  unit: ing.unit,
+                  original: `${ing.amount} ${ing.unit} ${ing.name}`
+              }, { transaction: t });
+          });
+
+          // 3. Tạo các bước hướng dẫn
+          const instructionPromises = instructions.map((inst) => 
+              RecipeInstruction.create({
+                  recipeId: recipe.id,
+                  stepNumber: inst.stepNumber,
+                  content: inst.content
+              }, { transaction: t })
+          );
+
+          // 4. Tạo tags
+          const tagPromises = tags.map((tag) =>
+              RecipeTag.create({
+                  recipe_id: recipe.id,
+                  tag: tag.trim()
+              }, { transaction: t })
+          );
+
+          // Chờ tất cả các thao tác hoàn thành
+          await Promise.all([
+              Promise.all(ingredientPromises),
+              Promise.all(instructionPromises),
+              Promise.all(tagPromises)
+          ]);
+
+          // Lấy công thức đầy đủ để trả về
+          const fullRecipe = await Recipe.findByPk(recipe.id, {
+              include: [
+                  {
+                      model: RecipeIngredient,
+                      include: [Ingredient]
+                  },
+                  {
+                      model: RecipeInstruction,
+                      order: [['stepNumber', 'ASC']]
+                  },
+                  {
+                      model: RecipeTag
+                  }
+              ],
+              transaction: t
+          });
+
+          return fullRecipe;
+      });
+
+      res.status(201).json(result);
+  } catch (error) {
+      console.error('Lỗi khi tạo công thức:', error);
+      res.status(500).json({ 
+          error: 'Lỗi khi tạo công thức',
+          details: error.message 
+      });
+  }
+});
+
+// PUT /api/recipes/:id - Edit công thức đã tạo
+recipesRouter.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+      title,
+      image,
+      summary,
+      readyInMinutes,
+      servings,
+      difficulty,
+      ingredients,
+      instructions,
+      tags,
+      userId // Từ token authentication
+  } = req.body;
+
+  try {
+      const result = await sequelize.transaction(async (t) => {
+          // 1. Kiểm tra công thức tồn tại và thuộc về user
+          const recipe = await Recipe.findOne({
+              where: { 
+                  id,
+                  userId // Đảm bảo user chỉ có thể sửa công thức của họ
+              }
+          });
+
+          if (!recipe) {
+              return res.status(404).json({ error: 'Recipe not found or unauthorized' });
+          }
+
+          // 2. Cập nhật thông tin cơ bản của công thức
+          await recipe.update({
+              title,
+              image,
+              summary,
+              readyInMinutes,
+              servings,
+              difficulty
+          }, { transaction: t });
+
+          // 3. Cập nhật ingredients
+          if (ingredients) {
+              // Xóa các liên kết ingredients cũ
+              await RecipeIngredient.destroy({
+                  where: { recipeId: id },
+                  transaction: t
+              });
+
+              // Tạo các liên kết ingredients mới
+              const ingredientPromises = ingredients.map(async (ing) => {
+                  const [ingredient] = await Ingredient.findOrCreate({
+                      where: { name: ing.name },
+                      defaults: { name: ing.name },
+                      transaction: t
+                  });
+
+                  return RecipeIngredient.create({
+                      recipeId: id,
+                      ingredientId: ingredient.id,
+                      amount: ing.amount,
+                      unit: ing.unit,
+                      original: `${ing.amount} ${ing.unit} ${ing.name}`
+                  }, { transaction: t });
+              });
+
+              await Promise.all(ingredientPromises);
+          }
+
+          // 4. Cập nhật instructions
+          if (instructions) {
+              // Xóa instructions cũ
+              await RecipeInstruction.destroy({
+                  where: { recipeId: id },
+                  transaction: t
+              });
+
+              // Tạo instructions mới
+              const instructionPromises = instructions.map(inst =>
+                  RecipeInstruction.create({
+                      recipeId: id,
+                      stepNumber: inst.stepNumber,
+                      content: inst.content
+                  }, { transaction: t })
+              );
+
+              await Promise.all(instructionPromises);
+          }
+
+          // 5. Cập nhật tags
+          if (tags) {
+              // Xóa tags cũ
+              await RecipeTag.destroy({
+                  where: { recipe_id: id },
+                  transaction: t
+              });
+
+              // Tạo tags mới
+              const tagPromises = tags
+                  .filter(tag => tag.trim() !== '')
+                  .map(tag =>
+                      RecipeTag.create({
+                          recipe_id: id,
+                          tag: tag.trim()
+                      }, { transaction: t })
+                  );
+
+              await Promise.all(tagPromises);
+          }
+
+          // 6. Lấy công thức đã cập nhật với đầy đủ thông tin
+          const updatedRecipe = await Recipe.findByPk(id, {
+              include: [
+                  {
+                      model: RecipeIngredient,
+                      include: [Ingredient]
+                  },
+                  {
+                      model: RecipeInstruction,
+                      order: [['stepNumber', 'ASC']]
+                  },
+                  {
+                      model: RecipeTag
+                  }
+              ],
+              transaction: t
+          });
+
+          return updatedRecipe;
+      });
+
+      res.status(200).json(result);
+
+  } catch (error) {
+      console.error('Lỗi khi cập nhật công thức:', error);
+      
+      if (error.name === 'SequelizeValidationError') {
+          return res.status(400).json({
+              error: 'Dữ liệu không hợp lệ',
+              details: error.errors.map(e => e.message)
+          });
+      }
+
+      res.status(500).json({ 
+          error: 'Lỗi khi cập nhật công thức',
+          details: error.message 
+      });
+  }
+});
+
 
 module.exports = recipeRouter;

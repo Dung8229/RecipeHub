@@ -8,6 +8,7 @@ import LoginRegisterPage from './pages/Login-Register';
 import ExploreCompetitionPage from './pages/ExploreCompetition';
 import AdminManageCompetitionPage from './pages/AdminManageCompetitionPage';
 import AdminManageACompetitionPage from './pages/AdminManageACompetitionPage';
+import CreateRecipePage from './pages/CreateRecipePage';
 
 const App = () => {
   return (
@@ -43,12 +44,14 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         */}
 
+        <Route path="/recipes/create" element={<CreateRecipePage />} />
+        <Route path="/recipes/my-recipes/:id/edit" element={<EditRecipePage />} />
         {/* Quản lý công thức nấu ăn */}
         {/* 
         <Route path="/recipes" element={<ExploreRecipesPage />} />
         <Route path="/recipes/:id/information" element={<RecipeDetailPage />} />
         <Route path="/recipes/create" element={<CreateRecipePage />} />
-        <Route path="/recipes/my-recipes/:id/edit" element={<EditRecipePage />} />
+        
         <Route path="/recipes/my-recipes" element={<MyRecipesPage />} />
         <Route path="/recipes/saved" element={<SavedRecipesPage />} />
         */}

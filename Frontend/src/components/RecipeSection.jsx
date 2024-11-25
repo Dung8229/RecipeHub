@@ -35,7 +35,6 @@ const RecipeSection = ({ title }) => {
         setError('Failed to load recipes');
       }
     };
-
     fetchRecipes();
   }, []);
 
