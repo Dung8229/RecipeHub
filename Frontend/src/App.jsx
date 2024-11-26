@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import HomePage from './pages/HomePage';
 import AdminManageUsersPage from './pages/AdminManageUsersPage';
 import HomeRedirect from './components/HomeRedirect';
@@ -11,66 +13,52 @@ import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import ShoppingList from './pages/ShoppingList';
 
-
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Các route chính */}
+        {/* Trang không cần đăng nhập */}
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recipes/search" element={<ExploreRecipesPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/shopping-list" element={<ShoppingList />} />
         
-        {/* Các route của competitions */}
         <Route path="/competitions">
           <Route path="open" element={<ExploreCompetitionPage />} />
           <Route path="closed" element={<ExploreCompetitionPage />} />
           <Route path="upcoming" element={<ExploreCompetitionPage />} />
           <Route path=":id/information" element={<CompetitionDetailPage />} />
         </Route>
-        
-        {/* Các route của admin */}
-        <Route path="/admin">
-          <Route path="dashboard/users" element={<AdminManageUsersPage />} />
-          <Route path="competitions" element={<AdminManageCompetitionPage />} />
-          <Route path="competitions/:id/information" element={<AdminManageACompetitionPage />} />
-          <Route path="competitions/:id/manageWinner" element={<AdminManageACompetitionPage />} />
+
+         {/* Trang cần đăng nhập */}
+         {/* Bảo vệ 1 route */}
+        <Route
+          path="/shopping-list"
+          element={<ProtectedRoute element={<ShoppingList />} />}
+        />
+
+        {/* Bảo vệ 1 nhóm route */}
+        {/* <Route path="/recipes">
+          <Route path="create" element={<ProtectedRoute element={(<div>Create Page</div>)} />} />
+          <Route path="favourite" element={<ProtectedRoute element={(<div>Favourite Page</div>)} />} />
+        </Route> */}
+        <Route path="/recipes" element={<ProtectedRoute />}>
+          <Route path="create" element={(<div>Create Page</div>)} />
+          <Route path="favourite" element={(<div>Favourite Page</div>)} />
         </Route>
-
-        {/* Quản lý công thức nấu ăn */}
-        {/* 
-        <Route path="/recipes" element={<ExploreRecipesPage />} />
-        <Route path="/recipes/:id/information" element={<RecipeDetailPage />} />
-        <Route path="/recipes/create" element={<CreateRecipePage />} />
-        <Route path="/recipes/my-recipes/:id/edit" element={<EditRecipePage />} />
-        <Route path="/recipes/my-recipes" element={<MyRecipesPage />} />
-        <Route path="/recipes/saved" element={<SavedRecipesPage />} />
-        */}
-
-        {/* Trang cá nhân người dùng */}
-        {/* 
-        <Route path="/profile" element={<UserProfilePage />} />
-        */}
-
-        {/* Danh sách mua sắm */}
-        {/* 
-        <Route path="/shopping-list" element={<ShoppingListPage />} />
-        */}
-
-        {/* Quản lý cuộc thi */}
-        {/* 
-        <Route path="/competitions/submit" element={<SubmitCompetitionPage />} />
-        */}
-
-        {/* Trang quản trị viên */}
-        {/* 
-        <Route path="/admin/dashboard/recipes" element={<AdminManageRecipesPage />} />
-        <Route path="/admin/dashboard/comments" element={<AdminManageCommentsPage />} />
-        <Route path="/admin/competitions" element={<AdminManageCompetitionPage />} />
-        */}
+        
+        {/* Bảo vệ 1 nhóm route của admin */}
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route path="dashboard">
+            <Route path="users" element={<AdminManageUsersPage />} />
+          </Route>
+            <Route path="competitions" element={<AdminManageCompetitionPage />} />
+            <Route path="competitions/:id">
+              <Route path="information" element={<AdminManageACompetitionPage />} />
+              <Route path="winner" element={<AdminManageACompetitionPage />} />
+          </Route>
+        </Route>
       </Routes>
     </Router>
   );

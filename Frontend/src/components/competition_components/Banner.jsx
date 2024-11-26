@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import competitionService from '../../services/competitions'
+import tokenService from '../../services/token'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +9,7 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 const Banner = ({ competitionId, title, image, description, detailDescription, startDate, endDate }) => {
   const now = new Date();
   const navigate = useNavigate()
+  const [userData, setUserData] = useState(null)
   const [isRegistered, setIsRegistered] = useState(false); // Trạng thái đăng ký
   const [isDetailVisible, setDetailVisible] = useState(false);
 
@@ -35,8 +37,24 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
 
   useEffect(() => {
     const fetchRegistrationStatus = async () => {
-      const registered = await competitionService.checkIsRegistered(competitionId); // Gọi API
-      setIsRegistered(registered); // Cập nhật trạng thái đăng ký
+      try {
+        const registered = await competitionService.checkIsRegistered(competitionId); // Gọi API
+        setIsRegistered(registered); // Cập nhật trạng thái đăng ký
+      } catch (error) {
+        console.error('Error fetching registration status:', error.message);
+      }
+    };
+
+    const fetchUserInfo = async () => {
+      try {
+        const token = tokenService.getToken();
+        if (!token) return; // Nếu không có token, không cần gọi API
+  
+        const userInfo = await tokenService.getUserInfo();
+        setUserData(userInfo); // Cập nhật thông tin người dùng, dùng như nào thì dùng
+      } catch (error) {
+        console.error('Error fetching user info:', error.message);
+      }
     };
 
     fetchRegistrationStatus();
