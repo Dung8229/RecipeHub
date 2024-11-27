@@ -1,7 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('../db')
 // Định nghĩa model cho bảng users
-
 const { verify } = require('jsonwebtoken');
 const Recipe = require('./recipe');
 
