@@ -15,7 +15,6 @@ const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
-const tokenRouter = require('./controllers/token')
 
 sequelize.authenticate()
     .then(() => {
