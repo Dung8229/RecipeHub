@@ -5,7 +5,7 @@ require('express-async-error')
 const app = express()
 const cors = require('cors')
 const usersRouter = require('./controllers/users')
-
+const shoppinglistRouter = require('./controllers/shoppinglist')
 
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
@@ -65,7 +65,7 @@ app.use('/api/users', usersRouter)
 
 
 app.use('/api/recipes', recipesRouter)
-
+app.use('/api/shoppinglist', shoppinglistRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
