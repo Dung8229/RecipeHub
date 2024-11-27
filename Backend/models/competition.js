@@ -35,6 +35,10 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  winnerSelectionStartDate: {
+    type: DataTypes.DATE,
+    allowNull: true, // Có thể null nếu không có giai đoạn này
+  },
   winnerRecipeId: {
     type: DataTypes.INTEGER,
   }

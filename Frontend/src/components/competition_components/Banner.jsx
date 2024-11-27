@@ -6,7 +6,7 @@ import tokenService from '../../services/token'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const Banner = ({ competitionId, title, image, description, detailDescription, startDate, endDate }) => {
+const Banner = ({ competitionId, title, image, description, detailDescription, startDate, endDate, winnerSelectionDate }) => {
   const now = new Date();
   const navigate = useNavigate()
   const [isRegistered, setIsRegistered] = useState(false); // Trạng thái đăng ký
@@ -99,7 +99,9 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
             >
               Learn More
             </button>
-            {new Date(endDate) > now && (
+  
+            {/* Chỉ hiển thị nút đăng ký nếu chưa đến ngày winnerSelectionStart */}
+            {new Date(winnerSelectionDate) > now && (
               <>
                 <button
                   className={`font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full 
@@ -110,7 +112,7 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
                 >
                   {isRegistered ? 'Unregister' : 'Register'}
                 </button>
-
+  
                 {/* Hiển thị nút "Submit Entry" nếu đã đăng ký */}
                 {isRegistered && new Date(startDate) <= now && (
                   <button

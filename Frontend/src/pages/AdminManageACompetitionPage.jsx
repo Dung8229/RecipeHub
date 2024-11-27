@@ -7,26 +7,27 @@ import AdminManageCompetitionForm from "../components/admin_components/AdminMana
 import ParticipantsList from "../components/admin_components/ParticipantsList";
 import SubmissionsList from "../components/admin_components/SubmissionsList";
 import WinnerList from "../components/admin_components/WinnerList"
+import AnnouncedWinner from "../components/admin_components/AnnouncedWinner";
 
 const AdminManageACompetitionPage = () => {
   const [activeItem, setActiveItem] = useState(location.pathname);
   const { id } = useParams(); // Lấy id từ URL
-  const [title, setTitle] = useState("")
-  const [winner, setWinner] = useState(null); // Thêm state winner
+  const [competitionData, setcompetitionData] = useState("")
   const navigate = useNavigate();
+  const now = new Date()
 
   useEffect(() => {
-    const fetchCompetitionTitle = async () => {
+    const fetchCompetitionData = async () => {
       try {
-        const competition = await competitionService.getDetail(id); // Gọi API với id
-        setTitle(competition.title);
-        setWinner(competition.winner);
+        const response = await competitionService.getDetail(id); // Gọi API với id
+        setcompetitionData(response);
+        console.log('response:', response)
       } catch (error) {
         console.error("Error fetching competition details:", error);
       }
     };
 
-    fetchCompetitionTitle();
+    fetchCompetitionData();
   }, [id])
 
   const handleNavItemClick = (href) => {
@@ -34,14 +35,10 @@ const AdminManageACompetitionPage = () => {
     navigate(href); // Điều hướng
   };
 
-  const handleWinnerSelected = (selectedWinner) => {
-    setWinner(selectedWinner); // Cập nhật winner khi chọn
-  };
-
   return (
     <div className="w-full max-w-5xl mx-auto">
       <h1 className="font-bold text-slate-900 text-2xl sm:text-2xl md:text-3xl leading-tight p-6">
-        { title }
+        { competitionData.title }
       </h1>
       <div className="divide-y divide-slate-100">
         <Nav>
@@ -70,7 +67,18 @@ const AdminManageACompetitionPage = () => {
         )}
         {activeItem === `/admin/competitions/${id}/winner` && (
           <div>
-            <WinnerList competitionId={id} onWinnerSelected={handleWinnerSelected} />
+            {now < new Date(competitionData.winnerSelectionStartDate) ? (
+              // Chưa đến ngày chọn winner
+              <div className="text-gray-600 text-center">
+                Winner selection is not available yet. Please wait until {new Date(competitionData.winnerSelectionStartDate).toLocaleDateString()}.
+              </div>
+            ) : now > new Date(competitionData.endDate) ? (
+              // Sau ngày kết thúc competition
+              <AnnouncedWinner competitionId={id} />
+            ) : (
+              // Đến ngày chọn winner
+              <WinnerList competitionId={id} />
+            )}
           </div>
         )}
       </div>

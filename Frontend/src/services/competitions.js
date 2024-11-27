@@ -32,6 +32,7 @@ const getDetail = async (id) => {
 const getLeaderboard = async (id) => {
     try {
         const response = await axios.get(`${baseUrl}/${id}/leaderboard`)
+        console.log('leaderboard: ', response.data)
 
         return response.data
     } catch (error) {
@@ -39,6 +40,20 @@ const getLeaderboard = async (id) => {
         throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
     }
 }
+
+const updateTieBreakerRanks = async (competitionId, updatedRanks) => {
+  try {
+    const response = await axios.post(`${baseUrl}/${competitionId}/tiebreaker`, {
+      entries: updatedRanks,
+    });
+
+    console.log('updated tie break ranks: ', response.data)
+    return response.data; // Trả về dữ liệu từ server nếu cần
+  } catch (error) {
+    console.error('Error updating tie-breaker ranks:', error);
+    throw error; // Bắn lỗi để xử lý ở nơi gọi hàm
+  }
+};
 
 // set bài thi chiến thắng 1 cuộc thi
 const setWinner = async (competitionId, winnerRecipeId) => {
@@ -61,7 +76,6 @@ const setWinner = async (competitionId, winnerRecipeId) => {
 const getWinner = async (competitionId) => {
   try {
     const response = await axios.get(`${baseUrl}/${competitionId}/winner`)
-    console.log(response.data)
     return response.data
   } catch (error) {
     console.error('Lỗi khi cập nhật người chiến thắng:', error);
@@ -304,4 +318,5 @@ export default {
   unregister,
   setWinner,
   getWinner,
+  updateTieBreakerRanks,
 }

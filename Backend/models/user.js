@@ -47,6 +47,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
   timestamps: false

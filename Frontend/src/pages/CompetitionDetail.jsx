@@ -26,26 +26,19 @@ const CompetitionDetailPage = () => {
 
   const fetchCompetitionLeaderboard = async () => {
     try {
-      const data = await competitionService.getLeaderboard(id)
-      setLeaderboardData(data.leaderboard)
-      setWinner(data.winner)
+      const leaderboardData = await competitionService.getLeaderboard(id)
+      setLeaderboardData(leaderboardData.leaderboard)
+      console.log('Leaderboard Data:', leaderboardData.leaderboard)
+      setWinner(leaderboardData.winner)
+      console.log('Winner: ', leaderboardData.winner)
     } catch (error) {
       console.error('Error fetching competition leaderboard:', error);
-    }
-  }
-
-  const fetchCompetitionWinner = async () => {
-    try {
-      const data = await competitionService.getWinner(id)
-    } catch (error) {
-      console.error('No winner set yet:', error);
     }
   }
 
   useEffect(() => {
     fetchCompetitionDetail(); // Gọi hàm khi component được mount
     fetchCompetitionLeaderboard()
-    fetchCompetitionWinner()
   }, [id]);
 
   return (
@@ -59,10 +52,12 @@ const CompetitionDetailPage = () => {
           detailDescription={competition?.detailDescription || 'No Detail Description'}
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'} 
+          winnerSelectionDate={competition?.winnerSelectionStartDate || 'No selcetion date'}
         />
         <ProgressBar
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'}
+          winnerSelectionStart={competition?.winnerSelectionStartDate || 'No selection date'}
         />
         {isCompetitionOver && winner ? (
         <WinnerAnnouncement

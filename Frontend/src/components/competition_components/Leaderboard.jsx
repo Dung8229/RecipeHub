@@ -34,29 +34,37 @@ const Leaderboard = ({ entries }) => {
           <FontAwesomeIcon className="" icon={faTrophy}/>
         </span>
       </h2>
-      <ul className="max-w-4xl mx-auto">
-        {entries.slice(0, visibleEntries).map((entry, index) => (
-          <LeaderboardItem
-            key={entry.id}
-            rank={index + 1}
-            username={entry.username}
-            recipeTitle={entry.recipeTitle}
-            recipeImage={entry.recipeImage}
-            totalVotes={entry.totalVotes}
-            score={entry.score}
-            onClick={() => window.location.href = `/recipe/${entry.recipeId}`}
-          />
-        ))}
-      </ul>
-      {visibleEntries < entries.length && (
-        <div className="flex justify-center">
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded my-4"
-            onClick={handleSeeMore}
-          >
-            See More
-          </button>
+      {(!entries || entries.length === 0) ? (
+        <div className="text-red-700 text-center">
+          No entries available yet. Be the first to participate!
         </div>
+      ) : (
+        <>
+          <ul className="max-w-4xl mx-auto">
+            {entries.slice(0, visibleEntries).map((entry, index) => (
+              <LeaderboardItem
+                key={entry.id}
+                rank={index + 1}
+                username={entry.username}
+                recipeTitle={entry.recipeTitle}
+                recipeImage={entry.recipeImage}
+                totalVotes={entry.totalVotes}
+                score={entry.score}
+                onClick={() => window.location.href = `/recipe/${entry.recipeId}`}
+              />
+            ))}
+          </ul>
+          {visibleEntries < entries.length && (
+            <div className="flex justify-center">
+              <button
+                className="bg-blue-500 text-white py-2 px-4 rounded my-4"
+                onClick={handleSeeMore}
+              >
+                See More
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

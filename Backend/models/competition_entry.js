@@ -33,6 +33,9 @@ const CompetitionEntry = sequelize.define('CompetitionEntry', {
       key: 'id',
     },
   },
+  tieBreakerRank: {
+    type: DataTypes.INTEGER,
+  }
 }, {
   tableName: 'competition_entry',
   timestamps: false, // Tự động thêm createdAt và updatedAt

@@ -31,8 +31,8 @@ competitionsRouter.get('/', async (request, response) => {
         const now = new Date()
         // Tính toán timeLeft và thêm vào từng cuộc thi
         const competitionsWithTimeLeft = competitions.map(comp => {
-          const endDate = new Date(comp.endDate);
-          const timeLeft = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24))); // Tính số ngày còn lại
+          const selectionDate = new Date(comp.winnerSelectionStartDate);
+          const timeLeft = Math.max(0, Math.ceil((selectionDate - now) / (1000 * 60 * 60 * 24))); // Tính số ngày còn lại
 
           return {
             ...comp.toJSON(), // Chuyển đổi mô hình Sequelize sang đối tượng JSON
@@ -157,6 +157,28 @@ competitionsRouter.delete('/:id', async (request, response) => {
   }
 });
 
+// API cho admin sửa thứ tự các bài thi khi điểm bằng nhau
+competitionsRouter.post('/:id/tiebreaker', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { entries } = req.body; // Dạng [{ entryId: 1, tieBreakerRank: 1 }, ...]
+
+    const updatePromises = entries.map(entry =>
+      CompetitionEntry.update(
+        { tieBreakerRank: entry.tieBreakerRank },
+        { where: { id: entry.entryId, competitionId: id } }
+      )
+    );
+
+    await Promise.all(updatePromises);
+
+    res.status(200).json({ message: 'Cập nhật thứ tự tie-breaker thành công.' });
+  } catch (error) {
+    console.error('Error updating tieBreakerRank:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật tie-breaker.' });
+  }
+});
+
 competitionsRouter.get('/:id/leaderboard', async (request, response) => {
   try {
     const { id } = request.params;
@@ -210,10 +232,17 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
         recipeImage: entry.Recipe.image,
         totalVotes,
         score: score.toFixed(2), // Làm tròn đến 2 chữ số thập phân
+        tieBreakerRank: entry.tieBreakerRank, // Thêm tieBreakerRank
       };
     }));
 
-    leaderboard.sort((a, b) => b.score - a.score);
+    // Nếu bằng điểm nhau thì so tieBreakRank nếu có
+    leaderboard.sort((a, b) => {
+      if (b.score === a.score) {
+        return (a.tieBreakerRank || Infinity) - (b.tieBreakerRank || Infinity); // Ưu tiên tieBreakerRank
+      }
+      return b.score - a.score;
+    });
 
     const winner = leaderboard[0] // Người chiến thắng
 
@@ -479,7 +508,7 @@ competitionsRouter.get('/:competitionId/winner', async (req, res) => {
   const { competitionId } = req.params;
 
   try {
-    const competition = await Competition.findById(competitionId);
+    const competition = await Competition.findByPk(competitionId);
     if (!competition) {
       return res.status(404).json({ message: 'Competition not found' });
     }

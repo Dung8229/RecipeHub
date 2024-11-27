@@ -13,10 +13,10 @@ async function getAllCompetitions(status = null) {
         } else if (status === 'open') { // Các cuộc thi đang mở
             options.where = {
                 startDate: { [Sequelize.Op.lte]: currentDate },
-                endDate: { [Sequelize.Op.gt]: currentDate }
+                winnerSelectionStartDate: { [Sequelize.Op.gt]: currentDate }
             };
         } else if (status === 'closed') { // Các cuộc thi đã đóng
-            options.where = { endDate: { [Sequelize.Op.lt]: currentDate } };
+            options.where = { winnerSelectionStartDate: { [Sequelize.Op.lt]: currentDate } };
         }
     }
 
