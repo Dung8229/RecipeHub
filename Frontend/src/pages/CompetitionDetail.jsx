@@ -16,10 +16,9 @@ const CompetitionDetailPage = () => {
   const fetchCompetitionDetail = async () => {
     try {
       const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
-      console.log("fetched data:", data)
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
+      console.log('Competition data:', data)
       setIsCompOver(new Date(data.endDate) < new Date());
-      console.log(competition)
     } catch (error) {
       console.error('Error fetching competition details:', error);
     }
@@ -27,11 +26,11 @@ const CompetitionDetailPage = () => {
 
   const fetchCompetitionLeaderboard = async () => {
     try {
-      const data = await competitionService.getLeaderboard(id)
-      console.log("fetched data:", data)
-      setLeaderboardData(data.leaderboard)
-      setWinner(data.winner)
-      console.log(leaderboardData)
+      const leaderboardData = await competitionService.getLeaderboard(id)
+      setLeaderboardData(leaderboardData.leaderboard)
+      console.log('Leaderboard Data:', leaderboardData.leaderboard)
+      setWinner(leaderboardData.winner)
+      console.log('Winner: ', leaderboardData.winner)
     } catch (error) {
       console.error('Error fetching competition leaderboard:', error);
     }
@@ -51,16 +50,19 @@ const CompetitionDetailPage = () => {
           image={competition?.image || 'default-image.jpg'} 
           description={competition?.description || 'No Description'} 
           detailDescription={competition?.detailDescription || 'No Detail Description'}
+          startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'} 
+          winnerSelectionDate={competition?.winnerSelectionStartDate || 'No selcetion date'}
         />
         <ProgressBar
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'}
+          winnerSelectionStart={competition?.winnerSelectionStartDate || 'No selection date'}
         />
         {isCompetitionOver && winner ? (
         <WinnerAnnouncement
           username={winner.username}
-          profilePic="path/to/profile-pic.jpg"
+          profilePic={winner.userImage}
           recipeTitle={winner.recipeTitle}
           recipeImage={winner.recipeImage}
           totalVotes={winner.totalVotes}

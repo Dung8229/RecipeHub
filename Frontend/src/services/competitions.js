@@ -32,12 +32,55 @@ const getDetail = async (id) => {
 const getLeaderboard = async (id) => {
     try {
         const response = await axios.get(`${baseUrl}/${id}/leaderboard`)
+        console.log('leaderboard: ', response.data)
 
         return response.data
     } catch (error) {
         console.error(`Error fetching competition leaderboard id ${id}`, error);
         throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
     }
+}
+
+const updateTieBreakerRanks = async (competitionId, updatedRanks) => {
+  try {
+    const response = await axios.post(`${baseUrl}/${competitionId}/tiebreaker`, {
+      entries: updatedRanks,
+    });
+
+    console.log('updated tie break ranks: ', response.data)
+    return response.data; // Trả về dữ liệu từ server nếu cần
+  } catch (error) {
+    console.error('Error updating tie-breaker ranks:', error);
+    throw error; // Bắn lỗi để xử lý ở nơi gọi hàm
+  }
+};
+
+// set bài thi chiến thắng 1 cuộc thi
+const setWinner = async (competitionId, winnerRecipeId) => {
+  try {
+    const response = await axios.patch(`${baseUrl}/${competitionId}/winner`, {
+      submissionId: winnerRecipeId, // ID của công thức chiến thắng
+    });
+
+    if (response.status === 200) {
+      const { winner } = response.data;
+      console.log('Người chiến thắng đã được cập nhật:', winner);
+    }
+  } catch (error) {
+    console.error('Lỗi khi cập nhật người chiến thắng:', error);
+    alert('Đã xảy ra lỗi khi cập nhật người chiến thắng.');
+  }
+};
+
+// Lấy recipeId chiến thắng (nếu có)
+const getWinner = async (competitionId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${competitionId}/winner`)
+    return response.data
+  } catch (error) {
+    console.error('Lỗi khi cập nhật người chiến thắng:', error);
+    alert('Đã xảy ra lỗi khi cập nhật người chiến thắng.');
+  }
 }
 
 // Hàm tạo competition mới
@@ -168,8 +211,29 @@ export const getParticipants = async (competitionId, page = 1, limit = 10) => {
 
 // Xóa người dự thi
 const deleteParticipant = async (competitionId, userId) => {
+  const token = window.localStorage.getItem('token');
   try {
-    const response = await axios.delete(`${baseUrl}/${competitionId}/participants/${userId}`)
+    const response = await axios.delete(`${baseUrl}/${competitionId}/participants/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+}
+
+// Hủy đăng ký (cho người dùng)
+const unregister = async (competitionId) => {
+  const token = window.localStorage.getItem('token');
+  try {
+    const response = await axios.delete(`${baseUrl}/${competitionId}/unregister-participant`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    })
     return response.data
   } catch (error) {
     console.error('Error deleting user:', error);
@@ -194,7 +258,12 @@ const getSubmissions = async (competitionId, page = 1, limit = 10) => {
 // Xóa bài dự thi
 const deleteSubmission = async (competitionId, submissionId) => {
   try {
-    await axios.delete(`${baseUrl}/${competitionId}/submissions/${submissionId}`);
+    const token = window.localStorage.getItem('token');
+    await axios.delete(`${baseUrl}/${competitionId}/submissions/${submissionId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
   } catch (error) {
     console.error('Error deleting submission:', error);
     throw error;
@@ -246,4 +315,8 @@ export default {
   deleteSubmission,
   addParticipant,
   checkIsRegistered,
+  unregister,
+  setWinner,
+  getWinner,
+  updateTieBreakerRanks,
 }

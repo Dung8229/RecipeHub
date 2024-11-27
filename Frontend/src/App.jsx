@@ -39,10 +39,6 @@ const App = () => {
         />
 
         {/* Bảo vệ 1 nhóm route */}
-        {/* <Route path="/recipes">
-          <Route path="create" element={<ProtectedRoute element={(<div>Create Page</div>)} />} />
-          <Route path="favourite" element={<ProtectedRoute element={(<div>Favourite Page</div>)} />} />
-        </Route> */}
         <Route path="/recipes" element={<ProtectedRoute />}>
           <Route path="create" element={(<div>Create Page</div>)} />
           <Route path="favourite" element={(<div>Favourite Page</div>)} />

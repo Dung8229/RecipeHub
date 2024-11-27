@@ -1,5 +1,4 @@
 const usersRouter = require('express').Router();
-const db = require('../db');
 const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');

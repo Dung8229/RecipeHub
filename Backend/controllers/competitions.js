@@ -4,7 +4,7 @@ const axios = require('axios')
 const logger = require('../utils/logger')
 const middleware = require('../utils/middleware')
 
-const { getAllCompetitions } = require('../services/competition');
+const { getAllCompetitions, unregisterParticipant } = require('../services/competition');
 const Competition = require('../models/competition');
 const CompetitionEntry = require('../models/competition_entry')
 const User = require('../models/user')
@@ -31,8 +31,8 @@ competitionsRouter.get('/', async (request, response) => {
         const now = new Date()
         // Tính toán timeLeft và thêm vào từng cuộc thi
         const competitionsWithTimeLeft = competitions.map(comp => {
-          const endDate = new Date(comp.endDate);
-          const timeLeft = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24))); // Tính số ngày còn lại
+          const selectionDate = new Date(comp.winnerSelectionStartDate);
+          const timeLeft = Math.max(0, Math.ceil((selectionDate - now) / (1000 * 60 * 60 * 24))); // Tính số ngày còn lại
 
           return {
             ...comp.toJSON(), // Chuyển đổi mô hình Sequelize sang đối tượng JSON
@@ -157,6 +157,28 @@ competitionsRouter.delete('/:id', async (request, response) => {
   }
 });
 
+// API cho admin sửa thứ tự các bài thi khi điểm bằng nhau
+competitionsRouter.post('/:id/tiebreaker', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { entries } = req.body; // Dạng [{ entryId: 1, tieBreakerRank: 1 }, ...]
+
+    const updatePromises = entries.map(entry =>
+      CompetitionEntry.update(
+        { tieBreakerRank: entry.tieBreakerRank },
+        { where: { id: entry.entryId, competitionId: id } }
+      )
+    );
+
+    await Promise.all(updatePromises);
+
+    res.status(200).json({ message: 'Cập nhật thứ tự tie-breaker thành công.' });
+  } catch (error) {
+    console.error('Error updating tieBreakerRank:', error);
+    res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật tie-breaker.' });
+  }
+});
+
 competitionsRouter.get('/:id/leaderboard', async (request, response) => {
   try {
     const { id } = request.params;
@@ -168,7 +190,7 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
       include: [
         {
           model: User,
-          attributes: ['username'],
+          attributes: ['username', 'image'],
         },
         {
           model: Recipe,
@@ -204,14 +226,23 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
       return {
         id: entry.id,
         username: entry.User.username,
+        userImage: entry.User.image,
+        recipeId: entry.Recipe.id,
         recipeTitle: entry.Recipe.title,
         recipeImage: entry.Recipe.image,
         totalVotes,
         score: score.toFixed(2), // Làm tròn đến 2 chữ số thập phân
+        tieBreakerRank: entry.tieBreakerRank, // Thêm tieBreakerRank
       };
     }));
 
-    leaderboard.sort((a, b) => b.score - a.score);
+    // Nếu bằng điểm nhau thì so tieBreakRank nếu có
+    leaderboard.sort((a, b) => {
+      if (b.score === a.score) {
+        return (a.tieBreakerRank || Infinity) - (b.tieBreakerRank || Infinity); // Ưu tiên tieBreakerRank
+      }
+      return b.score - a.score;
+    });
 
     const winner = leaderboard[0] // Người chiến thắng
 
@@ -319,7 +350,7 @@ competitionsRouter.get('/:competitionId/isRegister', middleware.authenticateJWT,
 });
 
 // Xóa người tham gia
-competitionsRouter.delete('/:id/participants/:userId', async (req, res) => {
+competitionsRouter.delete('/:id/participants/:userId', middleware.authenticateJWT, async (req, res) => {
   const { id, userId } = req.params;
 
   try {
@@ -331,6 +362,28 @@ competitionsRouter.delete('/:id/participants/:userId', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error deleting participant');
+  }
+});
+
+// Route: Hủy đăng ký tham gia cuộc thi
+competitionsRouter.delete('/:id/unregister-participant', middleware.authenticateJWT, async (req, res) => {
+  const competitionId = req.params.id; // Lấy competitionId từ URL
+  const userId = req.user.id; // Lấy userId từ JWT middleware (đã giải mã)
+  console.log('hi')
+
+  try {
+    console.log('hi')
+    const isUnregistered = await unregisterParticipant(competitionId, userId);
+    console.log(isUnregistered)
+
+    if (isUnregistered) {
+      return res.status(200).json({ message: 'Successfully unregistered from the competition.' });
+    } else {
+      return res.status(400).json({ error: 'Failed to unregister. You may not be registered or the competition does not exist.' });
+    }
+  } catch (error) {
+    console.error('Error during unregistration:', error.message);
+    return res.status(500).json({ error: 'An error occurred while unregistering.' });
   }
 });
 
@@ -400,6 +453,76 @@ competitionsRouter.delete('/:id/submissions/:submissionId', async (req, res) => 
   } catch (error) {
     console.error(error);
     res.status(500).send('Error deleting submission');
+  }
+});
+
+// Set winner
+competitionsRouter.patch('/:competitionId/winner', async (req, res) => {
+  const { competitionId } = req.params;
+  const { submissionId } = req.body;
+
+  try {
+    // Kiểm tra cuộc thi có tồn tại không
+    const competition = await Competition.findByPk(competitionId);
+    if (!competition) {
+      return res.status(404).json({ message: 'Cuộc thi không tồn tại.' });
+    }
+
+    // Kiểm tra bài thi có tồn tại trong cuộc thi không
+    const entry = await CompetitionEntry.findOne({
+      where: {
+        competitionId,
+        submissionId, // Điều kiện đúng
+      },
+      include: [
+        { model: User, attributes: ['username'] },
+        { model: Recipe, attributes: ['title'] },
+      ],
+    });
+
+    if (!entry) {
+      return res.status(404).json({ message: 'Bài dự thi không tồn tại hoặc không thuộc cuộc thi này.' });
+    }
+
+    // Cập nhật winnerRecipeId cho cuộc thi
+    competition.winnerRecipeId = submissionId;
+    await competition.save();
+
+    // Trả về thông tin cuộc thi đã cập nhật
+    return res.status(200).json({
+      message: 'Cập nhật người chiến thắng thành công.',
+      winner: {
+        submissionId,
+        username: entry.User.username,
+        recipeTitle: entry.Recipe.title,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating winner:', error);
+    return res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật người chiến thắng.' });
+  }
+});
+
+// Lấy id recipe winner (nếu đã được chọn bởi admin)
+competitionsRouter.get('/:competitionId/winner', async (req, res) => {
+  const { competitionId } = req.params;
+
+  try {
+    const competition = await Competition.findByPk(competitionId);
+    if (!competition) {
+      return res.status(404).json({ message: 'Competition not found' });
+    }
+
+    if (!competition.winnerRecipeId) {
+      return res.status(404).json({ message: 'Winner not yet decided for this competition' });
+    }
+
+    res.status(200).json({
+      recipeId: competition.winnerRecipeId
+    });
+  } catch (error) {
+    console.error('Error fetching winner:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 

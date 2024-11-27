@@ -3,6 +3,11 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
 const ListItemCompetition = ({ competition }) => {
+  const now = new Date()
+  const startDate = new Date(competition.startDate)
+  const selectionDate = new Date(competition.winnerSelectionStartDate)
+  const endDate = new Date(competition.endDate)
+
   return (
     <article className="max-h-50 p-6">
       <div className="flex justify-between items-center space-x-20 relative flex">
@@ -17,10 +22,12 @@ const ListItemCompetition = ({ competition }) => {
               <dt className="sr-only">Time left</dt>
               <dd className="text-red-500 font-bold">
                 <FontAwesomeIcon icon={faClock} />
-                {new Date(competition.startDate) > new Date() ? (
-                  ` Open in ${Math.ceil((new Date(competition.startDate) - new Date()) / (1000 * 60 * 60 * 24))} days`
+                {startDate > now ? (
+                  ` Open in ${Math.ceil((startDate - now) / (1000 * 60 * 60 * 24))} days`
                 ) : competition.timeLeft > 0 ? (
                   ` ${competition.timeLeft} days left`
+                ) : now < endDate ? (
+                  ' Winner selection in progress'
                 ) : (
                   ' Closed'
                 )}
