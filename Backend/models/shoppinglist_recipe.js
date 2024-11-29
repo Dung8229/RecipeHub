@@ -34,4 +34,7 @@ const ShoppinglistRecipe = sequelize.define('ShoppinglistRecipe', {
     timestamps: false // Nếu bạn không cần các trường updatedAt
 });
 
+ShoppinglistRecipe.belongsTo(Recipe, { foreignKey: 'recipeId' });
+Recipe.hasMany(ShoppinglistRecipe, { foreignKey: 'recipeId' });
+
 module.exports = ShoppinglistRecipe

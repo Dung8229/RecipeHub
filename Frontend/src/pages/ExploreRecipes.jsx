@@ -3,7 +3,7 @@ import Header from '../components/ExploreRecipeComponents/Header';
 import Sidebar from '../components/ExploreRecipeComponents/Sidebar';
 import RecipeList from '../components/ExploreRecipeComponents/RecipeList';
 import axios from 'axios';
-import { addRecipeToShoppingList } from '../services/shoppinglists';
+// import { addRecipeToShoppingList } from '../services/shoppinglists';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const ExploreRecipes = () => {
@@ -67,23 +67,23 @@ const ExploreRecipes = () => {
   };
 
   const handleRecipeSelect = (recipe) => {
-    if (isFromShoppingList) {
-      // Nếu đến từ shopping list, thêm công thức vào shopping list và quay lại
-      addRecipeToShoppingList('user123',recipe.id)
-        .then(() => {
-          navigate('/shopping-list', { 
-            state: { 
-              addedRecipe: recipe 
-            }
-          });
-        })
-        .catch(error => {
-          console.error('Error adding recipe to shopping list:', error);
-        });
-    } else {
-      // Xử lý bình thường khi chọn công thức
-      navigate(`/recipes/${recipe.id}`);
-    }
+    // if (isFromShoppingList) {
+    //   // Nếu đến từ shopping list, thêm công thức vào shopping list và quay lại
+    //   addRecipeToShoppingList('user123',recipe.id)
+    //     .then(() => {
+    //       navigate('/shopping-list', { 
+    //         state: { 
+    //           addedRecipe: recipe 
+    //         }
+    //       });
+    //     })
+    //     .catch(error => {
+    //       console.error('Error adding recipe to shopping list:', error);
+    //     });
+    // } else {
+    //   // Xử lý bình thường khi chọn công thức
+    //   navigate(`/recipes/${recipe.id}`);
+    // }
   };
 
   useEffect(() => {

@@ -17,6 +17,7 @@ const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
+const ingredientRouter = require('./controllers/ingredient')
 
 sequelize.authenticate()
     .then(() => {
@@ -71,6 +72,7 @@ app.use('/api/competitions', competitionsRouter)
 app.use('/api/image', imageUploadRouter)
 app.use('/api/token', tokenRouter)
 app.use('/api/shoppinglist', shoppinglistRouter)
+app.use('/api/ingredient', ingredientRouter)
 
 // Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

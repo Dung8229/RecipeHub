@@ -1,43 +1,69 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api'; // Thay đổi URL theo backend của bạn
+const baseUrl = '/api/shoppinglist'
 
 // Thêm công thức vào shopping list
-export const addRecipeToShoppingList = async (userID, recipeID) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/shoppinglist/${userID}/recipes`, { recipeID });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+// export const addRecipeToShoppingList = async (userID, recipeID) => {
+//   try {
+//     const response = await axios.post(`${API_BASE_URL}/shoppinglist/${userID}/recipes`, { recipeID });
+//     return response.data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 // Xóa công thức khỏi shopping list
-export const removeRecipeFromShoppingList = async (userID, recipeID) => {
+const removeRecipe = async (recipeId) => {
+  const token = window.localStorage.getItem('token');
   try {
-    const response = await axios.delete(`${API_BASE_URL}/shoppinglist/${userID}/recipes/${recipeID}`);
+    const response = await axios.delete(`${baseUrl}/recipes/${recipeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
     return response.data;
   } catch (error) {
+    console.error('Error remove a recipe')
     throw error;
   }
 };
 
 // Lấy danh sách công thức trong shopping list
-export const getShoppingListRecipes = async (userID) => {
+const getRecipes = async () => {
+  const token = window.localStorage.getItem('token');
   try {
-    const response = await axios.get(`${API_BASE_URL}/shoppinglist/${userID}/recipes`);
-    return response.data;
+    const response = await axios.get(`${baseUrl}/recipes`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+    console.log('Sl recipes: ', response.data.recipes)
+    return response.data.recipes;
   } catch (error) {
+    console.error('Error getting shopping list recipes')
     throw error;
   }
 };
 
 // Lấy danh sách nguyên liệu từ các công thức
-export const getIngredientsFromRecipes = async (recipeIDs) => {
+const getIngredients = async () => {
+  const token = window.localStorage.getItem('token');
   try {
-    const response = await axios.post(`${API_BASE_URL}/ingredients/from-recipes`, { recipeIDs });
-    return response.data;
+    const response = await axios.get(`${baseUrl}/ingredients`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('ingredients: ', response.data.ingredients)
+    return response.data.ingredients;
   } catch (error) {
+    console.error('Error getting ingredients')
     throw error;
   }
 };
+
+export default {
+  getRecipes,
+  removeRecipe,
+  getIngredients,
+}
