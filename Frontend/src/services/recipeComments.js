@@ -7,7 +7,10 @@ export const getRecipeComments = async (recipeId) => {
     return response.data;
 };
 
-export const addComment = async (userId, recipeId, comment) => {
-    const response = await axios.post(`${baseUrl}/comment`, { userId, recipeId, comment });
+export const addComment = async (userId, recipeId, commentText) => {
+    const response = await axios.post(`${baseUrl}/recipes/${recipeId}/comments`, {
+        userId,
+        commentText,
+    });
     return response.data;
 };

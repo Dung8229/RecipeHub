@@ -11,7 +11,7 @@ usersRouter.get('/', async (request, response) => {
   response.json(users)
 })
 
-usersRouter.get('/:id', middleware.authenticateJWT, async (request, response) => {
+usersRouter.get('/:id', async (request, response) => {
   try {
     const { id } = request.params
     const user = await User.findOne({ where: { id } })

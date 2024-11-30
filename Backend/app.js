@@ -33,7 +33,7 @@ app.use(middleware.requestLogger);
 app.use('/api/users', usersRouter);
 app.use('/api/competitions', competitionsRouter);
 
-app.use('/api/users', userProfile); // /api/users/:id
+//app.use('/api/users', userProfile); // /api/users/:id
 app.use('/api/users', myRecipes); // /api/users/:id/recipes
 app.use('/api/users', favouritesRouter); // /api/favourites
 

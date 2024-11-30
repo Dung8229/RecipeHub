@@ -38,7 +38,7 @@ router.post('/:id/comments', async (req, res) => {
         if (!userId || !commentText) {
             return res.status(400).json({ error: 'userId and commentText are required' });
         }
-        const comment = await RecipeComment.create({ userId, recipeId, commentText });
+        const comment = await RecipeComment.create({ recipeId, userId, commentText });
         res.status(201).json(comment);
     } catch (error) {
         res.status(500).json({ error: 'Something went wrong' });

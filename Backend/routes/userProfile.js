@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const middleware = require('../utils/middleware')
 // Route để lấy thông tin người dùng
-router.get('/:userId', middleware.authenticateJWT, async (req, res) => {
+router.get('/:userId', async (req, res) => {
     try {
         console.log(req.header('Authorization')); // Thêm dòng này để kiểm tra token nhận được
         const userId = req.params.userId;

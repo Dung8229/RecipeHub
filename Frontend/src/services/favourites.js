@@ -8,15 +8,19 @@ export const getFavourites = async (userId) => {
 };
 
 export const addFavourite = async (userId, recipeId) => {
-    const response = await axios.post(baseUrl, { userId, recipeId });
+    const response = await axios.post(`${baseUrl}/${userId}/fav`, { userId, recipeId });
     return response.data;
 };
 
 export const removeFavourite = async (userId, recipeId) => {
-    await axios.delete(baseUrl, { data: { userId, recipeId } });
+    await axios.delete(`${baseUrl}/${userId}/del`, {
+        data: { recipeId } // Send recipeId in the request body
+    });
 };
 
 export const checkFavourite = async (userId, recipeId) => {
-    const response = await axios.get(`${baseUrl}/check`, { data: { userId, recipeId } });
+    const response = await axios.get(`${baseUrl}/${userId}/check`, {
+        params: { recipeId } // Use query parameters
+    });
     return response.data.isFavourite;
 };

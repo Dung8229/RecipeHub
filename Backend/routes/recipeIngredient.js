@@ -5,10 +5,8 @@ const Ingredient = require('../models/ingredient');
 
 // Route để lấy tất cả các nguyên liệu của một công thức nấu ăn theo ID
 router.get('/:id/ingredients', async (req, res) => {
-    console.log('Received request for ingredients');
     try {
         const recipeId = req.params.id;
-        console.log(`Fetching ingredients for recipeId: ${recipeId}`);
         const ingredients = await RecipeIngredient.findAll({
             where: { recipeId },
             include: [

@@ -31,7 +31,7 @@ module.exports = router;
 
 // Route để thêm công thức vào danh sách yêu thích
 
-router.post('/fav', async (req, res) => {
+router.post('/:userId/fav', async (req, res) => {
     console.log(req.body);
     try {
         const { userId, recipeId } = req.body;
@@ -47,25 +47,30 @@ router.post('/fav', async (req, res) => {
 });
 
 // Route để xóa công thức khỏi danh sách yêu thích
-router.delete('/del', async (req, res) => {
+router.delete('/:userId/del', async (req, res) => {
     try {
-        const { userId, recipeId } = req.body;
+        const { userId } = req.params;
+        const { recipeId } = req.body;
+        if (!userId || !recipeId) {
+            return res.status(400).json({ error: 'userId and recipeId are required' });
+        }
         const favourite = await Favourites.findOne({ where: { userId, recipeId } });
         if (favourite) {
             await favourite.destroy();
-            res.status(204).end()
+            res.status(204).end();
         } else {
-            res.status(404).json({ error: 'Favourite not found' })
+            res.status(404).json({ error: 'Favourite not found' });
         }
     } catch (error) {
-        res.status(500).json({ error: 'Cannot delete recipe' })
+        res.status(500).json({ error: 'Cannot delete recipe' });
+        console.log(error);
     }
 });
 
-// Route để kiểm tra công thức có trong danh sách yêu thích hay không
-router.get('/check', async (req, res) => {
+router.get('/:userId/check', async (req, res) => {
     try {
-        const { userId, recipeId } = req.params;
+        const { userId } = req.params; // Corrected destructuring
+        const { recipeId } = req.query; // Extract from query
         const favourite = await Favourites.findOne({ where: { userId, recipeId } });
         if (favourite) {
             res.json({ isFavourite: true });
@@ -74,8 +79,10 @@ router.get('/check', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Something went wrong' });
+        console.log(error);
     }
 });
+
 
 
 module.exports = router
