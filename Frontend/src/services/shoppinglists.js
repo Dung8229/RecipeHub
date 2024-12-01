@@ -28,6 +28,21 @@ const removeRecipe = async (recipeId) => {
   }
 };
 
+const removeAllRecipes = async () => {
+  const token = window.localStorage.getItem('token');
+  try {
+    const response = await axios.delete(`${baseUrl}/recipes`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error remove all recipes')
+    throw error;
+  }
+}
+
 // Lấy danh sách công thức trong shopping list
 const getRecipes = async () => {
   const token = window.localStorage.getItem('token');
@@ -46,18 +61,24 @@ const getRecipes = async () => {
 };
 
 // Lấy danh sách nguyên liệu từ các công thức
-const getIngredients = async () => {
+const getIngredients = async (servingsData) => {
   const token = window.localStorage.getItem('token');
   try {
-    const response = await axios.get(`${baseUrl}/ingredients`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log('ingredients: ', response.data.ingredients)
+    // Gửi data servings vào API cùng với header Authorization
+    const response = await axios.post(
+      `${baseUrl}/ingredients`, 
+      { servings: servingsData }, // Truyền body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log('ingredients: ', response.data.ingredients);
     return response.data.ingredients;
   } catch (error) {
-    console.error('Error getting ingredients')
+    console.error('Error getting ingredients', error);
     throw error;
   }
 };
@@ -65,5 +86,6 @@ const getIngredients = async () => {
 export default {
   getRecipes,
   removeRecipe,
+  removeAllRecipes,
   getIngredients,
 }

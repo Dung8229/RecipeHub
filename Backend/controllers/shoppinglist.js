@@ -55,7 +55,7 @@ shoppingListRouter.get('/recipes', middleware.authenticateJWT, async (req, res) 
             where: { userId },
             include: [{
                 model: Recipe,
-                attributes: ['id', 'userId', 'title', 'image', 'summary'],
+                attributes: ['id', 'userId', 'title', 'image', 'summary', 'servings'],
                 include: [{
                     model: User,
                     attributes: ['username'],
@@ -74,6 +74,7 @@ shoppingListRouter.get('/recipes', middleware.authenticateJWT, async (req, res) 
                 title: recipe.title,
                 image: recipe.image,
                 summary: recipe.summary,
+                servings: recipe.servings,
                 username: recipe.User.username,
             };
         })
@@ -129,15 +130,42 @@ shoppingListRouter.delete('/recipes/:recipeId', middleware.authenticateJWT, asyn
     }
 });
 
-shoppingListRouter.get('/ingredients', middleware.authenticateJWT, async (req, res) => {
+// Xóa toàn bộ recipe khỏi shopping list
+shoppingListRouter.delete('/recipes', middleware.authenticateJWT, async (req, res) => {
+  const userId = req.user.id; // Lấy userId từ token
+
+  try {
+    // Xóa tất cả các recipe của user khỏi shopping list
+    const deletedCount = await ShoppinglistRecipe.destroy({
+      where: { userId },
+    });
+
+    // Kiểm tra xem có dữ liệu nào bị xóa không
+    if (deletedCount === 0) {
+      return res.status(404).json({ message: 'No recipes found in the shopping list to delete.' });
+    }
+
+    res.status(200).json({ message: 'All recipes removed from shopping list successfully.' });
+  } catch (error) {
+    console.error('Error deleting recipes from shopping list:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+shoppingListRouter.post('/ingredients', middleware.authenticateJWT, async (req, res) => {
   const userId = req.user.id; // Lấy userId từ middleware xác thực
+  const { servings } = req.body; // Lấy danh sách servings từ body yêu cầu
+
+  if (!servings || !Array.isArray(servings)) {
+    return res.status(400).json({ message: 'Invalid servings format. Expecting an array of { recipeId, servings }.' });
+  }
 
   try {
     const shoppingListRecipes = await ShoppinglistRecipe.findAll({
       where: { userId },
       include: [{
         model: Recipe,
-        attributes: ['id'],
+        attributes: ['id', 'servings'], // Lấy số khẩu phần của công thức
         include: [{
           model: RecipeIngredient,
           attributes: ['ingredientId', 'amount', 'unit'],
@@ -153,14 +181,30 @@ shoppingListRouter.get('/ingredients', middleware.authenticateJWT, async (req, r
       return res.status(404).json({ message: 'No ingredients found in shopping list.' });
     }
 
+    // Tạo map từ recipeId sang servings được cung cấp
+    const servingsMap = Object.fromEntries(servings.map(s => [s.recipeId, s.servings]));
+
     const ingredients = shoppingListRecipes.flatMap((item) => {
-      return item.Recipe.RecipeIngredients.map((ri) => ({
-        id: ri.ingredientId,
-        name: ri.Ingredient.name,
-        image: 'https://img.spoonacular.com/ingredients_100x100/' + ri.Ingredient.image,
-        amount: parseFloat(ri.amount),
-        unit: ri.unit || '', // Xử lý trường hợp unit là null hoặc undefined
-      }));
+      const targetServings = servingsMap[item.Recipe.id]; // Lấy servings cho công thức này
+      if (!targetServings) return []; // Nếu không có servings cho công thức này, bỏ qua
+
+      return item.Recipe.RecipeIngredients.map((ri) => {
+        const originalAmount = parseFloat(ri.amount);
+        let adjustedAmount = originalAmount;
+
+        // Điều chỉnh số lượng nguyên liệu theo servings của từng công thức
+        if (item.Recipe.servings) {
+          adjustedAmount = (originalAmount / item.Recipe.servings) * targetServings; // Điều chỉnh theo servings
+        }
+
+        return {
+          id: ri.ingredientId,
+          name: ri.Ingredient.name,
+          image: 'https://img.spoonacular.com/ingredients_100x100/' + ri.Ingredient.image,
+          amount: adjustedAmount,
+          unit: ri.unit || '', // Xử lý trường hợp unit là null hoặc undefined
+        };
+      });
     });
 
     // Gộp các nguyên liệu giống nhau (cùng tên)

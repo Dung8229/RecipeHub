@@ -9,7 +9,7 @@ const UNIT = [
   'cloves', 'pint', 'piece', 'pieces',
 ];
 
-const SearchBar = ({ onAddIngredient }) => {
+const SearchBar = ({ onAddIngredient, ingredients }) => {
   const [query, setQuery] = useState(''); // Dữ liệu người dùng nhập
   const [searchResults, setSearchResults] = useState([]); // Kết quả tìm kiếm
   const [selectedIngredient, setSelectedIngredient] = useState(null); // Nguyên liệu đã chọn
@@ -21,10 +21,14 @@ const SearchBar = ({ onAddIngredient }) => {
       const fetchIngredients = async () => {
         try {
           const response = await ingredientService.search(query);
-          if (response.length === 1 && response[0].name == query) {
-            setSearchResults([])
+          const filteredResults = response.filter(
+            (ingredient) => !ingredients.some((item) => item.id === ingredient.id)
+          );
+          
+          if (filteredResults.length === 0 || (filteredResults.length === 1 && filteredResults[0].name === query)) {
+            setSearchResults([]);
           } else {
-            setSearchResults(response);
+            setSearchResults(filteredResults);
           }
         } catch (error) {
           console.error('Error searching ingredients:', error);
