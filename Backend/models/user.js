@@ -1,12 +1,8 @@
-
-
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('../db')
 // Định nghĩa model cho bảng users
 
 const { verify } = require('jsonwebtoken');
-
-
 const Recipe = require('./recipe');
 
 const User = sequelize.define('User', {
@@ -51,11 +47,15 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
   timestamps: false
 });
 
-// User.hasMany(Recipe, { foreignKey: 'userId' });
+// User.hasMany(CompetitionEntry, { foreignKey: 'userId' });
 
 module.exports = User;

@@ -1,5 +1,4 @@
 const usersRouter = require('express').Router();
-const db = require('../db');
 const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');
@@ -47,8 +46,17 @@ usersRouter.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, userlogin.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
 
-        const token = jwt.sign({ id: userlogin.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, userlogin });
+        // Tạo JWT token
+        const token = jwt.sign(
+          { 
+            id: userlogin.id, 
+            username: userlogin.username, 
+            role: userlogin.role 
+          }, 
+          process.env.JWT_SECRET, 
+          { expiresIn: '1h' } // Token hết hạn sau 1 giờ
+        );
+        res.json({ token });
     } catch (error) {
         logger.error('Error during login:', error);
         return res.status(500).json({ error: 'Failed to log in' });
@@ -78,18 +86,18 @@ usersRouter.post('/', async (req, res) => {
 
 
 // API xóa người dùng dựa trên ID
-usersRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params;
+// usersRouter.delete('/:id', async (req, res) => {
+//     const { id } = req.params;
 
-    try {
-        const deleted = await User.destroy({ where: { id } });
-        if (!deleted) return res.status(404).json({ error: 'User not found' });
-        return res.status(204).send(); // Trả về 204 No Content
-    } catch (error) {
-        logger.error('Error deleting user:', error);
-        return res.status(500).json({ error: 'Failed to delete user' });
-    }
-});
+//     try {
+//         const deleted = await User.destroy({ where: { id } });
+//         if (!deleted) return res.status(404).json({ error: 'User not found' });
+//         return res.status(204).send(); // Trả về 204 No Content
+//     } catch (error) {
+//         logger.error('Error deleting user:', error);
+//         return res.status(500).json({ error: 'Failed to delete user' });
+//     }
+// });
 
 // Lấy tất cả người dùng
 usersRouter.get('/', async (req, res) => {
@@ -146,4 +154,20 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     }
 });
 
-module.exports = usersRouter;
+// Xóa người dùng (dành cho admin)
+usersRouter.delete('/:userId', middleware.authenticateJWT, middleware.authorizeAdmin, async (req, res) => {
+  const { userId } = req.params;
+  try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+      await user.destroy();
+      res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+module.exports = usersRouter

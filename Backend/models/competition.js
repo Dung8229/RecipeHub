@@ -19,6 +19,10 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  detailDescription: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
   startDate: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -27,6 +31,17 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  prize: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  winnerSelectionStartDate: {
+    type: DataTypes.DATE,
+    allowNull: true, // Có thể null nếu không có giai đoạn này
+  },
+  winnerRecipeId: {
+    type: DataTypes.INTEGER,
+  }
 }, {
   tableName: 'competitions',
   timestamps: true, // Tự động thêm createdAt và updatedAt

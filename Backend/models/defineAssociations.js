@@ -13,7 +13,7 @@ const IngredientCategory = require('./ingredient_category')
 const IngredientCaloricbreakdown = require('./ingredient_caloricbreakdown')
 const Favourites = require('./favourites')
 const Competition = require('./competition')
-const CompetitionParticipant = require('./competition_participant')
+const CompetitionEntry = require('./competition_entry');
 
 function defineAssociations() {
   Recipe.belongsTo(User, { foreignKey: 'userId' });
@@ -25,16 +25,23 @@ function defineAssociations() {
   Recipe.hasMany(RecipeTag, { foreignKey: 'recipe_id' });
   RecipeTag.belongsTo(Recipe, { foreignKey: 'recipe_id' });
 
-  User.hasMany(RecipeRating, { foreignKey: 'userId' });
-  RecipeRating.belongsTo(User, { foreignKey: 'userId' });
-  Recipe.hasMany(RecipeRating, { foreignKey: 'recipeId' });
-  RecipeRating.belongsTo(Recipe, { foreignKey: 'recipeId' });
+  User.belongsToMany(Recipe, {
+    through: RecipeRating,
+    foreignKey: 'userId',
+  });
+  Recipe.belongsToMany(User, {
+      through: RecipeRating,
+      foreignKey: 'recipeId',
+  });
 
   Recipe.hasMany(RecipeInstruction, { foreignKey: 'recipeId' });
   RecipeInstruction.belongsTo(Recipe, { foreignKey: 'recipeId' });
 
-  Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
-  Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
+  // RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+  // Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+
+  // Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
+  // Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
 
   Recipe.hasMany(RecipeComment, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
   RecipeComment.belongsTo(Recipe, { foreignKey: 'recipeId' });
@@ -62,27 +69,38 @@ function defineAssociations() {
   Ingredient.hasOne(IngredientCaloricbreakdown, {
     foreignKey: 'ingredientId',
   });
-  IngredientCategory.belongsTo(Ingredient, {
+  IngredientCaloricbreakdown.belongsTo(Ingredient, {
     foreignKey: 'ingredientId',
   });
 
-  User.belongsToMany(Recipe, {
-    through: Favourites,
-    foreignKey: 'userId',
-  });
-  Recipe.belongsToMany(User, {
-      through: Favourites,
-      foreignKey: 'recipeId',
-  });
+  // User.belongsToMany(Recipe, {
+  //   through: Favourites,
+  //   foreignKey: 'userId',
+  //   as: 'UserFavourites' // Đảm bảo alias không bị trùng lặp
+  // });
+
+  // Recipe.belongsToMany(User, {
+  //     through: Favourites,
+  //     foreignKey: 'recipeId',
+  //     as: 'RecipeUsers' // Alias khác để tránh xung đột
+  // });
 
   Competition.belongsToMany(User, {
-    through: CompetitionParticipant,
+    through: CompetitionEntry,
+    foreignKey: 'competitionId',
+  });
+  Competition.belongsToMany(Recipe, {
+    through: CompetitionEntry,
     foreignKey: 'competitionId',
   });
   User.belongsToMany(Competition, {
-    through: CompetitionParticipant,
+    through: CompetitionEntry,
     foreignKey: 'userId',
   });
+  Recipe.belongsToMany(Competition, {
+    through: CompetitionEntry,
+    foreignKey: "submissionId"
+  })
 }
 
 module.exports = defineAssociations;

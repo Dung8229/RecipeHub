@@ -4,7 +4,7 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { Op } = require('sequelize');
-
+const bcrypt = require('bcrypt');
 // Cấu hình Passport cho Google
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -22,11 +22,13 @@ passport.use(new GoogleStrategy({
 
         const existingUser = await User.findOne({ where: { email } });
         if (!existingUser) {
+            const hashedPassword = await bcrypt.hash('defaultPassword', 10);
+
             const user = await User.create({
                 googleId: profile.id,
                 username: profile.displayName,
                 email: email,
-                password: 'defaultPassword', // Có thể bỏ qua nếu không cần
+                password: hashedPassword,
                 token: jwtToken,
             });
             return done(null, user); // Trả về người dùng đã tạo
@@ -56,11 +58,13 @@ passport.use(new FacebookStrategy({
 
         const existingUser = await User.findOne({ where: { [Op.or]: [{ facebookId: profile.id }, { email }] } });
         if (!existingUser) {
+            const hashedPassword = await bcrypt.hash('defaultPassword', 10);
+
             const user = await User.create({
                 facebookId: profile.id,
                 username: profile.displayName,
                 email: email,
-                password: 'defaultPassword', // Có thể bỏ qua nếu không cần
+                password: hashedPassword,
                 token: jwtToken,
             });
             return done(null, user); // Trả về người dùng đã tạo
