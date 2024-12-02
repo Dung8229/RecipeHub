@@ -1,5 +1,6 @@
 import axios from 'axios'
 import imageService from './image'
+import tokenService from './token'
 
 const baseUrl = '/api/competitions'
 
@@ -84,7 +85,7 @@ const getWinner = async (competitionId) => {
 }
 
 // Hàm tạo competition mới
-const create = async (title, imageFile = null, imageURL = "", description, detailDescription, startDate, endDate, prize) => {
+const create = async (title, imageFile = null, imageURL = "", description, detailDescription, startDate, winnerSelectionStartDate, endDate, prize) => {
     try {
       // Kiểm tra nếu có file ảnh thì upload và lấy đường dẫn ảnh
       let image;
@@ -108,6 +109,7 @@ const create = async (title, imageFile = null, imageURL = "", description, detai
         description,
         detailDescription,
         startDate,
+        winnerSelectionStartDate,
         endDate,
         prize,
       };
@@ -123,7 +125,7 @@ const create = async (title, imageFile = null, imageURL = "", description, detai
 };
 
 // Hàm update 1 competition
-const update = async (id, title, imageFile = null, imageURL = "", description, detailDescription, startDate, endDate, prize) => {
+const update = async (id, title, imageFile = null, imageURL = "", description, detailDescription, startDate, winnerSelectionStartDate, endDate, prize) => {
   try {
     // Kiểm tra nếu có file ảnh thì upload và lấy đường dẫn ảnh
     let image;
@@ -147,6 +149,7 @@ const update = async (id, title, imageFile = null, imageURL = "", description, d
       description,
       detailDescription,
       startDate,
+      winnerSelectionStartDate,
       endDate,
       prize,
     };
@@ -163,7 +166,7 @@ const update = async (id, title, imageFile = null, imageURL = "", description, d
 
 // Hàm xóa 1 competition
 const deleteCompetition = async (id) => {
-    const token = window.localStorage.getItem('authToken');
+    const token = tokenService.getToken();
     // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
     const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -211,7 +214,7 @@ export const getParticipants = async (competitionId, page = 1, limit = 10) => {
 
 // Xóa người dự thi
 const deleteParticipant = async (competitionId, userId) => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     const response = await axios.delete(`${baseUrl}/${competitionId}/participants/${userId}`, {
       headers: {
@@ -227,7 +230,7 @@ const deleteParticipant = async (competitionId, userId) => {
 
 // Hủy đăng ký (cho người dùng)
 const unregister = async (competitionId) => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     const response = await axios.delete(`${baseUrl}/${competitionId}/unregister-participant`, {
       headers: {
@@ -258,7 +261,7 @@ const getSubmissions = async (competitionId, page = 1, limit = 10) => {
 // Xóa bài dự thi
 const deleteSubmission = async (competitionId, submissionId) => {
   try {
-    const token = window.localStorage.getItem('token');
+    const token = tokenService.getToken();
     await axios.delete(`${baseUrl}/${competitionId}/submissions/${submissionId}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Gửi token qua header
@@ -271,7 +274,7 @@ const deleteSubmission = async (competitionId, submissionId) => {
 };
 
 const addParticipant = async (competitionId) => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra
   const config = {
       headers: { Authorization: `Bearer ${token}` },
@@ -287,7 +290,7 @@ const addParticipant = async (competitionId) => {
 
 const checkIsRegistered = async (competitionId) => {
   try {
-    const token = window.localStorage.getItem('token'); // Lấy token từ localStorage
+    const token = tokenService.getToken(); // Lấy token từ localStorage
 
     const response = await axios.get(`${baseUrl}/${competitionId}/isRegister`, {
       headers: {

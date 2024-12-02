@@ -46,7 +46,7 @@ app.get('/auth/google/callback', (req, res, next) => {
             console.error('Google authentication error:', err || 'No user found');
             return res.redirect('/login'); // Chuyển hướng nếu có lỗi
         }
-        const jwtToken = jwt.sign({ id: user.googleId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const jwtToken = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', jwtToken, { httpOnly: true }); // Lưu token vào cookie
         return res.redirect('http://localhost:5173'); // Chuyển hướng về trang chủ
     })(req, res, next);

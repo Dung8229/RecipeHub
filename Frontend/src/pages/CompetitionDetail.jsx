@@ -4,6 +4,7 @@ import Banner from '../components/competition_components/Banner'
 import ProgressBar from '../components/competition_components/ProgressBar'
 import Leaderboard from '../components/competition_components/Leaderboard'
 import WinnerAnnouncement from '../components/competition_components/WinnerAnnouncement'
+import Prize from '../components/competition_components/Prize'
 import { useParams } from 'react-router-dom'
 
 const CompetitionDetailPage = () => {
@@ -69,6 +70,7 @@ const CompetitionDetailPage = () => {
           score={winner.score}
         />
         ) : null}
+        <Prize prize={competition?.prize || 'No prize'} />
         <Leaderboard entries={leaderboardData} />
       </div>
     </div>

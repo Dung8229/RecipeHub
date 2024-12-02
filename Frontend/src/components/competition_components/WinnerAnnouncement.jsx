@@ -1,6 +1,6 @@
 const WinnerAnnouncement = ({ username, profilePic, recipeTitle, recipeImage, totalVotes, score }) => {
   return (
-    <div className="bg-gray-100 rounded-lg shadow-lg w-full max-w-6xl mx-auto mb-6 h-96 p-4">
+    <div className="bg-gray-100 rounded-lg shadow-lg w-full mx-auto mb-6 h-96 p-4">
       <h2 className="text-4xl font-bold text-center mt-6 mb-0 text-gray-800">
         Congratulate to our winner!
       </h2>

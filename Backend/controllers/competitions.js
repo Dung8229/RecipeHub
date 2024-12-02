@@ -55,6 +55,7 @@ competitionsRouter.post('/', async (req, res) => {
     description,
     detailDescription,
     startDate,
+    winnerSelectionStartDate,
     endDate,
     prize,
   } = req.body;
@@ -67,6 +68,7 @@ competitionsRouter.post('/', async (req, res) => {
       description,
       detailDescription,
       startDate: new Date(startDate),
+      winnerSelectionStartDate: new Date(winnerSelectionStartDate),
       endDate: new Date(endDate),
       prize,
     });
@@ -106,7 +108,7 @@ competitionsRouter.get('/:id', async (request, response) => {
 // Route cập nhật thông tin cuộc thi
 competitionsRouter.put('/:id', async (request, response) => {
   const { id } = request.params;
-  const { title, image, description, detailDescription, startDate, endDate, prize } = request.body;
+  const { title, image, description, detailDescription, startDate, winnerSelectionStartDate, endDate, prize } = request.body;
 
   try {
     // Kiểm tra xem cuộc thi có tồn tại không
@@ -122,6 +124,7 @@ competitionsRouter.put('/:id', async (request, response) => {
       description,
       detailDescription,
       startDate,
+      winnerSelectionStartDate,
       endDate,
       prize,
     });

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import tokenService from '../services/token'
 
 const baseUrl = '/api/shoppinglist'
 
@@ -14,7 +15,7 @@ const baseUrl = '/api/shoppinglist'
 
 // Xóa công thức khỏi shopping list
 const removeRecipe = async (recipeId) => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     const response = await axios.delete(`${baseUrl}/recipes/${recipeId}`, {
       headers: {
@@ -29,7 +30,7 @@ const removeRecipe = async (recipeId) => {
 };
 
 const removeAllRecipes = async () => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     const response = await axios.delete(`${baseUrl}/recipes`, {
       headers: {
@@ -45,7 +46,7 @@ const removeAllRecipes = async () => {
 
 // Lấy danh sách công thức trong shopping list
 const getRecipes = async () => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     const response = await axios.get(`${baseUrl}/recipes`, {
       headers: {
@@ -62,7 +63,7 @@ const getRecipes = async () => {
 
 // Lấy danh sách nguyên liệu từ các công thức
 const getIngredients = async (servingsData) => {
-  const token = window.localStorage.getItem('token');
+  const token = tokenService.getToken();
   try {
     // Gửi data servings vào API cùng với header Authorization
     const response = await axios.post(
