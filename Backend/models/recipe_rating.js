@@ -35,11 +35,11 @@ const RecipeRating = sequelize.define('RecipeRating', {
   createdAt: 'created_at',
   updatedAt: 'updated_at',
 });
-// Thiết lập mối quan hệ giữa RecipeRating và Recipe
-Recipe.hasMany(RecipeRating, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
-RecipeRating.belongsTo(Recipe, { foreignKey: 'recipeId' });
 
-// Thiết lập mối quan hệ giữa RecipeRating và User
 User.hasMany(RecipeRating, { foreignKey: 'userId', onDelete: 'CASCADE' });
 RecipeRating.belongsTo(User, { foreignKey: 'userId' });
+Recipe.hasMany(RecipeRating, { foreignKey: 'recipeId' });
+RecipeRating.belongsTo(Recipe, { foreignKey: 'recipeId' });
+
+
 module.exports = RecipeRating

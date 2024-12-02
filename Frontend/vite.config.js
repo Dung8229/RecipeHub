@@ -9,7 +9,13 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3002',
         changeOrigin: true,
-      }
+        secure: false,
+      },
+      '/uploads': {
+        target: 'http://localhost:3002',  // Chỉ ra địa chỉ của backend
+        changeOrigin: true,               // Thay đổi origin của yêu cầu
+        secure: false,                    // Nếu backend sử dụng HTTP thay vì HTTPS
+      },
     }
   }
 })

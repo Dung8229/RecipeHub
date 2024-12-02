@@ -35,9 +35,11 @@ const Favourites = sequelize.define('Favourites', {
     tableName: 'favourites',
     timestamps: false, // Chỉ cần createdAt cho mục yêu thích
 });
-Favourites.belongsTo(Recipe, { foreignKey: 'recipeId' });
-Recipe.hasMany(Favourites, { foreignKey: 'recipeId' });
 
-Favourites.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Favourites, { foreignKey: 'userId' });
+Favourites.belongsTo(User, { foreignKey: 'userId' })
+Favourites.belongsTo(Recipe, { foreignKey: 'recipeId' })
+User.hasMany(Favourites, { foreignKey: 'userId' })
+Recipe.hasMany(Favourites, { foreignKey: 'recipeId' })
+
+
 module.exports = Favourites;

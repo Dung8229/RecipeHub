@@ -13,7 +13,7 @@ const IngredientCategory = require('./ingredient_category')
 const IngredientCaloricbreakdown = require('./ingredient_caloricbreakdown')
 const Favourites = require('./favourites')
 const Competition = require('./competition')
-const CompetitionEntry = require('./competition_entry');
+const CompetitionParticipant = require('./competition_participant')
 
 function defineAssociations() {
   Recipe.belongsTo(User, { foreignKey: 'userId' });
@@ -40,8 +40,14 @@ function defineAssociations() {
   RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
   Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
 
-  Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
-  Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
+  RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+  Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+
+  // RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+  // Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+
+  // Recipe.belongsToMany(Ingredient, { through: RecipeIngredient, foreignKey: 'recipeId' });
+  // Ingredient.belongsToMany(Recipe, { through: RecipeIngredient, foreignKey: 'ingredientId' })
 
   Recipe.hasMany(RecipeComment, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
   RecipeComment.belongsTo(Recipe, { foreignKey: 'recipeId' });
@@ -97,12 +103,22 @@ function defineAssociations() {
   });
   Competition.belongsToMany(Recipe, {
     through: CompetitionEntry,
+    through: CompetitionEntry,
+    foreignKey: 'competitionId',
+  });
+  Competition.belongsToMany(Recipe, {
+    through: CompetitionEntry,
     foreignKey: 'competitionId',
   });
   User.belongsToMany(Competition, {
     through: CompetitionEntry,
+    through: CompetitionEntry,
     foreignKey: 'userId',
   });
+  Recipe.belongsToMany(Competition, {
+    through: CompetitionEntry,
+    foreignKey: "submissionId"
+  })
   Recipe.belongsToMany(Competition, {
     through: CompetitionEntry,
     foreignKey: "submissionId"
