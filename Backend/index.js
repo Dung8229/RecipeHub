@@ -11,21 +11,21 @@ const app = require('./app'); // Đảm bảo import đúng file
 dotenv.config();
 
 // Kết nối đến MySQL
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
+// const db = mysql.createConnection({
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+// });
 
 // Kiểm tra kết nối đến DB
-db.connect((err) => {
-    if (err) {
-        logger.error('Kết nối DB thất bại!');
-        throw err;
-    }
-    logger.info('Kết nối DB thành công!');
-});
+// db.connect((err) => {
+//     if (err) {
+//         logger.error('Kết nối DB thất bại!');
+//         throw err;
+//     }
+//     logger.info('Kết nối DB thành công!');
+// });
 
 // Thiết lập session
 app.use(session({
@@ -38,10 +38,7 @@ app.use(passport.session());
 
 // Phục vụ các file tĩnh từ thư mục hiện tại
 app.use(express.static(path.join(__dirname)));
-// Đường dẫn gốc để phục vụ file index.html
-app.get('/', (req, res) => {
-    res.send('<h1>Mọi công thức mà bạn tìm</h1> Đi tới http://localhost:3000/api/users để xem users');
-});
+
 // Thiết lập PORT
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,4 +1,3 @@
-// Component chính của web
 const config = require('./utils/config')
 const express = require('express')
 require('express-async-error')
@@ -6,7 +5,10 @@ const app = express()
 const cors = require('cors')
 const usersRouter = require('./controllers/users')
 const shoppinglistRouter = require('./controllers/shoppinglist')
-
+const commentRouter = require('./controllers/commentController')
+const competitionsRouter = require('./controllers/competitions')
+const imageUploadRouter = require('./controllers/imageUpload')
+const tokenRouter = require('./controllers/token')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -15,6 +17,7 @@ const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
+
 sequelize.authenticate()
     .then(() => {
         logger.info('Kết nối DB thành công!');
@@ -23,7 +26,6 @@ sequelize.authenticate()
         logger.error('Kết nối DB thất bại:', err);
     });
 
-logger.info('Kết nối db thành công!')
 // Serve static files
 app.use(express.static('public'));
 // Phục vụ các file tĩnh từ thư mục hiện tại
@@ -33,6 +35,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use(middleware.requestLogger)
+
 // Route cho xác thực Google
 app.get('/auth/google', setupGoogleAuth);
 // Route callback cho Google
@@ -61,11 +64,16 @@ app.get('/auth/facebook/callback', (req, res, next) => {
         return res.redirect('http://localhost:5173'); // Chuyển hướng về trang chủ
     })(req, res, next);
 });
+
 app.use('/api/users', usersRouter)
-
-
 app.use('/api/recipes', recipesRouter)
 app.use('/api/shoppinglist', shoppinglistRouter)
+app.use('/api/competitions', competitionsRouter)
+app.use('/api/image', imageUploadRouter)
+app.use('/api/token', tokenRouter)
+app.use('/api/comments', commentRouter)
+// Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
