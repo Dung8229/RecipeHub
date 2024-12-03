@@ -12,6 +12,7 @@ import AdminManageACompetitionPage from './pages/AdminManageACompetitionPage';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import ShoppingList from './pages/ShoppingList';
+import AdminManageCommentsPage from './pages/AdminManageCommentsPage';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/recipes/search" element={<ExploreRecipesPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/admin/comments" element={<AdminManageCommentsPage />} />
         
         <Route path="/competitions">
           <Route path="open" element={<ExploreCompetitionPage />} />
@@ -48,6 +50,7 @@ const App = () => {
         <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route path="dashboard">
             <Route path="users" element={<AdminManageUsersPage />} />
+            <Route path="comments" element={<AdminManageCommentsPage />} />
           </Route>
             <Route path="competitions" element={<AdminManageCompetitionPage />} />
             <Route path="competitions/:id">

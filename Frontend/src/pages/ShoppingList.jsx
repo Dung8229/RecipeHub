@@ -5,7 +5,6 @@ import RecipeList from '../components/ShoppinglistComponents/RecipeList';
 import SearchBar from '../components/ShoppinglistComponents/SearchBar';
 import shoppinglistService from '../services/shoppinglists';
 import { jsPDF } from "jspdf";
-// import 'jspdf-autotable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 

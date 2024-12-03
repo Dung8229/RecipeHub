@@ -1,36 +1,33 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 const baseUrl = '/api/token'
 
 const getToken = () => {
-  const token = window.localStorage.getItem('token'); // Lấy token từ localStorage
-  return token
+  // First check localStorage
+  const token = window.localStorage.getItem('token');
+  if (token) {
+    return token;
+  }
+
+  // If not in localStorage, get from cookie
+  const tokenFromCookie = Cookies.get('token');
+  if (tokenFromCookie) {
+    return tokenFromCookie;
+  }
+  console.log("token from cookie: ", tokenFromCookie)
+
+  return null;
 }
 
 const isTokenExist = () => !!getToken();
 
 const isTokenValid = async () => {
   try {
-    const token = window.localStorage.getItem("token");
-
-    // Gửi yêu cầu kiểm tra token
-    const response = await axios.get(`${baseUrl}/isValid`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Gửi token qua header
-      },
-    });
-    console.log(response.data)
-
-    return response.data.valid; // Trả về kết quả kiểm tra từ server
-  } catch (error) {
-    console.error("Error validating token:", error.response?.data || error.message);
-    return false; // Token không hợp lệ
-  }
-};
-
-const isTokenValidAdmin = async () => {
-  try {
-    const token = window.localStorage.getItem("token");
+    const token = getToken();
+    if (!token) {
+      return false;
+    }
 
     const response = await axios.get(`${baseUrl}/isValid`, {
       headers: {
@@ -39,14 +36,35 @@ const isTokenValidAdmin = async () => {
     });
     console.log(response.data)
 
-    return response.data.valid && response.data.user.role === "admin"; // Kiểm tra role
+    return response.data.valid;
+  } catch (error) {
+    console.error("Error validating token:", error.response?.data || error.message);
+    return false;
+  }
+};
+
+const isTokenValidAdmin = async () => {
+  try {
+    const token = getToken();
+    if (!token) {
+      return false;
+    }
+
+    const response = await axios.get(`${baseUrl}/isValid`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data)
+
+    return response.data.valid && response.data.user.role === "admin";
   } catch (error) {
     console.error("Error checking admin role:", error);
     return false;
   }
 };
 
-const getUserInfo = async (token = window.localStorage.getItem('token')) => {
+const getUserInfo = async (token = getToken()) => {
   if (!token) {
     console.error('Token is missing. Please log in.');
     return null;
@@ -59,8 +77,7 @@ const getUserInfo = async (token = window.localStorage.getItem('token')) => {
       },
     });
 
-    // Trả về dữ liệu từ response
-    return response.data; // Dữ liệu đã được parse sẵn
+    return response.data;
   } catch (error) {
     if (error.response && error.response.status === 403) {
       console.error('Forbidden: Invalid token.');
