@@ -88,9 +88,14 @@ shoppingListRouter.get('/recipes', middleware.authenticateJWT, async (req, res) 
 });
 
 // Thêm công thức vào shopping list
-shoppingListRouter.post('/:userId/recipes', (req, res) => {
+shoppingListRouter.post('/recipes', middleware.authenticateJWT, (req, res) => {
+    const userId = req.user.id; // Lấy userId từ req.user (đã được middleware authenticateJWT gán vào)
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
     try {
-        const { userId } = req.params;
         const { recipeId } = req.body;
         shoppingList.push({ userId, recipeId });
         res.status(201).json({ message: 'Recipe added to shopping list' });

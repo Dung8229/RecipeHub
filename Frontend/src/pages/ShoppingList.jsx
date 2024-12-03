@@ -5,7 +5,7 @@ import RecipeList from '../components/ShoppinglistComponents/RecipeList';
 import SearchBar from '../components/ShoppinglistComponents/SearchBar';
 import shoppinglistService from '../services/shoppinglists';
 import { jsPDF } from "jspdf";
-import 'jspdf-autotable';
+// import 'jspdf-autotable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 
@@ -268,7 +268,7 @@ const ShoppingList = () => {
             </h1>
             <button
               onClick={handleExportPdf}
-              className="text-[#FFA726] text-white text-3xl rounded-full hover:text-primaryHover transition-colors"
+              className="text-[#FFA726] text-3xl rounded-full hover:text-primaryHover transition-colors"
               aria-label="Download PDF"
             >
               <FontAwesomeIcon icon={faFilePdf} />
