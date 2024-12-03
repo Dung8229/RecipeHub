@@ -18,7 +18,7 @@ const CompetitionDetailPage = () => {
     try {
       const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
-      console.log('Competition data:', data)
+      console.log('Prize given:', competition.prizeGiven)
       setIsCompOver(new Date(data.endDate) < new Date());
     } catch (error) {
       console.error('Error fetching competition details:', error);
@@ -70,7 +70,10 @@ const CompetitionDetailPage = () => {
           score={winner.score}
         />
         ) : null}
-        <Prize prize={competition?.prize || 'No prize'} />
+        <Prize 
+          prize={competition?.prize || 'No prize'} 
+          prizeGiven={competition?.prizeGiven ?? 'No prize given'}
+        />
         <Leaderboard entries={leaderboardData} />
       </div>
     </div>

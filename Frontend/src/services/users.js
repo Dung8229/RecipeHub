@@ -29,3 +29,20 @@ export const deleteUser = async (userId) => {
         throw error;
     }
 };
+
+export const getUserData = async (userId) => {
+    const token = window.localStorage.getItem('token');
+    // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    }
+
+  try {
+    const response = await axios.get(`${baseUrl}/${userId}`, config);
+    console.log('User: ', response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user id:', error);
+    throw error;
+  }
+}

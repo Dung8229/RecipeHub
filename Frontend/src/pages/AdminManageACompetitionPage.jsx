@@ -36,36 +36,36 @@ const AdminManageACompetitionPage = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       <h1 className="font-bold text-slate-900 text-2xl sm:text-2xl md:text-3xl leading-tight p-6">
         { competitionData.title }
       </h1>
       <div className="divide-y divide-slate-100">
         <Nav>
           <NavItem
-            href={`/admin/competitions/${id}/information`} 
-            isActive={activeItem === `/admin/competitions/${id}/information`} 
-            onClick={() => handleNavItemClick(`/admin/competitions/${id}/information`)}
+            href={`/admin/dashboard/competitions/${id}/information`} 
+            isActive={activeItem === `/admin/dashboard/competitions/${id}/information`} 
+            onClick={() => handleNavItemClick(`/admin/dashboard/competitions/${id}/information`)}
           >
             Manage Competition
           </NavItem>
           <NavItem
-            href={`/admin/competitions/${id}/winner`} 
-            isActive={activeItem === `/admin/competitions/${id}/winner`} 
-            onClick={() => handleNavItemClick(`/admin/competitions/${id}/winner`)}
+            href={`/admin/dashboard/competitions/${id}/winner`} 
+            isActive={activeItem === `/admin/dashboard/competitions/${id}/winner`} 
+            onClick={() => handleNavItemClick(`/admin/dashboard/competitions/${id}/winner`)}
           >
             Announce Winner
           </NavItem>
         </Nav>
         
-        {activeItem === `/admin/competitions/${id}/information` && (
+        {activeItem === `/admin/dashboard/competitions/${id}/information` && (
           <div>
             <AdminManageCompetitionForm id={id} />
             <ParticipantsList competitionId={id} />
             <SubmissionsList competitionId={id} />
           </div>
         )}
-        {activeItem === `/admin/competitions/${id}/winner` && (
+        {activeItem === `/admin/dashboard/competitions/${id}/winner` && (
           <div>
             {now < new Date(competitionData.winnerSelectionStartDate) ? (
               // Chưa đến ngày chọn winner

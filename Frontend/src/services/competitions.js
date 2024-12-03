@@ -22,6 +22,7 @@ const getAll = async (status) => {
 const getDetail = async (id) => {
     try {
         const response = await axios.get(`${baseUrl}/${id}`)
+        console.log('Competition: ', response.data)
 
         return response.data
     } catch (error) {
@@ -305,6 +306,19 @@ const checkIsRegistered = async (competitionId) => {
   }
 };
 
+const updatePrizeStatus = async (competitionId, prizeGiven=true) => {
+  try {
+    const response = await axios.patch(`${baseUrl}/${competitionId}/prizeGiven`, {
+      prizeGiven,
+    });
+    console.log("Prize status updated:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update prize status:", error);
+    throw error;
+  }
+};
+
 export default { 
   getAll, 
   getDetail, 
@@ -322,4 +336,5 @@ export default {
   setWinner,
   getWinner,
   updateTieBreakerRanks,
+  updatePrizeStatus,
 }

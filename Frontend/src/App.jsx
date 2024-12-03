@@ -13,6 +13,7 @@ import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import ShoppingList from './pages/ShoppingList';
 import AdminManageCommentsPage from './pages/AdminManageCommentsPage';
+import AdminDashboardPage from './pages/AdminDashboard';
 
 const App = () => {
   return (
@@ -49,13 +50,13 @@ const App = () => {
         {/* Bảo vệ 1 nhóm route của admin */}
         <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route path="dashboard">
-            <Route path="users" element={<AdminManageUsersPage />} />
-            <Route path="comments" element={<AdminManageCommentsPage />} />
-          </Route>
-            <Route path="competitions" element={<AdminManageCompetitionPage />} />
+            <Route path="users" element={<AdminDashboardPage />} />
+            <Route path="comments" element={<AdminDashboardPage />} />
+            <Route path="competitions" element={<AdminDashboardPage />} />
             <Route path="competitions/:id">
               <Route path="information" element={<AdminManageACompetitionPage />} />
               <Route path="winner" element={<AdminManageACompetitionPage />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
