@@ -9,8 +9,8 @@ import {
   getShoppingListRecipes, 
   getIngredientsFromRecipes 
 } from '../services/shoppinglists';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import {jsPDF} from 'jspdf';
+// import 'jspdf-autotable';
 
 const ShoppingList = () => {
   const location = useLocation();

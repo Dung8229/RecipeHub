@@ -36,10 +36,9 @@ const errorHandler = (error, request, response, next) => {
 // Middleware xác thực JWT - tạm thời bỏ qua để test
 const authenticateJWT = (req, res, next) => {
   // Tạm thời bỏ qua xác thực, luôn cho phép truy cập
-  next();
+  // next();
   
   // Code gốc - tạm comment lại
-  /*
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
@@ -56,7 +55,6 @@ const authenticateJWT = (req, res, next) => {
   } else {
     res.status(401).json({ error: 'Unauthorized' });
   }
-  */
 }
 
 // Middleware phân quyền (admin) - tạm thời bỏ qua để test
@@ -65,13 +63,11 @@ const authorizeAdmin = (req, res, next) => {
   next();
   
   // Code gốc - tạm comment lại
-  /*
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
     res.status(403).json({ error: 'Forbidden: Admin access required' });
   }
-  */
 }
 
 module.exports = {

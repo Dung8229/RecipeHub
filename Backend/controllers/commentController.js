@@ -4,7 +4,7 @@ const RecipeComment = require('../models/recipe_comment');
 const User = require('../models/user');
 const Recipe = require('../models/recipe');
 const { Op } = require('sequelize');
-const { authenticateJWT, authorizeAdmin } = require('../utils/middleware');
+const middleware = require('../utils/middleware');
 
 // Get comments list with pagination and search
 const getComments = async (req, res) => {
@@ -78,7 +78,7 @@ const deleteComment = async (req, res) => {
 };
 
 // Routes
-router.get('/', authenticateJWT, authorizeAdmin, getComments);
-router.delete('/:id', authenticateJWT, authorizeAdmin, deleteComment);
+router.get('/', getComments);
+router.delete('/:id', deleteComment);
 
 module.exports = router;

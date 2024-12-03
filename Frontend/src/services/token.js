@@ -15,6 +15,7 @@ const getToken = () => {
   if (tokenFromCookie) {
     return tokenFromCookie;
   }
+  console.log("token from cookie: ", tokenFromCookie)
 
   return null;
 }
