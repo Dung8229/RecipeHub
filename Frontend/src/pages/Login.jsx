@@ -150,6 +150,7 @@ const SocialLoginOptions = () => (
       GOOGLE
     </a>
   </div>
+  
 );
 
 export default Login;
