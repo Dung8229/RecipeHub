@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-
+import ReactLogo from '../assets/react.svg';
 import { getRecipeInstructions } from '../services/recipeInstructions';
 import { getRecipeIngredients } from '../services/recipeIngredients';
 import { getRecipeComments, addComment } from '../services/recipeComments';
@@ -10,6 +10,13 @@ import { addFavourite, removeFavourite, checkFavourite } from '../services/favou
 import Rating from "react-rating";
 import { FaStar, FaRegStar } from "react-icons/fa";
 const Recipes = () => {
+    let userId;
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        const userIn = JSON.parse(storedUser);
+        userId = userIn.id;
+
+    }
     const { id } = useParams();
     const [recipe, setRecipe] = useState(null);
     const [instructions, setInstructions] = useState([]);
@@ -27,12 +34,16 @@ const Recipes = () => {
 
         const fetchData = async () => {
             try {
-                const userId = 1; // Replace with actual user ID
+                // const userId = 1; // Replace with actual user ID
                 // const userInfo = await getUserInfo(userId);
                 // setUser(userInfo);
 
                 const recipeData = await getRecipeById(id);
                 setRecipe(recipeData);
+
+                const isFav = await checkFavourite(userId, id);
+                console.log('CHECK THIS LINE', userId, isFav);
+                setIsFavourite(isFav);
 
                 const instructionsData = await getRecipeInstructions(id);
                 setInstructions(instructionsData);
@@ -47,12 +58,16 @@ const Recipes = () => {
                 setUserRating(ratingsData.ratings);
                 setAverageRating(ratingsData.averageRating);
 
-                const isFav = await checkFavourite(userId, id);
-                setIsFavourite(isFav);
-
                 // Fetch user's rating
                 const userRatingData = await getUserRating(userId, id);
                 setUserRating(userRatingData.rating);
+
+                //Retrieve user information from localStorage
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                    console.log('User:', JSON.parse(storedUser));
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -60,10 +75,14 @@ const Recipes = () => {
 
         fetchData();
     }, [id]);
-    const userName = 'user1'
+
     const handleAddComment = async (commentText) => {
         try {
-            const userId = 1; // Replace with actual user ID
+            if (!user) {
+                console.error('User not logged in');
+                return;
+            }
+            const userId = user.id; // Replace with actual user ID
             const newComment = await addComment(userId, id, commentText);
             setComments((prevComments) => [
                 ...prevComments,
@@ -76,19 +95,18 @@ const Recipes = () => {
     };
 
     const handleFavouriteClick = async () => {
-        const userId = 1; // Replace with actual user ID
         if (isFavourite) {
             await removeFavourite(userId, id);
             setIsFavourite(false);
         } else {
             await addFavourite(userId, id);
+            console.log('added');
             setIsFavourite(true);
         }
     };
 
     const handleAddRating = async (rating) => {
         try {
-            const userId = 1; // Replace with actual user ID
             await addOrUpdateRating(userId, id, rating);
             setUserRating(rating);
             // Optionally, you can update the average rating after adding the user rating
@@ -132,6 +150,9 @@ const Recipes = () => {
     const handlePrint = () => {
         window.print();
     }
+
+    const formatImageUrl = (url) => url.replace(/\\/g, '/');
+
 
     if (!recipe) {
         return <div>Loading...</div>;
@@ -211,19 +232,23 @@ const Recipes = () => {
                         </button>
                     </div>
 
-                    <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4"><p>Average Rating: {averageRating.toFixed(2)}</p></h3>
-
-                    <div className="flex items-center gap-2">
-                        <div className="text-[#9c6d49]">
-
+                    <div className="flex flex-col gap-8 px-4 py-3 justify-start">
+                        {/* Average Rating */}
+                        <div className="flex flex-col gap-4 items-start">
+                            <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">
+                                Average Rating: {averageRating.toFixed(2)}/5
+                            </h3>
+                            <div className="flex items-center ">
+                                <div className="text-[#9c6d49]"></div>
+                                <div className="flex">
+                                    {renderStars(averageRating, null, null, null, 32)} {/* Display average rating as stars */}
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex">
-                            {renderStars(averageRating, null, null, null, 32)} {/* Display average rating as stars */}
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="flex flex-col items-start">
-                            <p className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
+
+                        {/* User Rating */}
+                        <div className="flex flex-col gap-4 items-start">
+                            <p className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">
                                 Rate this recipe
                             </p>
                             <div className="flex items-center gap-2">
@@ -236,36 +261,16 @@ const Recipes = () => {
                                 )}
                             </div>
                         </div>
-
                     </div>
 
                     <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Comments</h3>
-                    {comments.map(comment => (
-                        <div className="flex w-full flex-row items-start justify-start gap-3 p-4">
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style={{ backgroundImage: "url('https://cdn.usegalileo.ai/stability/f1fbbb2c-4991-4c1c-bfd6-6fb5fe85bb77.png')" }}></div>
-                            <div className="flex h-full flex-1 flex-col items-start justify-start">
-                                <div className="flex w-full flex-row items-start justify-start gap-x-3">
-                                    <p className="text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">{userName}</p>
 
-                                </div>
-                                <p className="text-[#1c130d] text-sm font-normal leading-normal">{comment.commentText}</p>
-                                <div className="flex w-full flex-row items-center justify-start gap-9 pt-2">
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-[#9c6d49]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M234,80.12A24,24,0,0,0,216,72H160V56a40,40,0,0,0-40-40,8,8,0,0,0-7.16,4.42L75.06,96H32a16,16,0,0,0-16,16v88a16,16,0,0,0,16,16H204a24,24,0,0,0,23.82-21l12-96A24,24,0,0,0,234,80.12ZM32,112H72v88H32ZM223.94,97l-12,96a8,8,0,0,1-7.94,7H88V105.89l36.71-73.43A24,24,0,0,1,144,56V80a8,8,0,0,0,8,8h64a8,8,0,0,1,7.94,9Z" />
-                                            </svg>
-                                        </div>
-                                        <p className="text-[#9c6d49] text-sm font-normal leading-normal">12</p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-[#9c6d49]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M239.82,157l-12-96A24,24,0,0,0,204,40H32A16,16,0,0,0,16,56v88a16,16,0,0,0,16,16H75.06l37.78,75.58A8,8,0,0,0,120,240a40,40,0,0,0,40-40V184h56a24,24,0,0,0,23.82-27ZM72,144H32V56H72Zm150,21.29a7.88,7.88,0,0,1-6,2.71H152a8,8,0,0,0-8,8v24a24,24,0,0,1-19.29,23.54L88,150.11V56H204a8,8,0,0,1,7.94,7l12,96A7.87,7.87,0,0,1,222,165.29Z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
+                    {comments.map(comment => (
+                        <div className="flex w-full flex-row items-start justify-start gap-3 p-4" key={comment.id}>
+                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style={{ backgroundImage: `url(${formatImageUrl(comment.User.image)})` }}></div>
+                            <div>
+                                <p className="text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">{comment.User?.username}</p>
+                                <p>{comment.commentText}</p>
                             </div>
                         </div>
                     ))}
@@ -273,17 +278,18 @@ const Recipes = () => {
                     <div className="flex items-center px-4 py-3 gap-3">
                         <input
                             placeholder="Add a public comment..."
-                            className="form-input w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#1c130d] focus:outline-0 focus:ring-0 border-none bg-[#f4ece7] focus:border-none h-full placeholder:text-[#9c6d49] px-4 text-base"
+                            className="form-input w-full min-w-0 resize-none overflow-hidden rounded-xl text-[#1c130d] focus:outline-0 focus:ring-0 border-none bg-[#f4ece7] focus:border-none h-14 placeholder:text-[#9c6d49] px-4 text-base"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                         />
                         <button
                             onClick={() => handleAddComment(commentText)}
-                            className="bg-[#f47f25] text-white px-4 py-2 rounded-lg font-bold"
+                            className="bg-[#f47f25] text-white px-4 py-2 rounded-lg h-14"
                         >
                             Add Comment
                         </button>
                     </div>
+
 
 
 

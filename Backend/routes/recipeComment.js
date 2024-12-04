@@ -12,7 +12,7 @@ router.get('/:id/comments', async (req, res) => {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'username'], // Lấy thông tin user
+                    attributes: ['id', 'username', 'image'], // Lấy thông tin user
                 },
             ],
             attributes: ['userId', 'commentText'], // Lấy thông tin comment

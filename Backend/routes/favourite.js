@@ -24,10 +24,11 @@ router.get('/:userId/favourites', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
     }
 });
 
-module.exports = router;
+
 
 // Route để thêm công thức vào danh sách yêu thích
 

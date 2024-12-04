@@ -13,7 +13,8 @@ const IngredientCategory = require('./ingredient_category')
 const IngredientCaloricbreakdown = require('./ingredient_caloricbreakdown')
 const Favourites = require('./favourites')
 const Competition = require('./competition')
-const CompetitionParticipant = require('./competition_participant')
+const CompetitionEntry = require('./competition_entry')
+//const CompetitionParticipant = require('./competition_participant')
 
 function defineAssociations() {
   Recipe.belongsTo(User, { foreignKey: 'userId' });
@@ -40,8 +41,8 @@ function defineAssociations() {
   RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
   Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
 
-  RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
-  Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
+  // RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
+  // Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
 
   // RecipeIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId' });
   // Ingredient.hasMany(RecipeIngredient, { foreignKey: 'ingredientId' });
@@ -58,11 +59,11 @@ function defineAssociations() {
   Recipe.hasOne(RecipeAverageRating, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
   RecipeAverageRating.belongsTo(Recipe, { foreignKey: 'recipeId' });
 
-  Favourites.belongsTo(User, { foreignKey: 'userId' });
-  User.hasMany(Favourites, { foreignKey: 'userId' });
+  // Favourites.belongsTo(User, { foreignKey: 'userId' });
+  // User.hasMany(Favourites, { foreignKey: 'userId' });
 
-  Favourites.belongsTo(Recipe, { foreignKey: 'recipeId' });
-  Recipe.hasMany(Favourites, { foreignKey: 'recipeId' });
+  // Favourites.belongsTo(Recipe, { foreignKey: 'recipeId' });
+  // Recipe.hasMany(Favourites, { foreignKey: 'recipeId' });
 
   Ingredient.hasMany(IngredientNutrition, {
     foreignKey: 'ingredientId',
@@ -85,17 +86,17 @@ function defineAssociations() {
     foreignKey: 'ingredientId',
   });
 
-  User.belongsToMany(Recipe, {
-    through: Favourites,
-    foreignKey: 'userId',
-    as: 'UserFavourites' // Đảm bảo alias không bị trùng lặp
-  });
+  // User.belongsToMany(Recipe, {
+  //   through: Favourites,
+  //   foreignKey: 'userId',
+  //   as: 'UserFavourites' // Đảm bảo alias không bị trùng lặp
+  // });
 
-  Recipe.belongsToMany(User, {
-    through: Favourites,
-    foreignKey: 'recipeId',
-    as: 'RecipeUsers' // Alias khác để tránh xung đột
-  });
+  // Recipe.belongsToMany(User, {
+  //   through: Favourites,
+  //   foreignKey: 'recipeId',
+  //   as: 'RecipeUsers' // Alias khác để tránh xung đột
+  // });
 
   Competition.belongsToMany(User, {
     through: CompetitionEntry,

@@ -22,5 +22,6 @@ export const checkFavourite = async (userId, recipeId) => {
     const response = await axios.get(`${baseUrl}/${userId}/check`, {
         params: { recipeId } // Use query parameters
     });
+    console.log('WORKED');
     return response.data.isFavourite;
 };

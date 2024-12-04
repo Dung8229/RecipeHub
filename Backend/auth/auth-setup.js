@@ -13,7 +13,7 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const jwtToken = jwt.sign({ id: profile.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        
+
         // Kiểm tra email
         const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
         if (!email) {
@@ -38,7 +38,7 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-// Cấu hình Passport cho Facebook
+//Cấu hình Passport cho Facebook
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
@@ -47,7 +47,7 @@ passport.use(new FacebookStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const jwtToken = jwt.sign({ id: profile.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        
+
         // Kiểm tra email
         const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
         if (!email) {

@@ -24,28 +24,48 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Route cho trang chủ */}
-        <Route path="/" element={<HomePage recipes={recipes} />} />
-        {/* user={latestUser}  */}
-        {/* Route cho trang login */}
-        {/* <Route path="/login" element={<LoginPage />} /> */}
+        {/* Trang không cần đăng nhập */}
+        <Route path="/" element={<HomeRedirect />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/recipes/search" element={<ExploreRecipesPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-        {/* Route cho trang chi tiết công thức */}
-        <Route path="/trangcongthuc" element={
-          <>
-            <Header />
-            <RecipeDetail />
-          </>
-        }
+        <Route path="/competitions">
+          <Route path="open" element={<ExploreCompetitionPage />} />
+          <Route path="closed" element={<ExploreCompetitionPage />} />
+          <Route path="upcoming" element={<ExploreCompetitionPage />} />
+          <Route path=":id/information" element={<CompetitionDetailPage />} />
+        </Route>
+
+        <Route
+          path="/shopping-list"
+          element={<ProtectedRoute element={<ShoppingList />} />}
         />
-        {/* <Route path="/recipes/favourite" element={<Favourite />} /> */}
+
+        {/* Bảo vệ 1 nhóm route */}
+        <Route path="/recipes" element={<ProtectedRoute />}>
+          <Route path="create" element={(<div>Create Page</div>)} />
+          <Route path="favourite" element={(<div>Favourite Page</div>)} />
+        </Route>
+
+        {/* Bảo vệ 1 nhóm route của admin */}
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route path="dashboard">
+            <Route path="users" element={<AdminManageUsersPage />} />
+          </Route>
+          <Route path="competitions" element={<AdminManageCompetitionPage />} />
+          <Route path="competitions/:id">
+            <Route path="information" element={<AdminManageACompetitionPage />} />
+            <Route path="winner" element={<AdminManageACompetitionPage />} />
+          </Route>
+        </Route>
 
         <Route path="/recipes/:id/information" element={<RecipeDetail />} />
         <Route path="/manage" element={<RecipeManage />} />
         <Route path="/favourite" element={<Favourite />} />
-        <Route path="/myprofile" element={
+        <Route path="/profile" element={
           <>
-            <Header />
             <Profile />
 
           </>

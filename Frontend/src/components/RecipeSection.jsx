@@ -1,56 +1,86 @@
-// File này để design cho từng mục chứa cái Recipe Card
-// Chẳng hạn cái HomePage nó có 2 mục là Trending Recipes và Most Popular Recipes
-import React from 'react';
-import RecipeCard from './RecipeCard';
-import { getDinnerRecipes } from '../services/recipes';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getTrendingRecipes, getLatestRecipes } from '../services/recipes'; // Ensure these functions are correctly imported
 
-// Mình thêm mẫu chay để test
-{/*
-const recipes = [
-  { title: "Easy BBQ", image: "https://i.pinimg.com/474x/3f/00/87/3f008701749fd1423faacda5c98ad1b2.jpg" },
-  { title: "Caribbean Chicken", image: "https://i.pinimg.com/236x/c8/34/5b/c8345b195c23ecc8bfc20fb49df54d0b.jpg" },
-  { title: "Broccoli With Horseradish Sauce", image: "https://i.pinimg.com/236x/80/60/6e/80606e6cf3980cd059063d89168a1b9b.jpg" },
-  { title: "Mustard Curry Sauce", image: "https://i.pinimg.com/736x/71/4d/25/714d250e4942a18bec95e03914a0db67.jpg" },
-  { title: "German-Style Beer Brat Sandwich", image: "https://i.pinimg.com/236x/c9/df/83/c9df831fd48a7f6dc26b10ed43f5a5b2.jpg" },
-  { title: "Chicken Wings With BBQ Sauce for the Crock Pot!", image: "https://i.pinimg.com/236x/00/2e/05/002e057c06c9af00d7d75cd101448e36.jpg" },
-  { title: "Honey Mustard Meatloaf", image: "https://i.pinimg.com/236x/e8/d0/02/e8d002696e5c7b00be0d59dbc19d9eab.jpg" },
-  { title: "Egg and Ham Salad", image: "https://i.pinimg.com/236x/3b/8a/eb/3b8aebda87d50eb5e9181c75bc02626a.jpg" },
-];
-*/}
+const RecipeSection = ({ title, type }) => {
+  const [recipes, setRecipes] = useState([]); // Initialize as an empty array
+  const scrollRef = useRef(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
-
-const RecipeSection = ({ title }) => {
-
-  const [recipes, setRecipes] = useState([]);
-  const [error, setError] = useState(null);
-
-  // Lấy dữ liệu từ api theo dinner recipes
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const data = await getDinnerRecipes();
-        setRecipes(data);
-      } catch (err) {
-        setError('Failed to load recipes');
+        let fetchedRecipes;
+        if (type === 'trending') {
+          fetchedRecipes = await getTrendingRecipes();
+        } else if (type === 'latest') {
+          fetchedRecipes = await getLatestRecipes();
+        }
+        setRecipes(fetchedRecipes);
+        console.log('FETCHED RECIPES: ', fetchedRecipes)
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
       }
     };
 
     fetchRecipes();
-  }, []);
+  }, [type]);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: -scrollRef.current.offsetWidth,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: scrollRef.current.offsetWidth,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const handleRecipeClick = (id) => {
+    navigate(`/recipes/${id}/information`);
+  };
 
   return (
-    <div className="my-12 px-8">
+    <section className="py-8 relative">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="flex overflow-hidden space-x-4" ref={scrollRef} style={{ scrollSnapType: 'x mandatory' }}>
         {recipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
+          <div
+            key={recipe.id}
+            className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 cursor-pointer"
+            style={{ width: 'calc(100% / 3)' }} // Adjust the width to show 3 recipes at a time
+            onClick={() => handleRecipeClick(recipe.id)}
+          >
+            <img src={recipe.image} alt={recipe.title} className="w-full h-48 object-cover" />
+            <div className="p-4">
+              <h3 className="text-lg font-bold mb-2">{recipe.title}</h3>
+            </div>
+          </div>
         ))}
       </div>
-    </div>
+      <button
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white px-2 py-3 rounded flex items-center justify-center"
+        onClick={scrollLeft}
+      >
+        <span className="text-2xl">&lt;</span>
+      </button>
+      <button
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white px-2 py-3 rounded flex items-center justify-center"
+        onClick={scrollRight}
+      >
+        <span className="text-2xl">&gt;</span>
+      </button>
+
+    </section>
   );
 };
 
 export default RecipeSection;
-

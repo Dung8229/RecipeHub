@@ -26,7 +26,7 @@ const Register = () => {
       return;
     }
 
-    fetch('http://localhost:3000/api/users/register', {
+    fetch('http://localhost:3002/api/users/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password }),
@@ -55,12 +55,12 @@ const Register = () => {
         src="https://images.pexels.com/photos/1640773/pexels-photo-1640773.jpeg"
         alt="Background"
       />
-      
+
       <div className="w-[90%] max-w-[500px] bg-white/90 rounded-lg p-5 shadow-lg flex flex-col items-center gap-5">
         <div className="text-orange-500 text-4xl font-bold text-center">
           Recipehub
         </div>
-        
+
         <div className="text-black text-3xl font-bold">
           Sign up with email
         </div>
@@ -169,7 +169,7 @@ const InputField = ({ label, id, type, name, value, onChange, placeholder, class
 
 const SocialLoginOptions = () => (
   <div className="flex justify-between w-full">
-    <a href="http://localhost:3000/auth/facebook" 
+    <a href="http://localhost:3000/auth/facebook"
       className="w-[48%] h-[63px] bg-[#1877f2] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#1665d8] transition-colors">
       <i className="fa-brands fa-facebook-f mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
       FACEBOOK

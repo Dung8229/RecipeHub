@@ -1,46 +1,192 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserInfo, updateUserImage, changePassword } from '../services/users';
+import { postImage } from '../services/image';
+const Profile = ({ userId }) => {
+    const [user, setUser] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState('');
 
-const Header = () => {
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    const userIn = JSON.parse(storedUser);
+                    const id = userIn.id;
+                    const userInfo = await getUserInfo(id);
+                    setUser(userInfo);
+                }
+
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, [userId]);
+
+    const handleFileChange = (e) => {
+        setSelectedFile(e.target.files[0]);
+    }
+
+    const handleUpload = async () => {
+        if (!selectedFile) {
+            console.error('No file selected');
+            return;
+        }
+        try {
+            let imageUrl = await postImage(selectedFile);
+            imageUrl = 'http://localhost:3002/' + imageUrl;
+            //imageUrl = (url) => url.replace(/\\/g, '/');
+
+            console.log(imageUrl)
+            setUser((prevUser) => ({
+                ...prevUser,
+                image: imageUrl,
+            }));
+            const updatedUser = { ...user, image: imageUrl };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
+            await updateUserImage(user.id, imageUrl);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        setPasswordError('');
+        setPasswordSuccess('');
+
+        if (!currentPassword || !newPassword || !confirmPassword) Ơ
+        {
+            setPasswordError('Please fill in all fields');
+
+            return;
+        }
+
+        try {
+            await changePassword(user.id, currentPassword, newPassword);
+            setPasswordSuccess('Password changed successfully');
+            setCurrentPassword('');
+            setNewPassword('');
+        } catch (error) {
+            setPasswordError('Error changing password. Please try again.');
+            console.error('Error changing password:', error);
+        }
+    }
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
     return (
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4ece7] px-10 py-3">
-            <div className="flex items-center gap-4 text-[#1c130d]">
-                <div className="size-4">
-                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor" />
-                    </svg>
+        <div className="px-40 flex flex-1 justify-center py-5">
+            <div className="layout-content-container flex flex-col max-w-[960px] bg-[#fcfaf8] flex-1">
+                <div className="flex flex-wrap justify-between gap-3 p-4">
+                    <p className="text-[#1c130d] text-[32px] font-bold leading-tight">Account settings</p>
                 </div>
-                <h2 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">RecipeHub</h2>
+                <div className="flex items-center gap-4  px-4 min-h-14">
+                    <div className="text-[#1c130d] flex items-center justify-between rounded-lg  size-10">
+                        {/* Profile photo icon */}
+                        {user && user.image && (
+                            <img
+                                src={user.image}
+                                alt="Profile"
+                                className="w-10 h-10 rounded-full object-cover"
+                            />
+                        )}
+                    </div>
+                    <p className="text-[#1c130d] text-base font-normal flex-1 truncate">Profile photo</p>
+                </div>
+
+                {/* File input for uploading profile image */}
+                <div className="flex items-center gap-4  px-4 py-2">
+                    <input type="file" onChange={handleFileChange} />
+                    <button onClick={handleUpload} className="bg-[#f47f25] text-white px-4 py-2 rounded-lg font-bold">
+                        Upload Image
+                    </button>
+                </div>
+
+                {/* Display name */}
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">Display name</p>
+                        <p className="text-[#9c6d49] text-sm">Your display name will be used...</p>
+                    </div>
+                    <div>
+                        <p className="text-[#1c130d]">{user.display_name}</p>
+                    </div>
+                </div>
+                {/* User name */}
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">User name</p>
+                        <p className="text-[#9c6d49] text-sm">Your username will be used to access your account and log in.</p>
+                    </div>
+                    <div>
+                        <p className="text-[#1c130d]">{user.username}</p>
+                    </div>
+                </div>
+                {/* Email Setting */}
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">Email</p>
+                        <p className="text-[#9c6d49] text-sm"></p>
+                    </div>
+                    <div>
+                        <p className="text-[#1c130d]">{user.email}</p>
+                    </div>
+                </div>
+                <div className="flex px-4 py-3 justify-start">
+                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f4ece7] text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">
+                        <span onClick='' className="truncate">Change password</span>
+                    </button>
+                </div>
+                {/*RecipeHub */}
+                <div className="flex flex-wrap justify-between gap-3 p-4">
+                    <p className="text-[#1c130d] text-[22px] font-bold leading-tight">Your recipe box</p>
+                </div>
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">Liked Recipes</p>
+                        <p className="text-[#9c6d49] text-sm">View all of your liked recipes</p>
+                    </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">Submitted recipes</p>
+                        <p className="text-[#9c6d49] text-sm">View all of your submitted recipes</p>
+                    </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4  px-4 py-2 justify-between">
+                    <div>
+                        <p className="text-[#1c130d] text-base font-medium">Add a recipe</p>
+                        <p className="text-[#9c6d49] text-sm">Add a new recipe to your</p>
+                    </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-1 justify-end gap-8">
-                <div className="flex items-center gap-9">
-                    <a className="text-[#1c130d] text-sm font-medium leading-normal" href="#">Home</a>
-                    <a className="text-[#1c130d] text-sm font-medium leading-normal" href="#">Recipes</a>
-                    <a className="text-[#1c130d] text-sm font-medium leading-normal" href="#">Explore</a>
-                    <a className="text-[#1c130d] text-sm font-medium leading-normal" href="#">Events</a>
-                    <a className="text-[#1c130d] text-sm font-medium leading-normal" href="#">Contests</a>
-                </div>
-                <div className="flex gap-2">
-                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f47f25] text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">
-                        <span className="truncate">Add Recipe</span>
-                    </button>
-                    <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f4ece7] text-[#1c130d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
-                        <div className="text-[#1c130d]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z" />
-                            </svg>
-                        </div>
-                    </button>
-                    <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f4ece7] text-[#1c130d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
-                        <div className="text-[#1c130d]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,16V161.57l-51.77-32.35a8,8,0,0,0-8.48,0L72,161.56V48ZM132.23,177.22a8,8,0,0,0-8.48,0L72,209.57V180.43l56-35,56,35v29.14Z" />
-                            </svg>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </header>
+        </div>
     );
 };
 
-export default Header;
+export default Profile;
+
+
