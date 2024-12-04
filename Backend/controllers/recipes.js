@@ -87,11 +87,16 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
               [Op.like]: `%${term}%`
             }
           },
+          // {
+          //   '$Ingredients.name$': {
+          //     [Op.like]: `%${term}%`
+          //   }
+          // },
           {
-            '$Ingredients.name$': {
+            '$RecipeIngredients->Ingredient.name$': {
               [Op.like]: `%${term}%`
             }
-          }
+          }          
         ]
       });
     });
@@ -109,7 +114,10 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
   // Nếu có tham số ingredient, thêm vào whereClause
   if (ingredient) {
     whereClause[Op.and].push({
-      '$Ingredients.name$': {
+      // '$Ingredients.name$': {
+      //   [Op.like]: `%${ingredient}%`
+      // }
+      '$RecipeIngredients->Ingredient.name$': {
         [Op.like]: `%${ingredient}%`
       }
     });
@@ -159,9 +167,19 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
         model: RecipeTag,
         attributes: ['tag']
       },
+      // {
+      //   model: Ingredient,
+      //   attributes: ['name']
+      // },
       {
-        model: Ingredient,
-        attributes: ['name']
+        model: RecipeIngredient,
+        include: [
+          {
+            model: Ingredient,
+            attributes: ['name'],
+          },
+        ],
+        attributes: [],
       },
       {
         model: RecipeRating,
@@ -186,7 +204,8 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
         'rating'
       ]
     ],
-    group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
+    // group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
+    group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'RecipeIngredients.id', 'RecipeIngredients->Ingredient.id'],
     order: order
   });
 
