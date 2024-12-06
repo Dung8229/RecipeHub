@@ -1,6 +1,7 @@
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 const baseUrl = '/api/users';
+
 
 export const getFavourites = async (userId) => {
     const response = await axios.get(`${baseUrl}/${userId}/favourites`);
@@ -8,8 +9,17 @@ export const getFavourites = async (userId) => {
 };
 
 export const addFavourite = async (userId, recipeId) => {
-    const response = await axios.post(`${baseUrl}/${userId}/fav`, { userId, recipeId });
-    return response.data;
+    try {
+        const response = await axios.post(`${baseUrl}/${userId}/fav`, { userId, recipeId });
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === 403) {
+            alert('You need to login to add favourites');
+            if (navigate) navigate('/login');
+        }
+    }
+
+
 };
 
 export const removeFavourite = async (userId, recipeId) => {

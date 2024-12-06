@@ -15,7 +15,10 @@ const RecipeManage = () => {
                 const storedUser = localStorage.getItem('user');
                 if (storedUser) {
                     const userIn = JSON.parse(storedUser);
-                    const id = userIn.id;
+                    userId = userIn.id;
+                }
+                if (!storedUser) {
+                    navigate('/login');
                 }
                 // userId = 1;
                 const userRecipes = await getMyRecipes(userId);

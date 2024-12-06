@@ -13,6 +13,7 @@ const sequelize = require('./db');
 const imageUploadRouter = require('./controllers/imageUpload')
 const tokenRouter = require('./controllers/token')
 const recipesRouter = require('./controllers/recipes')
+const shoppingListRouter = require('./controllers/shoppingList')
 const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
@@ -74,6 +75,7 @@ app.get('/auth/facebook/callback', (req, res, next) => {
 // Routes
 app.use('/api/users', usersRouter);
 app.use('/api/competitions', competitionsRouter);
+app.use('/api/shoppingList', shoppingListRouter)
 
 app.use('/api/image', imageUploadRouter)
 app.use('/api/token', tokenRouter)

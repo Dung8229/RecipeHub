@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ReactLogo from '../assets/react.svg';
 import { getRecipeInstructions } from '../services/recipeInstructions';
 import { getRecipeIngredients } from '../services/recipeIngredients';
@@ -7,8 +7,9 @@ import { getRecipeComments, addComment } from '../services/recipeComments';
 import { getRecipeRatings, addOrUpdateRating, getUserRating } from '../services/recipeRatings';
 import { getRecipeById } from '../services/recipes';
 import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites';
-import Rating from "react-rating";
+import { addShoppingListRecipes, deleteShoppingListRecipes, checkShoppingList } from '../services/shoppingList';
 import { FaStar, FaRegStar } from "react-icons/fa";
+//import { set } from '../../../Backend/app';
 const Recipes = () => {
     let userId;
     const storedUser = localStorage.getItem('user');
@@ -17,6 +18,7 @@ const Recipes = () => {
         userId = userIn.id;
 
     }
+    const navigate = useNavigate();
     const { id } = useParams();
     const [recipe, setRecipe] = useState(null);
     const [instructions, setInstructions] = useState([]);
@@ -28,15 +30,13 @@ const Recipes = () => {
     const [userRating, setUserRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [user, setUser] = useState(null);
+    const [isInShoppingList, setIsInShoppingList] = useState(false);
     const printRef = useRef();
 
     useEffect(() => {
 
         const fetchData = async () => {
             try {
-                // const userId = 1; // Replace with actual user ID
-                // const userInfo = await getUserInfo(userId);
-                // setUser(userInfo);
 
                 const recipeData = await getRecipeById(id);
                 setRecipe(recipeData);
@@ -68,6 +68,7 @@ const Recipes = () => {
                     setUser(JSON.parse(storedUser));
                     console.log('User:', JSON.parse(storedUser));
                 }
+                isInShoppingList = setIsInShoppingList(await checkShoppingList(userId, id));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -80,9 +81,10 @@ const Recipes = () => {
         try {
             if (!user) {
                 console.error('User not logged in');
+                navigate('/login');
                 return;
             }
-            const userId = user.id; // Replace with actual user ID
+            const userId = user.id;
             const newComment = await addComment(userId, id, commentText);
             setComments((prevComments) => [
                 ...prevComments,
@@ -95,6 +97,10 @@ const Recipes = () => {
     };
 
     const handleFavouriteClick = async () => {
+        if (!user) {
+            console.error('User not logged in');
+            navigate('/login');
+        }
         if (isFavourite) {
             await removeFavourite(userId, id);
             setIsFavourite(false);
@@ -106,6 +112,10 @@ const Recipes = () => {
     };
 
     const handleAddRating = async (rating) => {
+        if (!user) {
+            console.error('User not logged in');
+            navigate('/login');
+        }
         try {
             await addOrUpdateRating(userId, id, rating);
             setUserRating(rating);
@@ -116,6 +126,23 @@ const Recipes = () => {
             console.error('Error adding rating:', error);
         }
     };
+    const handleAddShoppingList = async () => {
+        if (!user) {
+            console.error('User not logged in');
+            navigate('/login');
+        }
+        try {
+            if (isInShoppingList) {
+                await deleteShoppingListRecipes(userId, id);
+                setIsInShoppingList(false);
+            } else {
+                await addShoppingListRecipes(userId, id);
+                setIsInShoppingList(true);
+            }
+        } catch (error) {
+            console.error('Error adding to shopping list:', error);
+        }
+    }
 
     const renderStars = (rating, onClick, onMouseEnter, onMouseLeave, size = 24) => {
         const stars = [];
@@ -179,26 +206,49 @@ const Recipes = () => {
 
                         <div ref={printRef}>
                             <div className="flex items-center justify-between px-4">
-                                <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em]  pb-3 pt-5">Serving: {recipe.servings}</div>
-                                <button
-                                    onClick={handleFavouriteClick}
-                                    className="flex items-center justify-center cursor-pointer"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="32px"
-                                        height="32px"
-                                        viewBox="0 0 24 24"
-                                        fill={isFavourite ? "#f47f25" : "none"}
-                                        stroke="#f47f25"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
+                                {/* Serving Info */}
+                                <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">
+                                    Serving: {recipe.servings}
+                                </div>
+
+                                {/* Buttons Section */}
+                                <div className="flex items-center space-x-2"> {/* Group buttons with spacing */}
+                                    {/* Favourite Button */}
+                                    <button
+                                        onClick={handleFavouriteClick}
+                                        className="flex items-center justify-center cursor-pointer w-8 h-8" // Added fixed size
                                     >
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 20.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                </button>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="32"
+                                            height="32"
+                                            viewBox="0 0 24 24"
+                                            fill={isFavourite ? "#f47f25" : "none"}
+                                            stroke="#f47f25"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Shopping Button */}
+                                    <button onClick={handleAddShoppingList} className="flex items-center justify-center cursor-pointer w-8 h-8">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="32"
+                                            height="32"
+                                            viewBox="0 0 576 512"
+                                            fill="#f47f25"
+                                            stroke="#f47f25"
+                                        >
+                                            <path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96zM252 160c0 11 9 20 20 20l44 0 0 44c0 11 9 20 20 20s20-9 20-20l0-44 44 0c11 0 20-9 20-20s-9-20-20-20l-44 0 0-44c0-11-9-20-20-20s-20 9-20 20l0 44-44 0c-11 0-20 9-20 20z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
+
 
                             <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Ready Time: {recipe.readyInMinutes} minutes</div>
                             <h2 className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Description</h2>

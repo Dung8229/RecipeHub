@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { getFavourites, removeFavourite } from '../services/favourites.js';
-
+import { useNavigate } from 'react-router-dom';
 const FavouritesPage = () => {
     const [favourites, setFavourites] = useState([]);
-    const userId = 1; // Giả sử userId là 1, bạn có thể thay thế bằng giá trị thực tế
+    const navigate = useNavigate();
+    let userId;
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        const userIn = JSON.parse(storedUser);
+        userId = userIn.id;
+    }
+    if (!storedUser) {
+        navigate('/login');
+    }
+
 
     useEffect(() => {
         const fetchData = async () => {

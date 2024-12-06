@@ -25,6 +25,9 @@ const Profile = ({ userId }) => {
                     const userInfo = await getUserInfo(id);
                     setUser(userInfo);
                 }
+                if (!storedUser) {
+                    navigate('/login');
+                }
             } catch (error) {
                 console.error('Error fetching user info:', error);
             }
