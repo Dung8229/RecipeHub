@@ -50,6 +50,10 @@ const Recipe = sequelize.define('Recipe', {
     allowNull: false,
     defaultValue: DataTypes.NOW, // Tự động cập nhật thời gian khi sửa đổi
   },
+  isSubmission: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   difficulty: {
     type: DataTypes.ENUM('beginer', 'intermediate', 'advanced','expert','masterchef'), // Định nghĩa độ khó
     allowNull: false,

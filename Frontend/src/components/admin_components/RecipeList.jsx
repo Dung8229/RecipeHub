@@ -1,58 +1,55 @@
-// Danh sách người dùng, search bar và các nút pagination để di chuyển giữa các trang.
-
 import React, { useState, useEffect } from 'react';
-import { getAllUsers, deleteUser } from '../../services/users';
+import { getAllRecipes, deleteRecipe } from '../../services/recipes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-const UserList = () => {
-  const [users, setUsers] = useState([]);
+function RecipeList() {
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 8;
+  const recipesPerPage = 10;
 
   useEffect(() => {
-    fetchUsers();
+    fetchRecipes();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchRecipes = async () => {
     try {
-      const data = await getAllUsers();
-      setUsers(data);
+      const data = await getAllRecipes();
+      setRecipes(data);
       setLoading(false);
-    } catch (error) {
-      setError('Failed to fetch users');
+    } catch (err) {
+      setError('Lỗi khi tải danh sách công thức');
       setLoading(false);
     }
   };
 
-  const handleDelete = async (userId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+  const handleDelete = async (recipeId) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa công thức này?')) {
       try {
-        await deleteUser(userId);
-        fetchUsers();
-      } catch (error) {
-        setError('Failed to delete user');
+        await deleteRecipe(recipeId);
+        fetchRecipes();
+      } catch (err) {
+        setError('Lỗi khi xóa công thức');
       }
     }
   };
 
-  // Lọc users dựa trên searchTerm
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.id.toString().includes(searchTerm)
+  // Lọc recipes dựa trên searchTerm
+  const filteredRecipes = recipes.filter(recipe => 
+    recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    recipe.userId.toString().includes(searchTerm)
   );
 
-  // Tính toán users cho trang hiện tại
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  // Tính toán recipes cho trang hiện tại
+  const indexOfLastRecipe = currentPage * recipesPerPage;
+  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
+  const currentRecipes = filteredRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
 
   // Tính tổng số trang
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const totalPages = Math.ceil(filteredRecipes.length / recipesPerPage);
 
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
@@ -66,7 +63,7 @@ const UserList = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search users"
+            placeholder="Search recipes"
             className="px-4 py-2 w-full text-gray-500 focus:outline-none bg-orange-50"
           />
           <button className="bg-primary px-4 py-2">
@@ -75,28 +72,28 @@ const UserList = () => {
         </div>
       </div>
 
-      {/* Users Table */}
+      {/* Recipe Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">UserID</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Username</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Email</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Role</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Title</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Ready In Minutes</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Servings</th>
               <th className="px-6 py-3 text-right text-sm font-medium text-gray-500">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentUsers.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-500">{user.id}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{user.username}</td>
-                <td className="px-6 py-4 text-sm text-orange-500">{user.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{user.role || 'User'}</td>
+            {currentRecipes.map((recipe) => (
+              <tr key={recipe.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm text-gray-500">{recipe.userId}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{recipe.title}</td>
+                <td className="px-6 py-4 text-sm text-gray-500">{recipe.readyInMinutes}</td>
+                <td className="px-6 py-4 text-sm text-gray-500">{recipe.servings}</td>
                 <td className="px-6 py-4 text-right">
                   <button
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => handleDelete(recipe.id)}
                     className="text-orange-500 hover:text-orange-700 font-medium bg-orange-50 px-4 py-2 rounded-lg"
                   >
                     Delete
@@ -142,6 +139,6 @@ const UserList = () => {
       </div>
     </div>
   );
-};
+}
 
-export default UserList;
+export default RecipeList;

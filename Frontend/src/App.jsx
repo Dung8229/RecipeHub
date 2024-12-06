@@ -47,13 +47,14 @@ const App = () => {
         {/* Bảo vệ 1 nhóm route của admin */}
         <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route path="dashboard">
-            <Route path="users" element={<AdminManageUsersPage />} />
+            <Route path="/users" element={<AdminManageUsersPage />} />
+            <Route path="/recipes" element={<AdminManageRecipePage />} />
           </Route>
             <Route path="competitions" element={<AdminManageCompetitionPage />} />
             <Route path="competitions/:id">
               <Route path="information" element={<AdminManageACompetitionPage />} />
               <Route path="winner" element={<AdminManageACompetitionPage />} />
-          </Route>
+            </Route>
         </Route>
       </Routes>
     </Router>

@@ -154,20 +154,40 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     }
 });
 
-// Xóa người dùng (dành cho admin)
-usersRouter.delete('/:userId', middleware.authenticateJWT, middleware.authorizeAdmin, async (req, res) => {
-  const { userId } = req.params;
+///////////////API endpoint cho admin/////////////////////
+// Tạo router riêng cho admin
+const adminRouter = require('express').Router();
+adminRouter.use(middleware.authenticateJWT, middleware.authorizeAdmin);
+
+// Lấy tất cả người dùng (Admin)
+adminRouter.get('/all', async (req, res) => {
   try {
-      const user = await User.findByPk(userId);
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      await user.destroy();
-      res.status(200).json({ message: 'User deleted successfully' });
+    const users = await User.findAll();
+    res.json(users);
   } catch (error) {
-      console.error('Error deleting user:', error);
-      res.status(500).json({ error: 'Failed to delete user' });
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
+
+// Xóa người dùng (Admin)
+adminRouter.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    await user.destroy();
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+// Gắn adminRouter vào usersRouter chính
+usersRouter.use('/admin', adminRouter);
+//////////////////////////////////////////////////////////
 
 module.exports = usersRouter
