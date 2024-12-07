@@ -61,7 +61,7 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-4 md:px-0">
         
         {/* Logo */}
-        <div className="font-handwriting text-3xl md:text-8xl text-orange-400 uppercase transition-transform transform hover:scale-110 hover:text-orange-600">
+        <div className="font-handwriting text-3xl md:text-8xl text-orange-400 transition-transform transform hover:scale-110 hover:text-orange-600">
           Recipehub
         </div>
 
@@ -132,7 +132,7 @@ const Header = () => {
       <nav className="container mx-auto max-w-full mt-4 hidden md:flex justify-center space-x-10">
         <Link to="/home" className="text-lg hover:text-primaryHover">Home</Link>
         <Link to="/recipes/search" className="text-lg hover:text-primaryHover">Search</Link>
-        <Link to="/competitions" className="text-lg hover:text-primaryHover">Competitions</Link>
+        <Link to="/competitions/open" className="text-lg hover:text-primaryHover">Competitions</Link>
         <Link to="/recipes/create" className="text-lg hover:text-primaryHover">Create Recipe</Link>
         <Link to="/shopping-list" className="text-lg hover:text-primaryHover">Shopping List</Link>
       </nav>

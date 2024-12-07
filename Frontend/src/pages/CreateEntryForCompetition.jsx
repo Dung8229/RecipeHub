@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import recipeService from '../services/recipes';
 import competitionService from '../services/competitions';
+import ingredientService from '../services/ingredient'
+import { useNavigate } from 'react-router-dom';
 
 const UNIT = [
     'g', 'kg', 'mg', 'lb', 'lbs', 'ounce', 'ounces', 'oz',
@@ -10,7 +12,8 @@ const UNIT = [
     'cloves', 'pint', 'piece', 'pieces',
 ];
 
-const CreateEntryForCompetition = () => {
+const CreateEntryForCompetitionPage = () => {
+    const navigate = useNavigate
     const { competitionId } = useParams();
     const [competition, setCompetition] = useState(null);
     const [formData, setFormData] = useState({
@@ -21,7 +24,6 @@ const CreateEntryForCompetition = () => {
         summary: '',
         readyInMinutes: '',
         servings: '',
-        difficulty: 'beginer',
         ingredients: [],
         instructions: [{ stepNumber: 1, content: '' }],
         tags: [''],
@@ -205,7 +207,6 @@ const CreateEntryForCompetition = () => {
         try {
             const recipeData = {
                 ...formData,
-                userId: user.id // Lấy từ context hoặc state management
             };
 
             await recipeService.createCompetitionEntry(recipeData, competitionId);
@@ -343,22 +344,6 @@ const CreateEntryForCompetition = () => {
                             className="w-full px-3 py-2 border rounded-md"
                             required
                         />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-2">Độ khó</label>
-                        <select
-                            name="difficulty"
-                            value={formData.difficulty}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border rounded-md"
-                            required
-                        >
-                            <option value="beginer">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                            <option value="expert">Expert</option>
-                            <option value="masterchef">Masterchef</option>
-                        </select>
                     </div>
                 </div>
 
@@ -567,4 +552,4 @@ const CreateEntryForCompetition = () => {
     );
 };
 
-export default CreateEntryForCompetition;
+export default CreateEntryForCompetitionPage;

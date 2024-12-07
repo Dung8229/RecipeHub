@@ -1,17 +1,18 @@
 import axios from 'axios'
+import tokenService from './token'
 
 const baseUrl = '/api/users'
 
 /////////////////Services cho admin/////////////////
 // Lấy danh sách người dùng
-export const getAllUsers = async () => {
-    const token = window.localStorage.getItem('authToken');
+const getAllUsers = async () => {
+    const token = tokenService.getToken();
     const config = {
         headers: { Authorization: `Bearer ${token}` },
     };
 
     try {
-        const response = await axios.get(`${baseUrl}/admin/all`, config);
+        const response = await axios.get(`${baseUrl}`, config);
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -20,14 +21,14 @@ export const getAllUsers = async () => {
 };
 
 // Xóa người dùng
-export const deleteUser = async (userId) => {
-    const token = window.localStorage.getItem('authToken');
+const deleteUser = async (userId) => {
+    const token = tokenService.getToken();
     const config = {
         headers: { Authorization: `Bearer ${token}` },
     };
 
     try {
-        const response = await axios.delete(`${baseUrl}/admin/${userId}`, config);
+        const response = await axios.delete(`${baseUrl}/${userId}`, config);
         return response.data;
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -35,8 +36,8 @@ export const deleteUser = async (userId) => {
     }
 };
 
-export const getUserData = async (userId) => {
-    const token = window.localStorage.getItem('token');
+const getUserData = async (userId) => {
+    const token = tokenService.getToken();
     // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
     const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -50,4 +51,10 @@ export const getUserData = async (userId) => {
     console.error('Error fetching user id:', error);
     throw error;
   }
+}
+
+export default {
+  getAllUsers,
+  deleteUser,
+  getUserData,
 }

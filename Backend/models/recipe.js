@@ -26,7 +26,7 @@ const Recipe = sequelize.define('Recipe', {
   },
   imageType: {
     type: DataTypes.STRING,
-    allowNull: true,
+    defaultValue: "png",
   },
   summary: {
     type: DataTypes.TEXT, // Sử dụng TEXT để lưu trữ nhiều nội dung hơn
@@ -54,10 +54,9 @@ const Recipe = sequelize.define('Recipe', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  difficulty: {
-    type: DataTypes.ENUM('beginer', 'intermediate', 'advanced','expert','masterchef'), // Định nghĩa độ khó
-    allowNull: false,
-  },
+  // difficulty: {
+  //   type: DataTypes.ENUM('beginer', 'intermediate', 'advanced','expert','masterchef'), // Định nghĩa độ khó
+  // },
 }, {
   timestamps: true, // Sử dụng timestamps để tự động thêm createdAt và updatedAt
   createdAt: 'created_at', // Tùy chỉnh tên cột createdAt

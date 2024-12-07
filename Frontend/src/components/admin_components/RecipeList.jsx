@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllRecipes, deleteRecipe } from '../../services/recipes';
+import recipeService from '../../services/recipes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,7 +17,7 @@ function RecipeList() {
 
   const fetchRecipes = async () => {
     try {
-      const data = await getAllRecipes();
+      const data = await recipeService.getAllRecipes();
       setRecipes(data);
       setLoading(false);
     } catch (err) {
@@ -29,7 +29,7 @@ function RecipeList() {
   const handleDelete = async (recipeId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa công thức này?')) {
       try {
-        await deleteRecipe(recipeId);
+        await recipeService.deleteRecipe(recipeId);
         fetchRecipes();
       } catch (err) {
         setError('Lỗi khi xóa công thức');

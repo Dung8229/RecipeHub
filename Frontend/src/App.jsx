@@ -3,11 +3,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import HomePage from './pages/HomePage';
 import AdminManageUsersPage from './pages/AdminManageUsersPage';
+import AdminManageRecipePage from './pages/AdminManageRecipePage'
 import HomeRedirect from './components/HomeRedirect';
 import CompetitionDetailPage from './pages/CompetitionDetail';
+import CreateRecipePage from './pages/CreateRecipePage'
+import EditRecipePage from './pages/EditRecipePage'
+import CreateEntryForCompetitionPage from './pages/CreateEntryForCompetition'
 import ExploreRecipesPage from './pages/ExploreRecipes';
 import ExploreCompetitionPage from './pages/ExploreCompetition';
-import AdminManageCompetitionPage from './pages/AdminManageCompetitionPage';
 import AdminManageACompetitionPage from './pages/AdminManageACompetitionPage';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
@@ -40,6 +43,18 @@ const App = () => {
           path="/shopping-list"
           element={<ProtectedRoute element={<ShoppingList />} />}
         />
+        <Route 
+          path="/recipes/create" 
+          element={<ProtectedRoute element={<CreateRecipePage />} />} 
+        />
+        <Route 
+          path="/recipes/my-recipes/:id/edit" 
+          element={<ProtectedRoute element={<EditRecipePage />} />} 
+        />
+        <Route
+          path="/competitions/:id/submit-entry"
+          element={<ProtectedRoute element={<CreateEntryForCompetitionPage />} />}
+        />
 
         {/* Bảo vệ 1 nhóm route */}
         <Route path="/recipes" element={<ProtectedRoute />}>
@@ -50,7 +65,7 @@ const App = () => {
         {/* Bảo vệ 1 nhóm route của admin */}
         <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route path="dashboard">
-            <Route path="competitions" element={<AdminManageCompetitionPage />} />
+            <Route path="competitions" element={<AdminDashboardPage />} />
             <Route path="users" element={<AdminDashboardPage />} />
             <Route path="recipes" element={<AdminDashboardPage />} />
             <Route path="comments" element={<AdminDashboardPage />} />

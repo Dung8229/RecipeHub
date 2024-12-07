@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import competitionService from "../../services/competitions"
-import { getUserData } from '../../services/users'
+import userService from '../../services/users'
 import emailjs from "emailjs-com";
 
 const AnnouncedWinner = ({ competitionId }) => {
@@ -15,7 +15,7 @@ const AnnouncedWinner = ({ competitionId }) => {
       try {
         const { winner } = await competitionService.getLeaderboard(competitionId);
         setWinner(winner);
-        const winnerData = await getUserData(winner.userId)
+        const winnerData = await userService.getUserData(winner.userId)
         setWinnerEmail(winnerData.email)
         const competitionData = await competitionService.getDetail(competitionId)
         setPrizeGiven(competitionData.prizeGiven)

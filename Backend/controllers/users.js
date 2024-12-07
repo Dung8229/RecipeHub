@@ -3,6 +3,14 @@ const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const Recipe = require('../models/recipe')
+const RecipeComment = require('../models/recipe_comment');
+const ShoppinglistRecipe = require('../models/shoppinglist_recipe');
+const RecipeRating = require('../models/recipe_rating');
+const RecipeIngredient = require('../models/recipe_ingredient')
+const Favourite = require('../models/favourites');
+const CompetitionEntry = require('../models/competition_entry');
+const RecipeTag = require('../models/recipe_tag')
 
 const jwt = require('jsonwebtoken');
 
@@ -156,11 +164,9 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
 
 ///////////////API endpoint cho admin/////////////////////
 // Tạo router riêng cho admin
-const adminRouter = require('express').Router();
-adminRouter.use(middleware.authenticateJWT, middleware.authorizeAdmin);
 
 // Lấy tất cả người dùng (Admin)
-adminRouter.get('/all', async (req, res) => {
+usersRouter.get('/', async (req, res) => {
   try {
     const users = await User.findAll();
     res.json(users);
@@ -171,13 +177,30 @@ adminRouter.get('/all', async (req, res) => {
 });
 
 // Xóa người dùng (Admin)
-adminRouter.delete('/:id', async (req, res) => {
+usersRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+    // Tìm và xóa các công thức do người dùng tạo
+    const userRecipes = await Recipe.findAll({ where: { userId: id } });
+    const recipeIds = userRecipes.map((recipe) => recipe.id);
+
+    // Xóa các bản ghi liên quan trong các bảng khác
+    await RecipeComment.destroy({ where: { recipeId: recipeIds } });
+    await ShoppinglistRecipe.destroy({ where: { recipeId: recipeIds } });
+    await RecipeRating.destroy({ where: { recipeId: recipeIds } });
+    await Favourite.destroy({ where: { recipeId: recipeIds } });
+    await CompetitionEntry.destroy({ where: { userId: id } });
+    await RecipeIngredient.destroy({ where: { recipeId: recipeIds } })
+    await RecipeTag.destroy({ where: { recipe_id: recipeIds } })
+
+    // Xóa công thức của người dùng
+    await Recipe.destroy({ where: { userId: id } });
+
+    // Xóa người dùng
     await user.destroy();
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -187,7 +210,6 @@ adminRouter.delete('/:id', async (req, res) => {
 });
 
 // Gắn adminRouter vào usersRouter chính
-usersRouter.use('/admin', adminRouter);
 //////////////////////////////////////////////////////////
 
 module.exports = usersRouter

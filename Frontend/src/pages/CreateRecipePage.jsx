@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import recipeService from '../services/recipes';
-import ingredientService from '../services/recipes';
+import ingredientService from '../services/ingredient';
 
 const UNIT = [
     'g', 'kg', 'mg', 'lb', 'lbs', 'ounce', 'ounces', 'oz',
@@ -18,7 +18,6 @@ const CreateRecipePage = () => {
         summary: '',
         readyInMinutes: '',
         servings: '',
-        difficulty: 'beginer',
         ingredients: [],
         instructions: [{ stepNumber: 1, content: '' }],
         tags: [''],
@@ -68,12 +67,12 @@ const CreateRecipePage = () => {
 //////////Ingredients
     const handleAmountChange = (index, delta) => {
         setFormData((prevFormData) => {
-        const updatedIngredients = [...prevFormData.ingredients];
-        updatedIngredients[index].amount = Math.max(
-            0,
-            updatedIngredients[index].amount + delta
-        ); // Đảm bảo amount >= 0
-        return { ...prevFormData, ingredients: updatedIngredients };
+            const updatedIngredients = [...prevFormData.ingredients];
+            updatedIngredients[index].amount = Math.max(
+                0,
+                updatedIngredients[index].amount + delta
+            ); // Đảm bảo amount >= 0
+            return { ...prevFormData, ingredients: updatedIngredients };
         });
     };
 
@@ -185,7 +184,6 @@ const CreateRecipePage = () => {
                 summary: formData.summary,
                 readyInMinutes: parseInt(formData.readyInMinutes),
                 servings: parseInt(formData.servings),
-                difficulty: formData.difficulty,
                 ingredients: formData.ingredients,
                 instructions: formData.instructions,
                 tags: formData.tags.filter(tag => tag.trim() !== '')
@@ -202,7 +200,6 @@ const CreateRecipePage = () => {
                 summary: '',
                 readyInMinutes: '',
                 servings: '',
-                difficulty: 'beginer',
                 ingredients: [],
                 instructions: [{ stepNumber: 1, content: '' }],
                 tags: [''],
@@ -324,7 +321,7 @@ const CreateRecipePage = () => {
                             required
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <label className="block font-medium mb-2">Độ khó</label>
                         <select
                             name="difficulty"
@@ -339,7 +336,7 @@ const CreateRecipePage = () => {
                             <option value="expert">Expert</option>
                             <option value="masterchef">Masterchef</option>
                         </select>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Nguyên liệu */}
@@ -359,14 +356,15 @@ const CreateRecipePage = () => {
                             {formData.ingredients.map((ingredient, index) => (
                                 <tr key={ingredient.id} className="border-b">
                                     <td className="border border-gray-300 p-2">{index + 1}</td>
-                                    <td className="border border-gray-300 p-2 flex items-center gap-2">
-                                        {ingredient.image && (
+                                    <td className="border border-gray-300 p-2 gap-2">
+                                        {/* {ingredient.image && (
                                             <img src={ingredient.image} alt={ingredient.name} className="w-6 h-6 object-cover rounded-full" />
-                                        )}
+                                        )} */}
                                         {ingredient.name}
                                     </td>
-                                    <td className="border border-gray-300 p-2 flex items-center">
+                                    <td className="border border-gray-300 p-2 items-center">
                                         <button
+                                            type="button"
                                             onClick={() => handleAmountChange(index, -1)}
                                             className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
                                         >
@@ -379,6 +377,7 @@ const CreateRecipePage = () => {
                                             className="mx-2 w-12 text-center border border-gray-300 rounded"
                                         />
                                         <button
+                                            type="button"
                                             onClick={() => handleAmountChange(index, 1)}
                                             className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
                                         >
@@ -430,28 +429,27 @@ const CreateRecipePage = () => {
                     {/* Chọn đơn vị đo lường và thêm */}
                     {selectedIngredient && (
                         <div className="mt-4">
-                            <p>
-                                <strong>Selected Ingredient:</strong> {selectedIngredient.name}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2">
-                                <select
-                                    value={unit}
-                                    onChange={(e) => setUnit(e.target.value)}
-                                    className="border rounded-md p-2"
-                                >
-                                    {['cups', 'grams', 'ml', 'tbsp'].map((unitOption) => (
-                                        <option key={unitOption} value={unitOption}>
-                                            {unitOption}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button
-                                    onClick={handleAddIngredient}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                                >
-                                    Add Ingredient
-                                </button>
-                            </div>
+                        <h4>Selected Ingredient: {selectedIngredient.name}</h4>
+                        {/* Form chọn đơn vị */}
+                        <select
+                            value={unit}
+                            onChange={(e) => setUnit(e.target.value)}
+                            className="w-full p-2 mt-2 border rounded"
+                        >
+                            <option value="" disabled>Select Unit</option>
+                            <option key="none" value=" ">(none)</option>
+                            {UNIT.map((unit) => (
+                            <option key={unit} value={unit}>
+                                {unit}
+                            </option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={handleAddIngredient}
+                            className="w-full mt-2 p-2 bg-blue-500 text-white rounded"
+                        >
+                            Add Ingredient
+                        </button>
                         </div>
                     )}
                 </div>

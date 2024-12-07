@@ -2,7 +2,7 @@
 // Chẳng hạn cái HomePage nó có 2 mục là Trending Recipes và Most Popular Recipes
 import React from 'react';
 import RecipeCard from './RecipeCard';
-import { getDinnerRecipes } from '../services/recipes';
+// import { getDinnerRecipes } from '../services/recipes';
 import { useEffect, useState } from 'react';
 
 // Mình thêm mẫu chay để test
@@ -26,18 +26,18 @@ const RecipeSection = ({ title }) => {
   const [error, setError] = useState(null);
 
   // Lấy dữ liệu từ api theo dinner recipes
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const data = await getDinnerRecipes();
-        setRecipes(data);
-      } catch (err) {
-        setError('Failed to load recipes');
-      }
-    };
+  // useEffect(() => {
+  //   const fetchRecipes = async () => {
+  //     try {
+  //       const data = await getDinnerRecipes();
+  //       setRecipes(data);
+  //     } catch (err) {
+  //       setError('Failed to load recipes');
+  //     }
+  //   };
 
-    fetchRecipes();
-  }, []);
+  //   fetchRecipes();
+  // }, []);
 
   return (
     <div className="my-12 px-8">

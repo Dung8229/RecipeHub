@@ -3,7 +3,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import React, { useState, useEffect } from 'react';
 import recipeService from '../services/recipes';
-import ingredientService from '../services/ingredients';
+import ingredientService from '../services/ingredient';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FaTrash } from 'react-icons/fa';
 
 // Cập nhật các hằng số cho đơn vị
 const UNIT = [
@@ -25,7 +27,6 @@ const EditRecipePage = () => {
         summary: '',
         readyInMinutes: '',
         servings: '',
-        difficulty: 'beginer',
         ingredients: [],
         instructions: [{ stepNumber: 1, content: '' }],
         tags: [''],
@@ -51,8 +52,8 @@ const EditRecipePage = () => {
                     summary: recipe.summary,
                     readyInMinutes: recipe.readyInMinutes,
                     servings: recipe.servings,
-                    difficulty: recipe.difficulty,
                     ingredients: recipe.RecipeIngredients.map(ri => ({
+                        id: ri.Ingredient.id,
                         amount: ri.amount,
                         unit: ri.unit,
                         name: ri.Ingredient.name
@@ -134,26 +135,49 @@ const EditRecipePage = () => {
   };
 
   // Xử lý thay đổi nguyên liệu
-  const handleIngredientChange = (index, field, value) => {
-    setFormData(prevData => {
-        const newIngredients = [...prevData.ingredients];
-        newIngredients[index] = {
-            ...newIngredients[index],
-            [field]: value,
-        };
-        return {
-            ...prevData,
-            ingredients: newIngredients,
-        };
+  const handleAmountChange = (index, delta) => {
+    setFormData((prevFormData) => {
+        const updatedIngredients = [...prevFormData.ingredients];
+        updatedIngredients[index].amount = Math.max(
+            0,
+            updatedIngredients[index].amount + delta
+        ); // Đảm bảo amount >= 0
+        return { ...prevFormData, ingredients: updatedIngredients };
     });
-};
+  };
+
+    const handleAmountInputChange = (index, value) => {
+        const numericValue = parseInt(value, 10);
+        if (!isNaN(numericValue) && numericValue >= 0) {
+        setFormData((prevFormData) => {
+            const updatedIngredients = [...prevFormData.ingredients];
+            updatedIngredients[index].amount = numericValue;
+            return { ...prevFormData, ingredients: updatedIngredients };
+        });
+        }
+    };
 
   // Thêm nguyên liệu mới
   const handleAddIngredient = () => {
-      setFormData(prevData => ({
-          ...prevData,
-          ingredients: [...prevData.ingredients, { amount: '', unit: '', name: '' }]
-      }));
+    if (!selectedIngredient || !unit) return;
+  
+    const newIngredient = {
+      id: selectedIngredient.id,
+      name: selectedIngredient.name,
+      image: selectedIngredient.image || null,
+      amount: 1, // Mặc định là 1
+      unit,
+    };
+  
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      ingredients: [...prevFormData.ingredients, newIngredient],
+    }));
+  
+    // Reset các giá trị sau khi thêm
+    setSelectedIngredient(null);
+    setQuery('');
+    setUnit('');
   };
 
   // Xóa nguyên liệu
@@ -237,7 +261,6 @@ const EditRecipePage = () => {
                 summary: formData.summary,
                 readyInMinutes: parseInt(formData.readyInMinutes),
                 servings: parseInt(formData.servings),
-                difficulty: formData.difficulty,
                 ingredients: formData.ingredients,
                 instructions: formData.instructions,
                 tags: formData.tags.filter(tag => tag.trim() !== '')
@@ -245,7 +268,6 @@ const EditRecipePage = () => {
 
             await recipeService.update(id, recipeData);
             alert('Cập nhật công thức thành công!');
-            navigate(`/recipes/${id}`); // Chuyển về trang chi tiết công thức
         } catch (error) {
             console.error('Lỗi khi cập nhật công thức:', error);
             alert('Không thể cập nhật công thức.');
@@ -367,22 +389,6 @@ const EditRecipePage = () => {
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block font-medium mb-2">Difficulty</label>
-                                <select
-                                    name="difficulty"
-                                    value={formData.difficulty}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border rounded-md"
-                                    required
-                                >
-                                    <option value="beginer">Beginer</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                    <option value="expert">Expert</option>
-                                    <option value="masterchef">Masterchef</option>
-                                </select>
-                            </div>
                         </div>
 
                         {/* Add Ingredients */}
@@ -401,15 +407,16 @@ const EditRecipePage = () => {
                                     {formData.ingredients.map((ingredient, index) => (
                                         <tr key={index} className="border-b">
                                             <td className="border border-gray-300 p-2">{index + 1}</td>
-                                            <td className="border border-gray-300 p-2 flex items-center gap-2">
-                                                {ingredient.image && (
+                                            <td className="border border-gray-300 p-2 items-center gap-2">
+                                                {/* {ingredient.image && (
                                                     <img src={ingredient.image} alt={ingredient.name} className="w-6 h-6 object-cover rounded-full" />
-                                                )}
+                                                )} */}
                                                 {ingredient.name}
                                             </td>
-                                            <td className="border border-gray-300 p-2 flex items-center">
+                                            <td className="border border-gray-300 p-2 items-center">
                                                 <button
-                                                    onClick={() => handleIngredientChange(index, 'amount', ingredient.amount - 1)}
+                                                    type="button"
+                                                    onClick={() => handleAmountChange(index, -1)}
                                                     className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
                                                 >
                                                     -
@@ -417,11 +424,12 @@ const EditRecipePage = () => {
                                                 <input
                                                     type="number"
                                                     value={ingredient.amount}
-                                                    onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                                                    onChange={(e) => handleAmountInputChange(index, e.target.value)}
                                                     className="mx-2 w-12 text-center border border-gray-300 rounded"
                                                 />
                                                 <button
-                                                    onClick={() => handleIngredientChange(index, 'amount', ingredient.amount + 1)}
+                                                    type="button"
+                                                    onClick={() => handleAmountChange(index, 1)}
                                                     className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
                                                 >
                                                     +
@@ -430,11 +438,8 @@ const EditRecipePage = () => {
                                             </td>
                                             <td className="border border-gray-300 p-2">
                                                 <button
-                                                    onClick={() => {
-                                                        if (window.confirm('Bạn có chắc chắn muốn xóa nguyên liệu này?')) {
-                                                            handleRemoveIngredient(index);
-                                                        }
-                                                    }}
+                                                    type="button"
+                                                    onClick={() => {handleRemoveIngredient(index)}}
                                                     className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
                                                 >
                                                     Remove
@@ -461,8 +466,9 @@ const EditRecipePage = () => {
                                             key={result.id}
                                             className="p-2 hover:bg-gray-100 cursor-pointer"
                                             onClick={() => {
-                                                handleAddIngredient(result);
+                                                setSelectedIngredient(result);
                                                 setQuery('');
+                                                setSearchResults([]);
                                             }}
                                         >
                                             {result.name}
@@ -474,28 +480,27 @@ const EditRecipePage = () => {
                             {/* Chọn đơn vị đo lường và thêm */}
                             {selectedIngredient && (
                                 <div className="mt-4">
-                                    <p>
-                                        <strong>Selected Ingredient:</strong> {selectedIngredient.name}
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <select
-                                            value={unit}
-                                            onChange={(e) => setUnit(e.target.value)}
-                                            className="border rounded-md p-2"
-                                        >
-                                            {['cups', 'grams', 'ml', 'tbsp'].map((unitOption) => (
-                                                <option key={unitOption} value={unitOption}>
-                                                    {unitOption}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            onClick={handleAddIngredient}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                                        >
-                                            Add Ingredient
-                                        </button>
-                                    </div>
+                                <h4>Selected Ingredient: {selectedIngredient.name}</h4>
+                                {/* Form chọn đơn vị */}
+                                <select
+                                    value={unit}
+                                    onChange={(e) => setUnit(e.target.value)}
+                                    className="w-full p-2 mt-2 border rounded"
+                                >
+                                    <option value="" disabled>Select Unit</option>
+                                    <option key="none" value=" ">(none)</option>
+                                    {UNIT.map((unit) => (
+                                    <option key={unit} value={unit}>
+                                        {unit}
+                                    </option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={handleAddIngredient}
+                                    className="w-full mt-2 p-2 bg-blue-500 text-white rounded"
+                                >
+                                    Add Ingredient
+                                </button>
                                 </div>
                             )}
                         </div>
@@ -553,7 +558,7 @@ const EditRecipePage = () => {
                                             onClick={() => handleRemoveTag(index)}
                                             className="px-3 py-2 bg-red-500 text-white rounded-md"
                                         >
-                                            <FontAwesomeIcon icon={faTrash} size="lg" className="text-white" />
+                                            <FontAwesomeIcon icon={FaTrash} size="lg" className="text-white" />
                                         </button>
                                     )}
                                 </div>

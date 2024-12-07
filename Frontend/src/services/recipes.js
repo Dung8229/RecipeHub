@@ -1,6 +1,7 @@
 // Gọi api liên quan recipe từ backend
 import axios from 'axios'
 import imageService from './image'
+import tokenService from './token'
 
 const baseUrl = '/api/recipes'
 
@@ -91,6 +92,7 @@ const searchIngredients = async (query) => {
 
 // Tạo công thức mới
 const create = async (formData) => {
+  const token = tokenService.getToken();
   try {
       // Xử lý ảnh
       let image;
@@ -111,7 +113,6 @@ const create = async (formData) => {
           summary: formData.summary,
           readyInMinutes: parseInt(formData.readyInMinutes),
           servings: parseInt(formData.servings),
-          difficulty: formData.difficulty,
           ingredients: formData.ingredients.map(ing => ({
               amount: parseFloat(ing.amount),
               unit: ing.unit,
@@ -125,7 +126,13 @@ const create = async (formData) => {
           tags: formData.tags.filter(tag => tag.trim() !== '')
       };
 
-      const response = await axios.post(baseUrl, recipeData);
+      console.log('Recipe create data:', recipeData)
+
+      const response = await axios.post(baseUrl, recipeData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token qua header
+        },
+      });
       return response.data;
   } catch (error) {
       console.error('Error creating new recipe', error);
@@ -135,6 +142,7 @@ const create = async (formData) => {
 
 // Cập nhật công thức
 const update = async (id, formData) => {
+  const token = tokenService.getToken()
     try {
         // Xử lý ảnh
         let image;
@@ -157,7 +165,6 @@ const update = async (id, formData) => {
             summary: formData.summary,
             readyInMinutes: parseInt(formData.readyInMinutes),
             servings: parseInt(formData.servings),
-            difficulty: formData.difficulty,
             ingredients: formData.ingredients.map(ing => ({
                 amount: parseFloat(ing.amount),
                 unit: ing.unit,
@@ -170,8 +177,14 @@ const update = async (id, formData) => {
             })),
             tags: formData.tags.filter(tag => tag.trim() !== '')
         };
+
+        console.log('Update recipe data: ', recipeData)
   
-        const response = await axios.put(`${baseUrl}/${id}`, recipeData);
+        const response = await axios.put(`${baseUrl}/${id}`, recipeData, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Gửi token qua header
+          },
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating recipe:', error);
@@ -180,6 +193,7 @@ const update = async (id, formData) => {
 };
 
 const createCompetitionEntry = async (formData, competitionId) => {
+  const token = tokenService.getToken()
     try {
         let image;
         if (formData.imageFile) {
@@ -204,7 +218,11 @@ const createCompetitionEntry = async (formData, competitionId) => {
             })),
         };
   
-        const response = await axios.post(`${baseUrl}/competition-entry`, recipeData);
+        const response = await axios.post(`${baseUrl}/competition-entry`, recipeData, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Gửi token qua header
+          },
+        });
         return response.data;
     } catch (error) {
         console.error('Error creating competition entry:', error);
@@ -216,16 +234,14 @@ const createCompetitionEntry = async (formData, competitionId) => {
 const getMyRecipe = async (id) => {
   try {
     // Kiểm tra token tồn tại
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      throw new Error('Vui lòng đăng nhập để tiếp tục');
-    }
+    const token = tokenService.getToken();
 
     const response = await axios.get(`${baseUrl}/my-recipe/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
+    console.log('My recipe: ', response.data)
     
     return response.data;
   } catch (error) {
@@ -250,14 +266,14 @@ const getMyRecipe = async (id) => {
 
 //////////////////Service cho admin///////////////
 // Lấy danh sách công thức
-export const getAllRecipes = async () => {
-  const token = window.localStorage.getItem('authToken');
+const getAllRecipes = async () => {
+  const token = tokenService.getToken();
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
   try {
-    const response = await axios.get(`${baseUrl}/admin/all`, config);
+    const response = await axios.get(`${baseUrl}`, config);
     return response.data;
   } catch (error) {
     console.error('Error fetching recipes:', error);
@@ -266,14 +282,14 @@ export const getAllRecipes = async () => {
 };
 
 // Xóa công thức
-export const deleteRecipe = async (recipeId) => {
-  const token = window.localStorage.getItem('authToken');
+const deleteRecipe = async (recipeId) => {
+  const token = tokenService.getToken();
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
   try {
-    const response = await axios.delete(`${baseUrl}/admin/${recipeId}`, config);
+    const response = await axios.delete(`${baseUrl}/${recipeId}`, config);
     return response.data;
   } catch (error) {
     console.error('Error deleting recipe:', error);
@@ -293,5 +309,7 @@ export default {
   getHighlightedRecipes,
   createCompetitionEntry,
   getMyRecipe,
-  searchIngredients
+  searchIngredients,
+  getAllRecipes,
+  deleteRecipe,
 }

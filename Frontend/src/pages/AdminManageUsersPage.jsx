@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from '../components/admin_components/Navbar';
 import UserList from '../components/admin_components/UserList';
 
 function AdminManageUsersPage() {

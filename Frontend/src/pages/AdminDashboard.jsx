@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AdminManageUsersPage from './AdminManageUsersPage'
 import AdminManageCommentsPage from './AdminManageCommentsPage'
 import AdminManageCompetitionsPage from './AdminManageCompetitionPage'
+import AdminManageRecipePage from "./AdminManageRecipePage";
 
 const AdminDashboardPage = () => {
   const location = useLocation()
@@ -22,6 +23,8 @@ const AdminDashboardPage = () => {
         return <AdminManageUsersPage />;
       case "/admin/dashboard/comments":
         return <AdminManageCommentsPage />;
+      case "/admin/dashboard/recipes":
+        return <AdminManageRecipePage />
       case "/admin/dashboard/competitions":
         return <AdminManageCompetitionsPage />;
       default:

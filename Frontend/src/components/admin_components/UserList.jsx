@@ -1,7 +1,7 @@
 // Danh sách người dùng, search bar và các nút pagination để di chuyển giữa các trang.
 
 import React, { useState, useEffect } from 'react';
-import { getAllUsers, deleteUser } from '../../services/users';
+import userService from '../../services/users';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
@@ -19,7 +19,7 @@ const UserList = () => {
 
   const fetchUsers = async () => {
     try {
-      const data = await getAllUsers();
+      const data = await userService.getAllUsers();
       setUsers(data);
       setLoading(false);
     } catch (error) {
@@ -31,7 +31,7 @@ const UserList = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
       try {
-        await deleteUser(userId);
+        await userService.deleteUser(userId);
         fetchUsers();
       } catch (error) {
         setError('Failed to delete user');
