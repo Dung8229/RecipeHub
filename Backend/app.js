@@ -7,6 +7,8 @@ const usersRouter = require('./controllers/users')
 const competitionsRouter = require('./controllers/competitions')
 const imageUploadRouter = require('./controllers/imageUpload')
 const tokenRouter = require('./controllers/token')
+const shoppinglistRouter = require('./controllers/shoppinglist')
+const commentRouter = require('./controllers/commentController')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const sequelize = require('./db')
@@ -15,6 +17,7 @@ const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
+const ingredientRouter = require('./controllers/ingredient')
 
 sequelize.authenticate()
     .then(() => {
@@ -41,11 +44,22 @@ app.get('/auth/google/callback', (req, res, next) => {
     passport.authenticate('google', { failureRedirect: '/login' }, (err, user) => {
         if (err || !user) {
             console.error('Google authentication error:', err || 'No user found');
-            return res.redirect('/login'); // Chuyển hướng nếu có lỗi
+            return res.redirect('/login');
         }
-        const jwtToken = jwt.sign({ id: user.googleId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', jwtToken, { httpOnly: true }); // Lưu token vào cookie
-        return res.redirect('http://localhost:5173'); // Chuyển hướng về trang chủ
+        
+        const jwtToken = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+        // Set cookie và log token
+        res.cookie('token', jwtToken, { 
+            httpOnly: false, // Cho phép JavaScript đọc cookie
+            secure: process.env.NODE_ENV === 'production', // Chỉ dùng HTTPS trong production
+            sameSite: 'lax',
+            maxAge: 3600000 // 1 giờ
+        });
+        
+        console.log('Setting token:', jwtToken); // Log token được tạo
+        
+        return res.redirect('http://localhost:5173');
     })(req, res, next);
 });
 // Route cho xác thực Facebook
@@ -55,11 +69,22 @@ app.get('/auth/facebook/callback', (req, res, next) => {
     passport.authenticate('facebook', { failureRedirect: '/login' }, (err, user) => {
         if (err || !user) {
             console.error('Facebook authentication error:', err || 'No user found');
-            return res.redirect('/login'); // Chuyển hướng nếu có lỗi
+            return res.redirect('/login');
         }
-        const jwtToken = jwt.sign({ id: user.facebookId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', jwtToken, { httpOnly: true }); // Lưu token vào cookie
-        return res.redirect('http://localhost:5173'); // Chuyển hướng về trang chủ
+        
+        const jwtToken = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+        // Set cookie và log token
+        res.cookie('token', jwtToken, { 
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 3600000
+        });
+        
+        console.log('Setting token:', jwtToken);
+        
+        return res.redirect('http://localhost:5173');
     })(req, res, next);
 });
 
@@ -68,7 +93,9 @@ app.use('/api/recipes', recipesRouter)
 app.use('/api/competitions', competitionsRouter)
 app.use('/api/image', imageUploadRouter)
 app.use('/api/token', tokenRouter)
-
+app.use('/api/shoppinglist', shoppinglistRouter)
+app.use('/api/ingredient', ingredientRouter)
+app.use('/api/comments', commentRouter)
 // Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

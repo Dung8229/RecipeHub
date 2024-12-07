@@ -39,8 +39,9 @@ const Competition = sequelize.define('Competition', {
     type: DataTypes.DATE,
     allowNull: true, // Có thể null nếu không có giai đoạn này
   },
-  winnerRecipeId: {
-    type: DataTypes.INTEGER,
+  prizeGiven: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   }
 }, {
   tableName: 'competitions',

@@ -32,7 +32,7 @@ const Login = () => {
       })
       .then((data) => {
         // Lưu token vào localStorage
-        localStorage.setItem('token', data.token);
+        window.localStorage.setItem('token', data.token);
         window.location.href = 'http://localhost:5173';
       })
       .catch((error) => {
@@ -150,6 +150,7 @@ const SocialLoginOptions = () => (
       GOOGLE
     </a>
   </div>
+  
 );
 
 export default Login;

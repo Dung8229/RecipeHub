@@ -9,8 +9,8 @@ const ListItemCompetition = ({ competition }) => {
   const endDate = new Date(competition.endDate)
 
   return (
-    <article className="max-h-50 p-6">
-      <div className="flex justify-between items-center space-x-20 relative flex">
+    <article className="max-h-50 p-6 flex justify-between">
+      <div className="flex justify-between items-center space-x-20 relative">
         <div>
           <h2 className="font-semibold text-lg sm:text-xl md:text-2xl text-slate-900">{competition.title}</h2>
           <dl className="mt-0 mb-10 text-sm font-medium">
@@ -46,8 +46,8 @@ const ListItemCompetition = ({ competition }) => {
             </div>
           </dl>
         </div>
-        <img src={competition.image} alt="" className="object-cover flex-none rounded-md bg-slate-100 w-40 max-h-50" />
       </div>
+      <img src={competition.image} alt="" className="object-cover flex-none rounded-md bg-slate-100 w-44 h-36" />
     </article>
   )
 }

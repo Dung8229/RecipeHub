@@ -1,15 +1,15 @@
 import React from 'react';
 import Navbar from '../components/admin_components/Navbar';
-import UserList from '../components/admin_components/UserList';
+import CommentList from '../components/admin_components/CommentList';
 
-function AdminManageUsersPage() {
+function AdminManageCommentsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="p-6">
-        <UserList />
+        <CommentList />
       </main>
     </div>
   );
 }
 
-export default AdminManageUsersPage;
+export default AdminManageCommentsPage;

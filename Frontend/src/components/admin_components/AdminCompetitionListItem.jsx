@@ -25,7 +25,7 @@ const AdminCompetitionListItem = ({ competition, removeCompetition }) => {
     <div className="relative group">
       {/* Toàn bộ article là một link */}
       <Link
-        to={`/admin/competitions/${competition.id}/information`}
+        to={`/admin/dashboard/competitions/${competition.id}/information`}
         className="block p-4 bg-yellow-50 border rounded-md hover:border-primary transition-all duration-300"
       >
         <article className="flex items-center">

@@ -55,6 +55,7 @@ competitionsRouter.post('/', async (req, res) => {
     description,
     detailDescription,
     startDate,
+    winnerSelectionStartDate,
     endDate,
     prize,
   } = req.body;
@@ -67,6 +68,7 @@ competitionsRouter.post('/', async (req, res) => {
       description,
       detailDescription,
       startDate: new Date(startDate),
+      winnerSelectionStartDate: new Date(winnerSelectionStartDate),
       endDate: new Date(endDate),
       prize,
     });
@@ -106,7 +108,7 @@ competitionsRouter.get('/:id', async (request, response) => {
 // Route cập nhật thông tin cuộc thi
 competitionsRouter.put('/:id', async (request, response) => {
   const { id } = request.params;
-  const { title, image, description, detailDescription, startDate, endDate, prize } = request.body;
+  const { title, image, description, detailDescription, startDate, winnerSelectionStartDate, endDate, prize } = request.body;
 
   try {
     // Kiểm tra xem cuộc thi có tồn tại không
@@ -122,6 +124,7 @@ competitionsRouter.put('/:id', async (request, response) => {
       description,
       detailDescription,
       startDate,
+      winnerSelectionStartDate,
       endDate,
       prize,
     });
@@ -190,7 +193,7 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
       include: [
         {
           model: User,
-          attributes: ['username', 'image'],
+          attributes: ['id', 'username', 'image'],
         },
         {
           model: Recipe,
@@ -225,6 +228,7 @@ competitionsRouter.get('/:id/leaderboard', async (request, response) => {
 
       return {
         id: entry.id,
+        userId: entry.userId,
         username: entry.User.username,
         userImage: entry.User.image,
         recipeId: entry.Recipe.id,
@@ -523,6 +527,36 @@ competitionsRouter.get('/:competitionId/winner', async (req, res) => {
   } catch (error) {
     console.error('Error fetching winner:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Endpoint để cập nhật trạng thái prizeGiven
+competitionsRouter.patch("/:competitionId/prizeGiven", async (req, res) => {
+  const { competitionId } = req.params;
+  const { prizeGiven } = req.body;
+
+  if (typeof prizeGiven !== "boolean") {
+    return res.status(400).json({ error: "Invalid value for prizeGiven. Must be a boolean." });
+  }
+
+  try {
+    // Tìm và cập nhật trạng thái prizeGiven
+    const competition = await Competition.findByPk(
+      competitionId,
+    );
+
+    if (!competition) {
+      return res.status(404).json({ error: "Competition not found" });
+    }
+
+    // Cập nhật giá trị prizeGiven
+    competition.prizeGiven = prizeGiven;
+    await competition.save();
+
+    res.status(200).json({ message: "Prize status updated successfully", competition });
+  } catch (error) {
+    console.error("Error updating prize status:", error);
+    res.status(500).json({ error: "Failed to update prize status" });
   }
 });
 

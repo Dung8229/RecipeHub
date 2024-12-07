@@ -88,11 +88,16 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
               [Op.like]: `%${term}%`
             }
           },
+          // {
+          //   '$Ingredients.name$': {
+          //     [Op.like]: `%${term}%`
+          //   }
+          // },
           {
-            '$Ingredients.name$': {
+            '$RecipeIngredients->Ingredient.name$': {
               [Op.like]: `%${term}%`
             }
-          }
+          }          
         ]
       });
     });
@@ -110,7 +115,10 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
   // Nếu có tham số ingredient, thêm vào whereClause
   if (ingredient) {
     whereClause[Op.and].push({
-      '$Ingredients.name$': {
+      // '$Ingredients.name$': {
+      //   [Op.like]: `%${ingredient}%`
+      // }
+      '$RecipeIngredients->Ingredient.name$': {
         [Op.like]: `%${ingredient}%`
       }
     });
@@ -138,12 +146,46 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
         model: RecipeTag, // Tham chiếu đến model RecipeTag
         attributes: ['tag'] // Chỉ lấy trường tag
       },
+      // {
+      //   model: Ingredient,
+      //   attributes: ['name']
+      // },
       {
-        model: Ingredient,
-        attributes: ['name']
+        model: RecipeIngredient,
+        include: [
+          {
+            model: Ingredient,
+            attributes: ['name'],
+          },
+        ],
+        attributes: [],
+      },
+      {
+        model: RecipeRating,
+        attributes: [],
+        required: false
       }
     ],
-    attributes: ['id', 'title', 'image', 'readyInMinutes', 'servings'],
+    attributes: [
+      'id', 
+      'title', 
+      'image', 
+      'readyInMinutes', 
+      'servings', 
+      'created_at',
+      [Sequelize.col('User.username'), 'username'],
+      [
+        Sequelize.fn(
+          'COALESCE',
+          Sequelize.fn('AVG', Sequelize.col('RecipeRatings.rating')),
+          0
+        ),
+        'rating'
+      ]
+    ],
+    // group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
+    group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'RecipeIngredients.id', 'RecipeIngredients->Ingredient.id'],
+    order: order
   });
 
   // Thêm giá trị difficulty vào từng công thức

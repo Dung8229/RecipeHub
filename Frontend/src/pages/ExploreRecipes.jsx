@@ -3,8 +3,14 @@ import Header from '../components/ExploreRecipeComponents/Header';
 import Sidebar from '../components/ExploreRecipeComponents/Sidebar';
 import RecipeList from '../components/ExploreRecipeComponents/RecipeList';
 import axios from 'axios';
+// import { addRecipeToShoppingList } from '../services/shoppinglists';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ExploreRecipes = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isFromShoppingList = location.state?.fromShoppingList;
+
   const [showAllRecipes, setShowAllRecipes] = useState(false);
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState({
@@ -60,6 +66,10 @@ const ExploreRecipes = () => {
     }));
   };
 
+  const handleRecipeSelect = (recipe) => {
+    navigate(`/recipes/${recipe.id}/information`);
+  };
+
   useEffect(() => {
     handleSearch();
   }, [filters]);
@@ -81,6 +91,7 @@ const ExploreRecipes = () => {
           recipes={recipes} 
           showAllRecipes={showAllRecipes} 
           onViewMore={handleViewMore} 
+          onRecipeSelect={handleRecipeSelect}
         />
       </main>
     </div>
