@@ -8,7 +8,7 @@ interface SidebarProps {
     category: string;
     ingredient: string;
     cookingTime: string;
-    difficulty: string;
+    // difficulty: string;
     searchTerm: string;
     sortBy: string;
   };
@@ -23,7 +23,7 @@ interface SidebarProps {
 interface FilterData {
   categories: string[];
   ingredients: string[];
-  difficulties: string[];
+  // difficulties: string[];
   cookingTimes: { label: string; value: string; }[];
 }
 
@@ -31,7 +31,7 @@ const defaultFilters = {
   category: '',
   ingredient: '',
   cookingTime: '',
-  difficulty: '',
+  // difficulty: '',
   searchTerm: '',
   sortBy: 'newest'
 };
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [filterData, setFilterData] = useState<FilterData>({
     categories: [],
     ingredients: [],
-    difficulties: [],
+    // difficulties: [],
     cookingTimes: []
   });
 
@@ -106,13 +106,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           onSelectItem={onFilterChange}
         />
 
-        <FilterSection
-          title="Difficulty"
+        {/* <FilterSection
+          // title="Difficulty"
           items={filterData.difficulties}
           selectedValue={filters.difficulty}
           filterType="difficulty"
           onSelectItem={onFilterChange}
-        />
+        /> */}
 
         <FilterSection
           title="Cooking Time"

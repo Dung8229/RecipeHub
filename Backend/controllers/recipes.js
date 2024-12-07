@@ -10,6 +10,7 @@ const RecipeRating = require('../models/recipe_rating')
 const RecipeComment = require('../models/recipe_comment')
 const RecipeAverageRating = require('../models/recipe_averagerating')
 const RecipeIngredient = require('../models/recipe_ingredient')
+const RecipeIngredientCategory = require('../models/ingredient_category')
 const ShoppinglistRecipe = require('../models/shoppinglist_recipe')
 const Ingredient = require('../models/ingredient')
 const { Sequelize } = require('sequelize')
@@ -43,7 +44,7 @@ recipeRouter.get('/filter-data', async (req, res) => {
       attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('category')), 'category']],
     });
 
-    const difficulties = ['beginner', 'intermediate', 'advanced', 'expert', 'masterchef'];
+    // const difficulties = ['beginner', 'intermediate', 'advanced', 'expert', 'masterchef'];
 
     const cookingTimes = [
       { label: '0-15 minutes', value: '0-15' },
@@ -56,7 +57,7 @@ recipeRouter.get('/filter-data', async (req, res) => {
     res.json({
       categories: categories.map(c => c.tag),
       ingredients: ingredients.map(i => i.category),
-      difficulties,
+      // difficulties,
       cookingTimes
     });
   } catch (error) {
@@ -66,7 +67,7 @@ recipeRouter.get('/filter-data', async (req, res) => {
 });
 
 // Hàm tìm kiếm công thức
-const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, difficulty }) => {
+const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) => {
   const whereClause = {
     [Op.and]: [] // Sử dụng Op.and để kết hợp các điều kiện
   };
@@ -186,32 +187,32 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime, di
     ],
     // group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
     group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'RecipeIngredients.id', 'RecipeIngredients->Ingredient.id'],
-    order: order
+    // order: order
   });
 
-  // Thêm giá trị difficulty vào từng công thức
-  const recipesWithDifficulty = recipes.map(recipe => ({
-    ...recipe.get(), // Lấy tất cả các thuộc tính của recipe
-    difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
-  }));
+  // // Thêm giá trị difficulty vào từng công thức
+  // const recipesWithDifficulty = recipes.map(recipe => ({
+  //   ...recipe.get(), // Lấy tất cả các thuộc tính của recipe
+  //   difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
+  // }));
 
   // Lọc theo độ khó nếu có
-  if (difficulty) {
-    return recipesWithDifficulty.filter(recipe => recipe.difficulty === difficulty);
-  }
+  // if (difficulty) {
+  //   return recipesWithDifficulty.filter(recipe => recipe.difficulty === difficulty);
+  // }
 
-  return recipesWithDifficulty;
-
+  // return recipesWithDifficulty;
+  return recipes
 };
 
 // Route tìm kiếm công thức
 recipeRouter.get('/search', async (req, res) => {
-  const { searchTerm, category, ingredient, cookingTime, difficulty } = req.query;
+  const { searchTerm, category, ingredient, cookingTime} = req.query;
 
-  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime, difficulty });
+  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime});
 
   try {
-    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime, difficulty });
+    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime});
     return res.json(recipes);
   } catch (error) {
     console.error('Error searching recipes:', error);

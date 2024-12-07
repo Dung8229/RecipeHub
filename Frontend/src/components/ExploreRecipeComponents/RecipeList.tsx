@@ -5,7 +5,7 @@ interface Recipe {
   id: number;
   title: string;
   readyInMinutes: number;
-  difficulty: string;
+  // difficulty: string;
   rating: number;
   username: string;
 }
@@ -35,9 +35,9 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onView
                 <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-clock"></i> {recipe.readyInMinutes} min
                 </p>
-                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                {/* <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-chart-line"></i> {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
-                </p>
+                </p> */}
 
                 <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-user"></i> By {recipe.username}

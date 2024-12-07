@@ -17,7 +17,6 @@ const ExploreRecipes = () => {
     category: '',
     ingredient: '',
     cookingTime: '',
-    difficulty: '',
     searchTerm: '',
     sortBy: 'newest'
   });
