@@ -15,8 +15,12 @@ Nhớ chạy npm install khi clone về
 
 <h2>Những thay đổi quan trọng</h2>
 <ul>
-<li>Ở bảng users, thêm cột image và đặt giá trị default của nó là http://localhost:3002/uploads/default_avatar.png</li>
+<li>Ở bảng users, thêm cột image và đặt giá trị default của nó là http://localhost:3002/uploads/default_avatar.png
+  <code>ALTER TABLE users
+ALTER COLUMN image SET DEFAULT 'http://localhost:3002/uploads/default_avatar.png';</code>
+</li>
 <li>Thay đổi route get Favourite để lấy thông tin về tác giả</li>
 ![alt text](image.png)
 <li>Không cần cập nhật cho package.json ở Frontend vì cái JWT-ĐECODE KHÔNG CHẠY</li>
 </ul>
+
