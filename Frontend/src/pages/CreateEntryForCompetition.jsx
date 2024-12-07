@@ -38,7 +38,11 @@ const CreateEntryForCompetitionPage = () => {
         const fetchCompetition = async () => {
             try {
                 const data = await competitionService.getCompetitionById(competitionId);
-                setCompetition(data);
+                if (data) {
+                    setCompetition(data);
+                } else {
+                    console.error('No competition found for the given ID');
+                }
             } catch (error) {
                 console.error('Error fetching competition:', error);
             }

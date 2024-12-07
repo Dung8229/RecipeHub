@@ -193,42 +193,46 @@ const update = async (id, formData) => {
 };
 
 const createCompetitionEntry = async (formData, competitionId) => {
-  const token = tokenService.getToken()
-    try {
-        let image;
-        if (formData.imageFile) {
-            image = await imageService.postImage(formData.imageFile);
-            image = 'http://localhost:3000/' + image
-            image = image.replace('\\', '/')
-        } else if (formData.imageURL) {
-            image = formData.imageURL;
-        } else {
-            throw new Error("Image is required.");
-        }
-  
-        const recipeData = {
-            ...formData,
-            image,
-            competitionId,
-            ingredients: formData.ingredients.map(ing => ({
-                amount: parseFloat(ing.amount),
-                unit: ing.unit,
-                name: ing.name,
-                id: ing.id
-            })),
-        };
-  
-        const response = await axios.post(`${baseUrl}/competition-entry`, recipeData, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Gửi token qua header
-          },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error creating competition entry:', error);
-        throw error;
+  const token = tokenService.getToken();
+  if (!token) {
+    throw new Error("Token is required.");
+  }
+
+  try {
+    let image;
+    if (formData.imageFile) {
+      image = await imageService.postImage(formData.imageFile);
+      image = 'http://localhost:3000/' + image;
+      image = image.replace('\\', '/');
+    } else if (formData.imageURL) {
+      image = formData.imageURL;
+    } else {
+      throw new Error("Image is required.");
     }
-  };
+
+    const recipeData = {
+      ...formData,
+      image,
+      competitionId,
+      ingredients: formData.ingredients.map(ing => ({
+        amount: parseFloat(ing.amount),
+        unit: ing.unit,
+        name: ing.name,
+        id: ing.id
+      })),
+    };
+
+    const response = await axios.post(`${baseUrl}/competition-entry`, recipeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating competition entry:', error);
+    throw error;
+  }
+};
 
 // Lấy công thức của người dùng cụ thể
 const getMyRecipe = async (id) => {

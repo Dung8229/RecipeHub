@@ -484,12 +484,22 @@ recipeRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     tags,
   } = req.body;
 
+  // Kiểm tra dữ liệu đầu vào
+  if (!title || !readyInMinutes || !servings) {
+    return res.status(400).json({ error: 'Title, readyInMinutes, and servings are required' });
+  }
+
   try {
     const recipe = await Recipe.findByPk(id);
+    // Kiểm tra công thức có tồn tại không
     if (!recipe) {
       return res.status(404).json({ error: 'Recipe not found' });
     }
-
+    // Kiểm tra quyền sở hữu
+    if (recipe.userId !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to update this recipe' });
+    }
+    
     // Cập nhật thông tin chung của công thức
     await recipe.update({
       title,
@@ -501,38 +511,45 @@ recipeRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
 
     // Cập nhật nguyên liệu
     if (ingredients && ingredients.length > 0) {
-      for (const ingredient of ingredients) {
-        const { id: ingredientId, amount, unit } = ingredient;
+      const ingredientIds = ingredients.map(ingredient => ingredient.id);
 
-        // Kiểm tra và cập nhật hoặc tạo mới nguyên liệu cho công thức
-        const existingIngredient = await RecipeIngredient.findOne({
-          where: {
-            recipeId: recipe.id,
-            ingredientId: ingredientId,
-          },
-        });
+      // Xóa nguyên liệu cũ không còn trong danh sách mới
+      await RecipeIngredient.destroy({
+        where: {
+          recipeId: recipe.id,
+          ingredientId: { [Op.notIn]: ingredientIds },
+        },
+      });
 
-        if (existingIngredient) {
-          // Cập nhật nguyên liệu nếu đã tồn tại
-          await existingIngredient.update({
-            amount,
-            unit,
+      // Cập nhật hoặc thêm mới nguyên liệu
+      const ingredientPromises = ingredients.map(async (ingredient) => {
+        try {
+          const { id: ingredientId, amount, unit } = ingredient;
+          const existingIngredient = await RecipeIngredient.findOne({
+            where: { recipeId: recipe.id, ingredientId },
           });
-        } else {
-          // Thêm mới nguyên liệu nếu chưa tồn tại
-          await RecipeIngredient.create({
-            recipeId: recipe.id,
-            ingredientId,
-            amount,
-            unit,
-          });
+
+          if (existingIngredient) {
+            await existingIngredient.update({ amount, unit });
+          } else {
+            await RecipeIngredient.create({
+              recipeId: recipe.id,
+              ingredientId,
+              amount,
+              unit,
+            });
+          }
+        } catch (error) {
+          console.error(`Error processing ingredient ${ingredient.id}:`, error);
         }
-      }
+      });
+
+      await Promise.all(ingredientPromises);
     }
 
     // Cập nhật bước công thức
     if (instructions && instructions.length > 0) {
-      for (const step of instructions) {
+      const instructionPromises = instructions.map(async (step) => {
         const { stepNumber, content } = step;
 
         // Kiểm tra và cập nhật hoặc tạo mới bước công thức
@@ -544,19 +561,30 @@ recipeRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
         });
 
         if (existingStep) {
-          // Cập nhật bước công thức nếu đã tồn tại
-          await existingStep.update({
-            content,
-          });
+          return existingStep.update({ content });
         } else {
-          // Thêm mới bước công thức nếu chưa tồn tại
-          await RecipeInstruction.create({
+          return RecipeInstruction.create({
             recipeId: recipe.id,
             stepNumber,
             content,
           });
         }
-      }
+      });
+
+      await Promise.all(instructionPromises);
+    }
+
+    // Cập nhật tags
+    if (tags && tags.length > 0) {
+      // Xóa tất cả các tag hiện tại trước khi thêm mới
+      await RecipeTag.destroy({ where: { recipe_id: recipe.id } });
+
+      // Thêm các tag mới
+      const tagData = tags.map(tag => ({
+        recipe_id: recipe.id,
+        tag,
+      }));
+      await RecipeTag.bulkCreate(tagData);
     }
 
     res.status(200).json({ message: 'Recipe updated successfully' });
