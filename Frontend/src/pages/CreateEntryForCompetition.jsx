@@ -4,6 +4,7 @@ import recipeService from '../services/recipes';
 import competitionService from '../services/competitions';
 import ingredientService from '../services/ingredient'
 import { useNavigate } from 'react-router-dom';
+import EditRecipePage from './EditRecipePage';
 
 const UNIT = [
     'g', 'kg', 'mg', 'lb', 'lbs', 'ounce', 'ounces', 'oz',
@@ -14,7 +15,7 @@ const UNIT = [
 
 const CreateEntryForCompetitionPage = () => {
     const navigate = useNavigate
-    const { competitionId } = useParams();
+    const { id } = useParams();
     const [competition, setCompetition] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
@@ -34,10 +35,27 @@ const CreateEntryForCompetitionPage = () => {
     const [selectedIngredient, setSelectedIngredient] = useState(null);
     const [unit, setUnit] = useState(UNIT[0]);
 
+    console.log("Before useEffect: ", id);
+
     useEffect(() => {
+        console.log("useEffect running with id:", id);
+        const fetchRegistrationStatus = async () => {
+            try {
+              const registered = await competitionService.checkIsRegistered(id); // Gọi API
+              if (!registered) {
+                alert("You haven't registered to this competition!")
+                navigate(`competitions/${id}/information`)
+              }
+              console.log("hihi")
+            } catch (error) {
+              console.error('Error fetching registration status:', error.message);
+            }
+        };
+
         const fetchCompetition = async () => {
             try {
-                const data = await competitionService.getCompetitionById(competitionId);
+                const data = await competitionService.getDetail(id);
+                console.log("haha: ", data)
                 if (data) {
                     setCompetition(data);
                 } else {
@@ -47,8 +65,10 @@ const CreateEntryForCompetitionPage = () => {
                 console.error('Error fetching competition:', error);
             }
         };
+
+        fetchRegistrationStatus()
         fetchCompetition();
-    }, [competitionId]);
+    }, [id]);
 
     useEffect(() => {
         const fetchIngredients = async () => {
@@ -213,33 +233,37 @@ const CreateEntryForCompetitionPage = () => {
                 ...formData,
             };
 
-            await recipeService.createCompetitionEntry(recipeData, competitionId);
+            await recipeService.createCompetitionEntry(recipeData, id);
             alert('Đã nộp bài dự thi thành công!');
             // Chuyển hướng về trang chi tiết cuộc thi
-            navigate(`/competitions/${competitionId}`);
+            navigate(`/competitions/${id}/information`);
         } catch (error) {
             console.error('Lỗi khi tạo bài dự thi:', error);
-            alert('Không thể tạo bài dự thi.');
         }
     };
 
-    if (!competition) return <div>Đang tải...</div>;
-
     return (
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="max-w-6xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">Tạo Bài Dự Thi</h1>
             
             {/* Hiển thị thông tin cuộc thi */}
             <div className="mb-6 p-4 bg-gray-100 rounded-lg">
-                <h2 className="text-xl font-semibold mb-2">{competition.title}</h2>
-                <p className="mb-2">{competition.description}</p>
-                <div className="prose max-w-none">
-                    <h3 className="text-lg font-semibold mb-2">Chi tiết cuộc thi:</h3>
-                    <div dangerouslySetInnerHTML={{ __html: competition.detailDescription }} />
-                </div>
+                {competition ? (
+                <>
+                    <h2 className="text-xl font-semibold mb-2">{competition.title || 'No title available'}</h2>
+                    <p className="mb-2">{competition.description || 'No description available'}</p>
+                    <div className="prose max-w-none">
+                        <h3 className="text-lg font-semibold mb-2">Chi tiết cuộc thi:</h3>
+                        {/* Sử dụng dangerouslySetInnerHTML nếu competition.detailDescription có dữ liệu */}
+                        <div dangerouslySetInnerHTML={{ __html: competition.detailDescription || 'No details available' }} />
+                    </div>
+                </>
+                ) : (
+                    // Hiển thị thông báo nếu competition chưa được tải hoặc không có dữ liệu
+                    <p>Loading competition details...</p>
+                )}
             </div>
 
-            {/* Form giống như trong CreateRecipePage */}
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* ... các trường form giống như trong CreateRecipePage ... */}
                 {/* Tiêu đề */}
@@ -368,13 +392,13 @@ const CreateEntryForCompetitionPage = () => {
                             {formData.ingredients.map((ingredient, index) => (
                                 <tr key={index} className="border-b">
                                     <td className="border border-gray-300 p-2">{index + 1}</td>
-                                    <td className="border border-gray-300 p-2 flex items-center gap-2">
-                                        {ingredient.image && (
+                                    <td className="border border-gray-300 p-2 items-center gap-2">
+                                        {/* {ingredient.image && (
                                             <img src={ingredient.image} alt={ingredient.name} className="w-6 h-6 object-cover rounded-full" />
-                                        )}
+                                        )} */}
                                         {ingredient.name}
                                     </td>
-                                    <td className="border border-gray-300 p-2 flex items-center">
+                                    <td className="border border-gray-300 p-2 items-center">
                                         <button
                                             onClick={() => handleAmountChange(index, -1)}
                                             className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-2 rounded"
@@ -552,6 +576,7 @@ const CreateEntryForCompetitionPage = () => {
                     Submit Entry
                 </button>
             </form>
+            
         </div>
     );
 };

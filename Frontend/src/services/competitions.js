@@ -319,6 +319,44 @@ const updatePrizeStatus = async (competitionId, prizeGiven=true) => {
   }
 };
 
+const getEntryDetail = async (competitionId) => {
+  const token = tokenService.getToken(); // Lấy token từ service
+
+  try {
+    // Gửi request đến API để lấy thông tin bài dự thi
+    const response = await axios.get(`${baseUrl}/${competitionId}/entry`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+
+    // Kiểm tra nếu không có bài dự thi
+    if (response.status === 404) {
+      return {
+        isEntrySubmitted: false,
+      };
+    }
+
+    // Xử lý thông tin bài dự thi và công thức (nếu có)
+    const { submissionId } = response.data;
+
+    console.log('Entry detail:', response.data);
+
+    return response.data
+  } catch (error) {
+    console.error('Failed to get entry detail:', error);
+
+    // Trường hợp API gặp lỗi
+    if (error.response && error.response.status === 404) {
+      return {
+        isEntrySubmitted: false,
+      };
+    }
+
+    throw error; // Ném lỗi để xử lý ở nơi gọi service
+  }
+};
+
 export default { 
   getAll, 
   getDetail, 
@@ -337,4 +375,5 @@ export default {
   getWinner,
   updateTieBreakerRanks,
   updatePrizeStatus,
+  getEntryDetail,
 }

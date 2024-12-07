@@ -12,6 +12,8 @@ const CompetitionDetailPage = () => {
   const [competition, setCompetition] = useState(null)
   const [leaderboardData, setLeaderboardData] = useState([])
   const [winner, setWinner] = useState(null)
+  const [isEntryExisted, setIsEntryExisted] = useState(null)
+  const [submissionId, setSubmissionId] = useState(null)
   const [isCompetitionOver, setIsCompOver] = useState(false)
 
   const fetchCompetitionDetail = async () => {
@@ -37,8 +39,20 @@ const CompetitionDetailPage = () => {
     }
   }
 
+  const fetchEntryData = async () => {
+    const entryData = await competitionService.getEntryDetail(id)
+    if (!entryData.isEntrySubmitted) {
+      setIsEntryExisted(false)
+    } else {
+      setIsEntryExisted(true)
+      setSubmissionId(entryData.submissionId)
+      console.log("This runs")
+    }
+  }
+
   useEffect(() => {
     fetchCompetitionDetail(); // Gọi hàm khi component được mount
+    fetchEntryData()
     fetchCompetitionLeaderboard()
   }, [id]);
 
@@ -54,6 +68,8 @@ const CompetitionDetailPage = () => {
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'} 
           winnerSelectionDate={competition?.winnerSelectionStartDate || 'No selcetion date'}
+          isEntryExisted={isEntryExisted}
+          submissionId={submissionId}
         />
         <ProgressBar
           startDate={competition?.startDate || 'No start date'}

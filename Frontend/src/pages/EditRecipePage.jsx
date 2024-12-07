@@ -15,8 +15,11 @@ const UNIT = [
     'cloves', 'pint', 'piece', 'pieces',
 ];
 
-const EditRecipePage = () => {
-    const { id } = useParams();
+const EditRecipePage = ({ recipeId }) => {
+    let { id } = useParams();
+    if (parseInt(id) < 500) {
+        id = recipeId  // Gán id vào recipeId khi id < 500
+    }
     const navigate = useNavigate();
     // Sử dụng state giống CreateRecipePage
     const [formData, setFormData] = useState({
@@ -75,11 +78,9 @@ const EditRecipePage = () => {
                     navigate('/login');
                 } else if (error.message === 'Bạn không có quyền truy cập công thức này') {
                     alert(error.message);
-                    navigate('/recipes');
+                    navigate('/home');
                 } else {
-                    alert('Không thể tải thông tin công thức');
                     console.error('Error loading recipe:', error);
-                    navigate('/recipes');
                 }
             }
         };
@@ -277,8 +278,8 @@ const EditRecipePage = () => {
 
     return (
         <div>
-            <Header />
-            <main className="pt-32">
+            {/* <Header /> */}
+            <main className="">
                 <div className="p-8 bg-gray-100 max-w-5xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6">Edit Recipe</h1>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -556,9 +557,9 @@ const EditRecipePage = () => {
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveTag(index)}
-                                            className="px-3 py-2 bg-red-500 text-white rounded-md"
+                                            className="px-3 py-2 bg-red-500 text-white rounded-md font-bold"
                                         >
-                                            <FontAwesomeIcon icon={FaTrash} size="lg" className="text-white" />
+                                            Remove
                                         </button>
                                     )}
                                 </div>

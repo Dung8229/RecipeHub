@@ -10,6 +10,10 @@ const CompetitionEntry = require('../models/competition_entry')
 const User = require('../models/user')
 const Recipe = require('../models/recipe')
 const RecipeRating = require('../models/recipe_rating');
+const RecipeIngredient = require('../models/recipe_ingredient')
+const Ingredient = require('../models/ingredient')
+const RecipeInstruction = require('../models/recipe_instruction');
+const RecipeTag = require('../models/recipe_tag')
 const { response } = require('express');
 
 competitionsRouter.get('/', async (request, response) => {
@@ -557,6 +561,111 @@ competitionsRouter.patch("/:competitionId/prizeGiven", async (req, res) => {
   } catch (error) {
     console.error("Error updating prize status:", error);
     res.status(500).json({ error: "Failed to update prize status" });
+  }
+});
+
+// competitionsRouter.get('/:competitionId/entry', middleware.authenticateJWT, async (req, res) => {
+//   const { competitionId } = req.params;
+//   const userId = req.user.id;
+
+//   if (!userId) {
+//     return res.status(400).json({ error: 'User ID is required' });
+//   }
+
+//   try {
+//     // Tìm bài dự thi của user trong cuộc thi
+//     const entry = await CompetitionEntry.findOne({
+//       where: {
+//         competitionId,
+//         userId,
+//       },
+//     });
+
+//     if (!entry) {
+//       return res.status(404).json({ 
+//         isEntrySubmitted: false, 
+//         message: 'No entry found for the given competition' 
+//       });
+//     }
+
+//     let recipeDetail = null;
+
+//     // Nếu có submissionId, lấy chi tiết công thức từ database
+//     if (entry.submissionId) {
+//       recipeDetail = await Recipe.findOne({
+//         where: {
+//           id: entry.submissionId,
+//           userId, // Đảm bảo chỉ lấy công thức của user đang đăng nhập
+//         },
+//         include: [
+//           {
+//             model: RecipeIngredient,
+//             include: [Ingredient], // Thông tin nguyên liệu
+//           },
+//           {
+//             model: RecipeInstruction,
+//             order: [['stepNumber', 'ASC']], // Sắp xếp các bước hướng dẫn
+//           },
+//           {
+//             model: RecipeTag, // Các tag của công thức
+//           },
+//         ],
+//       });
+
+//       if (!recipeDetail) {
+//         return res.status(404).json({ error: 'Recipe not found or unauthorized' });
+//       }
+//     }
+
+//     // Trả về thông tin bài dự thi kèm chi tiết công thức nếu có
+//     res.json({
+//       isEntrySubmitted: true,
+//       // entryDetail: {
+//       //   ...entry.toJSON(),
+//       //   recipe: recipeDetail, // Thêm thông tin công thức nếu tồn tại
+//       // },
+//       submissionId: entry.submissionId
+//     });
+//   } catch (error) {
+//     console.error('Error fetching entry detail:', error);
+//     res.status(500).json({ error: 'Failed to fetch entry detail' });
+//   }
+// });
+
+competitionsRouter.get('/:competitionId/entry', middleware.authenticateJWT, async (req, res) => {
+  const { competitionId } = req.params;
+  const userId = req.user.id;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  try {
+    // Tìm bài dự thi của user trong cuộc thi
+    const entry = await CompetitionEntry.findOne({
+      where: {
+        competitionId,
+        userId,
+      },
+    });
+
+    console.log("há: ", entry)
+
+    if (!entry.submissionId) {
+      return res.status(404).json({ 
+        isEntrySubmitted: false, 
+        message: 'No entry found for the given competition' 
+      });
+    }
+
+    // Trả về thông tin bài dự thi với submissionId
+    res.json({
+      isEntrySubmitted: true,
+      submissionId: entry.submissionId, // Trả về chỉ submissionId
+    });
+  } catch (error) {
+    console.error('Error fetching entry detail:', error);
+    res.status(500).json({ error: 'Failed to fetch entry detail' });
   }
 });
 

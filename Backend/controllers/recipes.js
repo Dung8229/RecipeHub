@@ -15,7 +15,9 @@ const ShoppinglistRecipe = require('../models/shoppinglist_recipe')
 const Ingredient = require('../models/ingredient')
 const { Sequelize } = require('sequelize')
 const RecipeInstruction = require('../models/recipe_instruction');
+const CompetitionEntry = require('../models/competition_entry')
 const middleware = require('../utils/middleware')
+const db = require('../db')
 
 defineAssociations()
 // Hàm để xác định độ khó dựa trên readyInMinutes và servings
@@ -595,7 +597,13 @@ recipeRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
 });
 
 // POST /api/recipes/competition-entry
-recipeRouter.post('/competition-entry', async (req, res) => {
+recipeRouter.post('/competition-entry', middleware.authenticateJWT, async (req, res) => {
+  const userId = req.user.id
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   const {
       title,
       image,
@@ -605,12 +613,11 @@ recipeRouter.post('/competition-entry', async (req, res) => {
       ingredients,
       instructions,
       tags,
-      userId,
       competitionId
   } = req.body;
 
   try {
-      const result = await sequelize.transaction(async (t) => {
+      const result = await db.transaction(async (t) => {
           // 1. Tạo recipe mới với isSubmission = true
           const recipe = await Recipe.create({
               userId,
@@ -668,11 +675,23 @@ recipeRouter.post('/competition-entry', async (req, res) => {
           ]);
 
           // 3. Tạo competition entry
-          await CompetitionEntry.create({
+          const existingEntry = await CompetitionEntry.findOne({
+            where: {
               competitionId,
               userId,
-              submissionId: recipe.id
-          }, { transaction: t });
+            }
+          });
+          
+          if (existingEntry) {
+            existingEntry.submissionId = recipe.id;
+            await existingEntry.save();
+          } else {
+            await CompetitionEntry.create({
+              competitionId,
+              userId,
+              submissionId: recipe.id, // Đặt submissionId là recipeId
+            });
+          }
 
           // 4. Lấy recipe đầy đủ để trả về
           const fullRecipe = await Recipe.findByPk(recipe.id, {
