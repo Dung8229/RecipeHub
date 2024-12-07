@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+
 const baseUrl = '/api/users';
 
 
@@ -13,10 +13,7 @@ export const addFavourite = async (userId, recipeId) => {
         const response = await axios.post(`${baseUrl}/${userId}/fav`, { userId, recipeId });
         return response.data;
     } catch (error) {
-        if (error.response && error.response.status === 403) {
-            alert('You need to login to add favourites');
-            if (navigate) navigate('/login');
-        }
+        console.error('Error adding favourite:', error);
     }
 
 
@@ -32,6 +29,5 @@ export const checkFavourite = async (userId, recipeId) => {
     const response = await axios.get(`${baseUrl}/${userId}/check`, {
         params: { recipeId } // Use query parameters
     });
-    console.log('WORKED');
     return response.data.isFavourite;
 };

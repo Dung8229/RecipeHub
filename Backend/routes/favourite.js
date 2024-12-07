@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Favourites = require('../models/favourites');
 const Recipe = require('../models/recipe');
+const User = require('../models/user');
 // const authenticate = require('../middleware/authenticate'); // Import middleware
 
 // Route để lấy danh sách công thức yêu thích của người dùng
@@ -14,6 +15,9 @@ router.get('/:userId/favourites', async (req, res) => {
                 {
                     model: Recipe,
                     attributes: ['id', 'title', 'image', 'imageType', 'readyInMinutes', 'servings'],
+                    include: [{
+                        model: User, attributes: ['username']
+                    }],
                 },
             ],
         });

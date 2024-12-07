@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // React Router
 import { getMyRecipes, deleteRecipe } from '../services/myRecipes';
-
+import { getUserInfo } from '../services/token';
 const RecipeManage = () => {
     const [recipes, setRecipes] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -12,15 +12,10 @@ const RecipeManage = () => {
     useEffect(() => {
         const fetchUserRecipes = async () => {
             try {
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    const userIn = JSON.parse(storedUser);
-                    userId = userIn.id;
-                }
-                if (!storedUser) {
-                    navigate('/login');
-                }
-                // userId = 1;
+                const userInfo = await getUserInfo();
+                if (!userInfo) navigate('/login');
+                userId = userInfo.id;
+                console.log('User ID:', userId);
                 const userRecipes = await getMyRecipes(userId);
                 setRecipes(userRecipes);
             } catch (error) {

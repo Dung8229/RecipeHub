@@ -9,15 +9,8 @@ import { getRecipeById } from '../services/recipes';
 import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites';
 import { addShoppingListRecipes, deleteShoppingListRecipes, checkShoppingList } from '../services/shoppingList';
 import { FaStar, FaRegStar } from "react-icons/fa";
-//import { set } from '../../../Backend/app';
+import { getUserInfo } from '../services/token';
 const Recipes = () => {
-    let userId;
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        const userIn = JSON.parse(storedUser);
-        userId = userIn.id;
-
-    }
     const navigate = useNavigate();
     const { id } = useParams();
     const [recipe, setRecipe] = useState(null);
@@ -32,60 +25,74 @@ const Recipes = () => {
     const [user, setUser] = useState(null);
     const [isInShoppingList, setIsInShoppingList] = useState(false);
     const printRef = useRef();
-
+    let userId;
     useEffect(() => {
-
         const fetchData = async () => {
             try {
+                const userInfo = await getUserInfo();
 
-                const recipeData = await getRecipeById(id);
-                setRecipe(recipeData);
+                if (userInfo) {
+                    setUser(userInfo);
+                    userId = userInfo.id;
 
-                const isFav = await checkFavourite(userId, id);
-                console.log('CHECK THIS LINE', userId, isFav);
-                setIsFavourite(isFav);
-
-                const instructionsData = await getRecipeInstructions(id);
-                setInstructions(instructionsData);
-
-                const ingredientsData = await getRecipeIngredients(id);
-                setIngredients(ingredientsData);
-
-                const commentsData = await getRecipeComments(id);
-                setComments(commentsData);
-
-                const ratingsData = await getRecipeRatings(id);
-                setUserRating(ratingsData.ratings);
-                setAverageRating(ratingsData.averageRating);
-
-                // Fetch user's rating
-                const userRatingData = await getUserRating(userId, id);
-                setUserRating(userRatingData.rating);
-
-                //Retrieve user information from localStorage
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
-                    console.log('User:', JSON.parse(storedUser));
                 }
-                isInShoppingList = setIsInShoppingList(await checkShoppingList(userId, id));
+                if (!userId) {
+                    console.error('User not logged in');
+                }
+                // Thực hiện các lệnh gọi API đồng thời nhưng không để lỗi một API ngăn cản các API khác
+                const results = await Promise.allSettled([
+                    getRecipeById(id),
+                    getRecipeInstructions(id),
+                    getRecipeIngredients(id),
+                    getRecipeComments(id),
+                    getRecipeRatings(id),
+                    checkFavourite(userId, id),
+                    checkShoppingList(userId, id),
+                    getUserRating(userId, id),
+                ]);
+
+                // Xử lý từng kết quả
+                const [recipeRes, instructionsRes, ingredientsRes, commentsRes, ratingsRes, isFavRes, shoppingListRes, userRatingRes] = results;
+
+                if (recipeRes.status === "fulfilled") setRecipe(recipeRes.value);
+                else console.error("Error fetching recipe:", recipeRes.reason);
+
+                if (instructionsRes.status === "fulfilled") setInstructions(instructionsRes.value);
+                else console.warn("No instructions available.");
+
+                if (ingredientsRes.status === "fulfilled") setIngredients(ingredientsRes.value);
+                else console.warn("No ingredients found.");
+
+                if (commentsRes.status === "fulfilled") setComments(commentsRes.value);
+                else console.warn("Unable to load comments.");
+
+                if (ratingsRes.status === "fulfilled") {
+                    setUserRating(ratingsRes.value.ratings);
+                    setAverageRating(ratingsRes.value.averageRating);
+                } else {
+                    console.warn("Ratings not available.");
+                }
+
+                if (isFavRes.status === "fulfilled") setIsFavourite(isFavRes.value);
+                else console.warn("Unable to check favourite status.");
+
+                if (shoppingListRes.status === "fulfilled") setIsInShoppingList(shoppingListRes.value);
+                else console.warn("Shopping list status not available.");
+
+                if (userRatingRes.status === "fulfilled") setUserRating(userRatingRes.value.rating);
+                else console.warn("Unable to fetch user rating.");
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
     }, [id]);
 
+
     const handleAddComment = async (commentText) => {
         try {
-            if (!user) {
-                console.error('User not logged in');
-                navigate('/login');
-                return;
-            }
-            const userId = user.id;
-            const newComment = await addComment(userId, id, commentText);
+            const newComment = await addComment(id, commentText);
             setComments((prevComments) => [
                 ...prevComments,
                 { ...newComment, User: user }, // Add user info to the new comment
@@ -93,6 +100,10 @@ const Recipes = () => {
             setCommentText(''); // Clear the comment input after submission
         } catch (error) {
             console.error('Error adding comment:', error);
+            if (error.status && error.response.status === 403) {
+                console.error('User not logged in');
+                navigate('/login');
+            }
         }
     };
 
@@ -102,11 +113,10 @@ const Recipes = () => {
             navigate('/login');
         }
         if (isFavourite) {
-            await removeFavourite(userId, id);
+            await removeFavourite(user.id, id);
             setIsFavourite(false);
         } else {
-            await addFavourite(userId, id);
-            console.log('added');
+            await addFavourite(user.id, id);
             setIsFavourite(true);
         }
     };
@@ -117,11 +127,8 @@ const Recipes = () => {
             navigate('/login');
         }
         try {
-            await addOrUpdateRating(userId, id, rating);
+            await addOrUpdateRating(user.id, id, rating);
             setUserRating(rating);
-            // Optionally, you can update the average rating after adding the user rating
-            const recipeData = 100034;
-            //setAverageRating(recipeData.averageRating);
         } catch (error) {
             console.error('Error adding rating:', error);
         }
@@ -133,10 +140,10 @@ const Recipes = () => {
         }
         try {
             if (isInShoppingList) {
-                await deleteShoppingListRecipes(userId, id);
+                await deleteShoppingListRecipes(user.id, id);
                 setIsInShoppingList(false);
             } else {
-                await addShoppingListRecipes(userId, id);
+                await addShoppingListRecipes(user.id, id);
                 setIsInShoppingList(true);
             }
         } catch (error) {
@@ -240,7 +247,7 @@ const Recipes = () => {
                                             width="32"
                                             height="32"
                                             viewBox="0 0 576 512"
-                                            fill="#f47f25"
+                                            fill={isInShoppingList ? "#f47f25" : "#f70707"}
                                             stroke="#f47f25"
                                         >
                                             <path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96zM252 160c0 11 9 20 20 20l44 0 0 44c0 11 9 20 20 20s20-9 20-20l0-44 44 0c11 0 20-9 20-20s-9-20-20-20l-44 0 0-44c0-11-9-20-20-20s-20 9-20 20l0 44-44 0c-11 0-20 9-20 20z" />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserInfo, updateUserImage, changePassword } from '../services/users';
+import { updateUserImage, changePassword } from '../services/users';
+import { getUserInfo, updateToken, logout } from '../services/token';
 import { postImage } from '../services/image';
 
 const Profile = ({ userId }) => {
@@ -18,14 +19,10 @@ const Profile = ({ userId }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    const userIn = JSON.parse(storedUser);
-                    const id = userIn.id;
-                    const userInfo = await getUserInfo(id);
-                    setUser(userInfo);
-                }
-                if (!storedUser) {
+                const userInfo = await getUserInfo();
+                setUser(userInfo);
+
+                if (!userInfo) {
                     navigate('/login');
                 }
             } catch (error) {
@@ -53,8 +50,6 @@ const Profile = ({ userId }) => {
                 ...prevUser,
                 image: imageUrl,
             }));
-            const updatedUser = { ...user, image: imageUrl };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
 
             await updateUserImage(user.id, imageUrl);
             setShowImageDialog(false); // Đóng hộp thoại sau khi upload thành công
@@ -85,6 +80,7 @@ const Profile = ({ userId }) => {
             setNewPassword('');
             setConfirmPassword('');
             setShowPasswordDialog(false); // Đóng hộp thoại sau khi thành công
+            //await updateToken();
         } catch (error) {
             setPasswordError('Error changing password. Please try again.');
             console.error('Error changing password:', error);
@@ -94,10 +90,11 @@ const Profile = ({ userId }) => {
     const navigateTo = (path) => {
         navigate(path);
     }
-
     if (!user) {
         return <div>Loading...</div>;
     }
+
+
 
     return (
         <div className="px-40 flex flex-1 justify-center py-5">
@@ -174,17 +171,17 @@ const Profile = ({ userId }) => {
                         <p className="text-[#9c6d49] text-sm">Your username will be used to access your account and log in.</p>
                     </div>
                     <div>
-                        <p className="text-[#1c130d]">{user.username}</p>
+                        <p className="text-[#1c130d]">{user?.username}</p>
                     </div>
                 </div>
                 {/* Email Setting */}
                 <div className="flex items-center gap-4  px-4 py-2 justify-between">
                     <div>
                         <p className="text-[#1c130d] text-base font-medium">Email</p>
-                        <p className="text-[#9c6d49] text-sm"></p>
+                        <p className="text-[#9c6d49] text-sm">Your email will be used to access your account and log in.</p>
                     </div>
                     <div>
-                        <p className="text-[#1c130d]">{user.email}</p>
+                        <p className="text-[#1c130d]">{user?.email}</p>
                     </div>
                 </div>
 
@@ -252,7 +249,7 @@ const Profile = ({ userId }) => {
                 <div className="flex flex-wrap justify-between gap-3 p-4">
                     <p className="text-[#1c130d] text-[22px] font-bold leading-tight">Your recipe box</p>
                 </div>
-                <div onClick={() => navigateTo('/manage')} className="flex items-center gap-4  px-4 py-2 justify-between">
+                <div onClick={() => navigateTo('/favourite')} className="flex items-center gap-4  px-4 py-2 justify-between">
                     <div>
                         <p className="text-[#1c130d] text-base font-medium">Liked Recipes</p>
                         <p className="text-[#9c6d49] text-sm">View all of your liked recipes</p>

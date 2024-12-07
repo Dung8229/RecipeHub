@@ -46,7 +46,7 @@ const isTokenValidAdmin = async () => {
   }
 };
 
-const getUserInfo = async (token = window.localStorage.getItem('token')) => {
+export const getUserInfo = async (token = window.localStorage.getItem('token')) => {
   if (!token) {
     console.error('Token is missing. Please log in.');
     return null;
@@ -58,9 +58,9 @@ const getUserInfo = async (token = window.localStorage.getItem('token')) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
     // Trả về dữ liệu từ response
     return response.data; // Dữ liệu đã được parse sẵn
+
   } catch (error) {
     if (error.response && error.response.status === 403) {
       console.error('Forbidden: Invalid token.');
@@ -72,6 +72,26 @@ const getUserInfo = async (token = window.localStorage.getItem('token')) => {
     return null;
   }
 };
+
+export const logout = () => {
+  window.localStorage.removeItem('token');
+}
+
+export const updateToken = async () => {
+  try {
+    const token = window.localStorage.getItem('token');
+
+    const response = await axios.post(`${baseUrl}/update-token`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    );
+    localStorage.setItem('token', response.data.token);
+  } catch (error) {
+    console.error('Error updating token:', error);
+  }
+}
 
 export default {
   getUserInfo,

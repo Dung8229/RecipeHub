@@ -48,6 +48,18 @@ const RecipeSection = ({ title, type }) => {
     navigate(`/recipes/${id}/information`);
   };
 
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span key={i} className={`text-2xl`} style={{ color: i <= rating ? '#f74002' : 'gray' }}>
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
+
   return (
     <section className="py-8 relative">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
@@ -62,6 +74,12 @@ const RecipeSection = ({ title, type }) => {
             <img src={recipe.image} alt={recipe.title} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="text-lg font-bold mb-2">{recipe.title}</h3>
+              <div className="flex items-center">
+                {renderStars(recipe.RecipeAverageRating?.averageUserRating || 0)}
+                <span className="ml-2 text-base text-gray-600">
+                  ({recipe.RecipeAverageRating?.totalUserRatings || 0})
+                </span>
+              </div>
             </div>
           </div>
         ))}

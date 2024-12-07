@@ -50,8 +50,11 @@ usersRouter.post('/login', async (req, res) => {
         const token = jwt.sign(
             {
                 id: userlogin.id,
+                email: userlogin.email,
                 username: userlogin.username,
-                role: userlogin.role
+                role: userlogin.role,
+                image: userlogin.image,
+
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' } // Token hết hạn sau 1 giờ
@@ -63,6 +66,27 @@ usersRouter.post('/login', async (req, res) => {
         return res.status(500).json({ error: 'Failed to log in' });
     }
 });
+
+// usersRouter.get('/logout', async (req, res) => {
+//     res.clearCookie('token');
+//     res.json({ message: 'Logged out' });
+// });
+
+// usersRouter.post('/update-token', middleware.authenticateJWT, async (req, res) => {
+//     const token = jwt.sign(
+//         {
+//             id: req.user.id,
+//             username: req.user.username,
+//             role: req.user.role,
+//             image: req.user.image,
+//             email: req.user.email,
+//         },
+//         process.env.JWT_SECRET,
+//         { expiresIn: '1h' }
+//     );
+//     res.json({ token, userlogin: { id: userlogin.id, email: userlogin.email, username: userlogin.username, image: userlogin.image, display_name: userlogin.display_name, email: userlogin.email } });
+
+// });
 
 
 // API thêm người dùng mới (cho admin)
@@ -113,7 +137,7 @@ usersRouter.get('/', async (req, res) => {
 
 // Lấy thông tin người dùng theo ID
 usersRouter.get('/:id', middleware.authenticateJWT, async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.user.id;
     try {
         const user = await User.findOne({ where: { id } });
         if (!user) {

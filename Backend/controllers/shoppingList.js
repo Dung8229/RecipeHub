@@ -88,16 +88,12 @@ shoppingListRouter.get('/recipes', middleware.authenticateJWT, async (req, res) 
 });
 
 // Thêm công thức vào shopping list
-shoppingListRouter.post('/recipes', middleware.authenticateJWT, (req, res) => {
-  const userId = req.user.id; // Lấy userId từ req.user (đã được middleware authenticateJWT gán vào)
-
-  if (!userId) {
-    return res.status(400).json({ error: 'User ID is required' });
-  }
+shoppingListRouter.post('/recipes', (req, res) => {
 
   try {
-    const { recipeId } = req.body;
-    shoppingList.push({ userId, recipeId });
+    const { userId, recipeId } = req.body;
+    console.log('ADD LIST:', req.body);
+    ShoppinglistRecipe.create({ userId: userId, recipeId: recipeId });
     res.status(201).json({ message: 'Recipe added to shopping list' });
   } catch (error) {
     logger.error('Error adding recipe to shopping list:', error);
@@ -106,14 +102,9 @@ shoppingListRouter.post('/recipes', middleware.authenticateJWT, (req, res) => {
 });
 
 // Xóa công thức khỏi shopping list
-shoppingListRouter.delete('/recipes/:recipeId', middleware.authenticateJWT, async (req, res) => {
-  const userId = req.user.id;
-  const { recipeId } = req.params;
-
-  if (!userId) {
-    return response.status(400).json({ error: 'User ID is required' }); // Sửa lại `response`
-  }
-
+shoppingListRouter.delete('/recipes/:recipeId/user/:userId', async (req, res) => {
+  const recipeId = req.params.recipeId;
+  const userId = req.params.userId;
   try {
     // Thực hiện xóa công thức khỏi danh sách trong database
     const deleted = await ShoppinglistRecipe.destroy({
@@ -131,7 +122,7 @@ shoppingListRouter.delete('/recipes/:recipeId', middleware.authenticateJWT, asyn
     return res.status(204).send(); // No Content
   } catch (error) {
     logger.error('Error removing recipe from shopping list:', error);
-    return response.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
@@ -242,6 +233,22 @@ shoppingListRouter.post('/ingredients', middleware.authenticateJWT, async (req, 
   } catch (error) {
     console.error('Error fetching ingredients:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+shoppingListRouter.get('/check', async (req, res) => {
+  try {
+    //const { userId } = req.params; // Corrected destructuring
+    const { userId, recipeId } = req.query; // Extract from query
+    const isInList = await ShoppinglistRecipe.findOne({ where: { userId, recipeId } });
+    if (isInList) {
+      res.json({ isInList: true });
+    } else {
+      res.json({ isInList: false });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+    console.log(error);
   }
 });
 

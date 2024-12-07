@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { getFavourites, removeFavourite } from '../services/favourites.js';
 import { useNavigate } from 'react-router-dom';
+import { getUserInfo } from '../services/token';
 const FavouritesPage = () => {
     const [favourites, setFavourites] = useState([]);
+    const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
-    let userId;
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        const userIn = JSON.parse(storedUser);
-        userId = userIn.id;
-    }
-    if (!storedUser) {
-        navigate('/login');
-    }
-
-
     useEffect(() => {
         const fetchData = async () => {
+            const userInfo = await getUserInfo();
+            if (!userInfo) navigate('/login');
+            setUserId(userInfo.id);
             const data = await getFavourites(userId);
             setFavourites(data);
         };
@@ -25,6 +19,7 @@ const FavouritesPage = () => {
     }, [userId]);
 
     const handleRemoveClick = async (recipeId) => {
+        console.log('Remove userId:', userId);
         await removeFavourite(userId, recipeId);
         setFavourites(favourites.filter(fav => fav.recipeId !== recipeId));
     };
@@ -55,7 +50,7 @@ const FavouritesPage = () => {
                                     ></div>
                                     <div>
                                         <p className="text-[#1c130d] text-base font-medium">{fav.Recipe.title}</p>
-                                        <p className="text-[#9c6d49] text-sm">{fav.Recipe.readyInMinutes} minutes to finish</p>
+                                        <p className="text-[#9c6d49] text-sm">Made by {fav.Recipe.User.username}</p>
                                     </div>
                                 </div>
 

@@ -7,10 +7,15 @@ export const getRecipeComments = async (recipeId) => {
     return response.data;
 };
 
-export const addComment = async (userId, recipeId, commentText) => {
+export const addComment = async (recipeId, commentText) => {
+    const token = localStorage.getItem('token');
     const response = await axios.post(`${baseUrl}/recipes/${recipeId}/comments`, {
-        userId,
+
         commentText,
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
     });
     return response.data;
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Recipe = require('../models/recipe');
 const { Op } = require('sequelize');
-
+const RecipeAverageRating = require('../models/recipe_averagerating');
 
 // Route to get latest 5 recipes
 router.get('/latest', async (req, res) => {
@@ -26,6 +26,9 @@ router.get('/trending', async (req, res) => {
             attributes: ['id', 'title', 'image'],
             order: [['views', 'DESC']],
             limit: 5,
+            include: [
+                { model: RecipeAverageRating, attributes: ['averageUserRating', 'totalUserRatings'] }
+            ]
         });
         res.json(trendingRecipes);
     } catch (error) {
@@ -42,6 +45,9 @@ router.get('/popular', async (req, res) => {
         const popularRecipes = await Recipe.findAll({
             order: [['likes', 'DESC']],
             limit: 10,
+            include: [
+                { model: RecipeAverageRating, attributes: ['averageUserRating', 'totalUserRatings'] }
+            ]
         });
 
         res.json(popularRecipes);

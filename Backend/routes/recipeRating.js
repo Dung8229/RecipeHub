@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const RecipeRating = require('../models/recipe_rating');
+const RecipeAverageRating = require('../models/recipe_averagerating');
 const User = require('../models/user');
 
 // Route để lấy tất cả các đánh giá của một công thức nấu ăn và tính toán đánh giá trung bình
@@ -45,6 +46,23 @@ router.post('/:id/ratings', async (req, res) => {
         } else {
             const newRating = await RecipeRating.create({ userId, recipeId, rating });
             res.status(201).json(newRating);
+        }
+        // Calculate the new average rating
+        const ratings = await RecipeRating.findAll({ where: { recipeId } });
+        const totalRatings = ratings.length;
+        const sumRatings = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+        const averageRating = (sumRatings / totalRatings).toFixed(1);
+
+        // Update the RecipeAverageRating model
+        const [averageRatingRecord, created] = await RecipeAverageRating.findOrCreate({
+            where: { recipeId },
+            defaults: { averageUserRating: averageRating, totalUserRatings: totalRatings }
+        });
+
+        if (!created) {
+            averageRatingRecord.averageUserRating = averageRating;
+            averageRatingRecord.totalUserRatings = totalRatings;
+            await averageRatingRecord.save();
         }
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });

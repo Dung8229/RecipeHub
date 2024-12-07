@@ -3,6 +3,8 @@ const router = express.Router();
 const RecipeComment = require('../models/recipe_comment');
 const User = require('../models/user');
 const Recipe = require('../models/recipe');
+const middleware = require('../utils/middleware')
+
 // Route để lấy tất cả các comment của một công thức nấu ăn theo ID
 router.get('/:id/comments', async (req, res) => {
     try {
@@ -30,11 +32,12 @@ router.get('/:id/comments', async (req, res) => {
 
 //Add route post to add a comment
 // Route để thêm comment vào một công thức nấu ăn
-router.post('/:id/comments', async (req, res) => {
+router.post('/:id/comments', middleware.authenticateJWT, async (req, res) => {
     console.log(req.body);
     try {
         const recipeId = req.params.id;
-        const { userId, commentText } = req.body;
+        const userId = req.user.id;
+        const { commentText } = req.body;
         if (!userId || !commentText) {
             return res.status(400).json({ error: 'userId and commentText are required' });
         }

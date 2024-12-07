@@ -35,9 +35,8 @@ export const deleteUser = async (userId) => {
     }
 };
 
-export const getUserInfo = async (userId) => {
+export const getUserInfo = async () => {
     const token = window.localStorage.getItem('token');
-    console.log(token)
     // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
     const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,6 +44,7 @@ export const getUserInfo = async (userId) => {
 
     try {
         const response = await axios.get(`${baseUrl}/${userId}`, config); // Thêm config vào đây
+        console.log('User Info JSON type: ', response.data)
         return response.data;
     } catch (error) {
         console.error('Error fetching user info:', error);

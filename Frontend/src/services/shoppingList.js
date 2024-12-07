@@ -1,14 +1,10 @@
 import axios from 'axios';
 
-const baseUrl = '/api/shoppinglist';
+const baseUrl = '/api/shoppingList';
 
-export const addShoppingListRecipes = async () => {
+export const addShoppingListRecipes = async (userId, recipeId) => {
     try {
-        const token = localStorage.getItem('token'); // Get the token from localStorage
-        const config = {
-            headers: { Authorization: `Bearer ${token}` },
-        };
-        const response = await axios.post(`${baseUrl}/recipes`, config);
+        const response = await axios.post(`${baseUrl}/recipes`, { userId, recipeId });
         return response.data;
     } catch (error) {
         console.error('Error fetching shopping list recipes:', error);
@@ -16,13 +12,10 @@ export const addShoppingListRecipes = async () => {
     }
 };
 
-export const deleteShoppingListRecipes = async () => {
+export const deleteShoppingListRecipes = async (userId, recipeId) => {
+    console.log('DELETE:', userId, recipeId);
     try {
-        const token = localStorage.getItem('token'); // Get the token from localStorage
-        const config = {
-            headers: { Authorization: `Bearer ${token}` },
-        };
-        const response = await axios.delete(`${baseUrl}/recipes`, config);
+        const response = await axios.delete(`${baseUrl}/recipes/${recipeId}/user/${userId}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting shopping list recipes:', error);
@@ -32,12 +25,8 @@ export const deleteShoppingListRecipes = async () => {
 
 export const checkShoppingList = async (userId, recipeId) => {
     try {
-        const token = localStorage.getItem('token'); // Get the token from localStorage
-        const config = {
-            headers: { Authorization: `Bearer ${token}` },
-        };
-        const response = await axios.get(`${baseUrl}/recipes/${recipeId}`, config);
-        return response.data;
+        const response = await axios.get(`${baseUrl}/check`, { params: { userId, recipeId } });
+        return response.data.isInList;
     } catch (error) {
         console.error('Error checking shopping list:', error);
         throw error;

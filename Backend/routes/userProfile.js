@@ -4,10 +4,10 @@ const User = require('../models/user');
 const middleware = require('../utils/middleware')
 const bcrypt = require('bcrypt');
 // Route để lấy thông tin người dùng
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', middleware.authenticateJWT, async (req, res) => {
     try {
         console.log(req.header('Authorization')); // Thêm dòng này để kiểm tra token nhận được
-        const userId = req.params.userId;
+        const userId = req.params;
         const user = await User.findByPk(userId, {
             attributes: ['username', 'email', 'password', 'googleId', 'facebookId', 'image', 'display_name']
         });
@@ -24,7 +24,7 @@ router.get('/:userId', async (req, res) => {
 
 
 // Route to update user's image URL
-router.put('/:id/image', async (req, res) => {
+router.put('/:id/image', middleware.authenticateJWT, async (req, res) => {
     try {
         const { id } = req.params;
         const { imageUrl } = req.body;
