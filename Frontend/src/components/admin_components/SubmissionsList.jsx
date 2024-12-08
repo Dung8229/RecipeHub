@@ -32,7 +32,7 @@ const SubmissionsList = ({ competitionId }) => {
   
     try {
       await competitionService.deleteSubmission(competitionId, submissionId);
-      alert('User removed!');
+      alert('Submission removed!');
       setSubmissions((prevSubmissions) =>
         prevSubmissions.filter((s) => s.submissionId !== submissionId)
       );

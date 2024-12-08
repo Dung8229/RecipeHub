@@ -26,7 +26,7 @@ const Recipe = sequelize.define('Recipe', {
   },
   imageType: {
     type: DataTypes.STRING,
-    allowNull: true,
+    defaultValue: "png",
   },
   summary: {
     type: DataTypes.TEXT, // Sử dụng TEXT để lưu trữ nhiều nội dung hơn
@@ -55,7 +55,10 @@ const Recipe = sequelize.define('Recipe', {
     allowNull: true,
     defaultValue: 0,
   },
-
+  isSubmission: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 }, {
   timestamps: true, // Sử dụng timestamps để tự động thêm createdAt và updatedAt
   createdAt: 'created_at', // Tùy chỉnh tên cột createdAt

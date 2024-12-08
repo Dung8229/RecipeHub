@@ -24,7 +24,7 @@ const ProgressBar = ({ startDate, winnerSelectionStart, endDate }) => {
   }
 
   return (
-    <div className="w-full p-4 max-w-6xl mx-auto">
+    <div className="w-full p-4 mx-auto">
       <p className="text-lg font-bold mb-2">Progress</p>
 
       {/* Hiển thị ngày bắt đầu và kết thúc */}

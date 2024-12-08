@@ -42,6 +42,7 @@ export default {
       fontFamily: {
         primary: ['Poppins', 'sans-serif'], // Font chính
         secondary: ['Roboto', 'sans-serif'], // Font phụ
+        handwriting: ['Qwitcher Grypen', 'sans-serif']
       },
       // Kích thước font chữ (UI)
       fontSize: {

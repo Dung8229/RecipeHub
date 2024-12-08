@@ -5,7 +5,7 @@ interface Recipe {
   id: number;
   title: string;
   readyInMinutes: number;
-  difficulty: string;
+  // difficulty: string;
   rating: number;
   username: string;
 }
@@ -14,9 +14,10 @@ interface RecipeListProps {
   recipes: Recipe[];
   showAllRecipes: boolean;
   onViewMore: () => void;
+  onRecipeSelect: (recipe: Recipe) => void;
 }
 
-const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onViewMore }) => {
+const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onViewMore, onRecipeSelect }) => {
   const displayedRecipes = showAllRecipes ? recipes : recipes.slice(0, 8);
   const formatRating = (rating: any): string => {
     const numRating = Number(rating);
@@ -26,7 +27,7 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onView
     <div className="w-3/4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {displayedRecipes.map((recipe) => (
-          <div key={recipe.id} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 hover:scale-105 border-2 border-[#ff8c00]">
+          <div key={recipe.id} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 hover:scale-105 border-2 border-[#ff8c00]" onClick={() => onRecipeSelect(recipe)}>
             <img src={recipe.image} alt={recipe.title} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-2">{recipe.title}</h3>
@@ -34,9 +35,9 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes, showAllRecipes, onView
                 <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-clock"></i> {recipe.readyInMinutes} min
                 </p>
-                <p className="text-sm text-[#8a7060] flex items-center gap-4">
+                {/* <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-chart-line"></i> {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
-                </p>
+                </p> */}
 
                 <p className="text-sm text-[#8a7060] flex items-center gap-4">
                   <i className="fas fa-user"></i> By {recipe.username}

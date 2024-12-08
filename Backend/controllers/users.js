@@ -3,6 +3,14 @@ const logger = require('../utils/logger');
 const middleware = require('../utils/middleware');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const Recipe = require('../models/recipe')
+const RecipeComment = require('../models/recipe_comment');
+const ShoppinglistRecipe = require('../models/shoppinglist_recipe');
+const RecipeRating = require('../models/recipe_rating');
+const RecipeIngredient = require('../models/recipe_ingredient')
+const Favourite = require('../models/favourites');
+const CompetitionEntry = require('../models/competition_entry');
+const RecipeTag = require('../models/recipe_tag')
 
 const jwt = require('jsonwebtoken');
 
@@ -24,7 +32,8 @@ usersRouter.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             role: 'user',
-            verified: false
+            verified: false,
+            image: '/anoynymus-avatar.png'
         });
 
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
@@ -179,20 +188,54 @@ usersRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     }
 });
 
-// Xóa người dùng (dành cho admin)
-usersRouter.delete('/:userId', middleware.authenticateJWT, middleware.authorizeAdmin, async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const user = await User.findByPk(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        await user.destroy();
-        res.status(200).json({ message: 'User deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).json({ error: 'Failed to delete user' });
-    }
+///////////////API endpoint cho admin/////////////////////
+// Tạo router riêng cho admin
+
+// Lấy tất cả người dùng (Admin)
+usersRouter.get('/', async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
 });
+
+// Xóa người dùng (Admin)
+usersRouter.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // Tìm và xóa các công thức do người dùng tạo
+    const userRecipes = await Recipe.findAll({ where: { userId: id } });
+    const recipeIds = userRecipes.map((recipe) => recipe.id);
+
+    // Xóa các bản ghi liên quan trong các bảng khác
+    await RecipeComment.destroy({ where: { recipeId: recipeIds } });
+    await ShoppinglistRecipe.destroy({ where: { recipeId: recipeIds } });
+    await RecipeRating.destroy({ where: { recipeId: recipeIds } });
+    await Favourite.destroy({ where: { recipeId: recipeIds } });
+    await CompetitionEntry.destroy({ where: { userId: id } });
+    await RecipeIngredient.destroy({ where: { recipeId: recipeIds } })
+    await RecipeTag.destroy({ where: { recipe_id: recipeIds } })
+
+    // Xóa công thức của người dùng
+    await Recipe.destroy({ where: { userId: id } });
+
+    // Xóa người dùng
+    await user.destroy();
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+// Gắn adminRouter vào usersRouter chính
+//////////////////////////////////////////////////////////
 
 module.exports = usersRouter

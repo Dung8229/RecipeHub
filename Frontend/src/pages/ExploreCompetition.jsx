@@ -44,7 +44,7 @@ const ExploreCompetitionPage = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       <h1 className="font-bold text-slate-900 text-2xl sm:text-2xl md:text-3xl leading-tight p-6">
         Competitions
       </h1>

@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTrendingRecipes, getLatestRecipes } from '../services/recipes'; // Ensure these functions are correctly imported
+import RecipeCard from './RecipeCard';
+import { useEffect, useState } from 'react';
+// File này để design cho từng mục chứa cái Recipe Card
+// Chẳng hạn cái HomePage nó có 2 mục là Trending Recipes và Most Popular Recipes
 
 const RecipeSection = ({ title, type }) => {
   const [recipes, setRecipes] = useState([]); // Initialize as an empty array

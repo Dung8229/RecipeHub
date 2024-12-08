@@ -6,7 +6,7 @@ import tokenService from '../../services/token'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const Banner = ({ competitionId, title, image, description, detailDescription, startDate, endDate, winnerSelectionDate }) => {
+const Banner = ({ competitionId, title, image, description, detailDescription, startDate, endDate, winnerSelectionDate, isEntryExisted, submissionId }) => {
   const now = new Date();
   const navigate = useNavigate()
   const [userData, setUserData] = useState(null)
@@ -15,6 +15,16 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
 
   const toggleDetail = () => {
     setDetailVisible(!isDetailVisible);
+  };
+
+  const handleNavigateEntry = () => {
+    if (!isEntryExisted) {
+      // Nếu chưa có bài dự thi, điều hướng đến trang submit-entry
+      navigate(`/competitions/${competitionId}/submit-entry`);
+    } else {
+      // Nếu đã có bài dự thi, điều hướng đến trang view-entry
+      navigate(`/recipes/${submissionId}/information`);
+    }
   };
 
   // Hàm đăng ký tham gia cuộc thi
@@ -117,9 +127,9 @@ const Banner = ({ competitionId, title, image, description, detailDescription, s
                 {isRegistered && new Date(startDate) <= now && (
                   <button
                     className="bg-secondaryBackground hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold py-1 sm:py-2 md:py-3 px-6 md:px-7 lg:px-8 rounded-full"
-                    onClick={() => navigate(`/competitions/${competitionId}/submit`)}
+                    onClick={handleNavigateEntry}
                   >
-                    Submit Entry
+                    {isEntryExisted ? "View your entry" : "Submit entry"}
                   </button>
                 )}
               </>

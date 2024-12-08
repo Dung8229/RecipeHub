@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import competitionService from '../../services/competitions';
+import { Link } from 'react-router-dom';
 
 const WinnerList = ({ competitionId }) => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -86,23 +87,25 @@ const DraggableEntry = ({ entry, index, moveEntry }) => {
   });
 
   return (
-    <div
-      ref={(node) => ref(drop(node))}
-      className="flex items-center justify-between bg-gray-100 p-4 rounded-lg mb-4 shadow-sm"
-    >
-      <div className="flex items-center">
-        <img
-          src={entry.recipeImage}
-          alt={entry.recipeTitle}
-          className="w-16 h-16 object-cover rounded-lg mr-4"
-        />
-        <div>
-          <p className="font-bold text-lg">{entry.recipeTitle}</p>
-          <p className="text-gray-700">By: {entry.username}</p>
-          <p className="text-sm text-gray-500">Score: {entry.score}</p>
+    <Link to={`/recipes/${entry.recipeId}/information`} className="block">
+      <div
+        ref={(node) => ref(drop(node))}
+        className="flex items-center justify-between bg-gray-100 p-4 rounded-lg mb-4 shadow-sm hover:border-primary hover:border-2"
+      >
+        <div className="flex items-center">
+          <img
+            src={entry.recipeImage}
+            alt={entry.recipeTitle}
+            className="w-16 h-16 object-cover rounded-lg mr-4"
+          />
+          <div>
+            <p className="font-bold text-lg">{entry.recipeTitle}</p>
+            <p className="text-gray-700">By: {entry.username}</p>
+            <p className="text-sm text-gray-500">Score: {entry.score}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

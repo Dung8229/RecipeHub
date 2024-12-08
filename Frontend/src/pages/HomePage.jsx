@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
 import ContestBanner from '../components/ContestBanner';
 import RecipeSection from '../components/RecipeSection';
-import Footer from '../components/Footer';
-
 function HomePage() {
   const contestBanners = [
     {
@@ -40,21 +37,11 @@ function HomePage() {
 
   return (
     <div>
-      <Header />
-      <main className=' px-40 py-5 flex flex-col items-center justify-center min-h-screen pt-32'>
-
-        {/* Only render the current banner */}
-        <ContestBanner
-          backgroundImage={contestBanners[currentBannerIndex].backgroundImage}
-          title={contestBanners[currentBannerIndex].title}
-          description={contestBanners[currentBannerIndex].description}
-          link={contestBanners[currentBannerIndex].link}
-        />
-
-        <RecipeSection title="Trending Recipes" type="trending" />
-        <RecipeSection title="Lastest Recipes" type="latest" />
+      <main className=''>
+        <ContestBanner />
+        <RecipeSection title= "Trending Recipes" />
+        <RecipeSection title= "Most Popular Recipes" />
       </main>
-      <Footer />
     </div>
   );
 }

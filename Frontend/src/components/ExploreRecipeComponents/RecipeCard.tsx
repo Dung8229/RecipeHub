@@ -1,20 +1,22 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface RecipeCardProps {
+  id: number; // Thêm id để xác định công thức
   name: string;
   time: number;
   rating: number;
   image: string;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ name, time, rating, image }) => (
-  <div className="flex flex-col gap-3">
+const RecipeCard: React.FC<RecipeCardProps> = ({ id, name, time, rating, image }) => (
+  <Link to={`/recipes/${id}/information`} className="flex flex-col gap-3">
     <img src={image} alt={name} className="w-full h-40 object-cover rounded-xl" />
     <div>
       <h3 className="text-base font-medium text-[#181311]">{name}</h3>
       <p className="text-sm text-[#8a7060]">{time} min · {rating} ★</p>
     </div>
-  </div>
+  </Link>
 );
 
 export default RecipeCard;

@@ -10,6 +10,7 @@ const AdminCreateCompetitionForm = ({ addNewCompetition }) => {
     description: '',
     detailDescription: '',
     startDate: '',
+    winnerSelectionStartDate: '',
     endDate: '',
     prize: '',
   });
@@ -52,6 +53,7 @@ const AdminCreateCompetitionForm = ({ addNewCompetition }) => {
         formData.description,
         formData.detailDescription,
         formData.startDate,
+        formData.winnerSelectionStartDate,
         formData.endDate,
         formData.prize
       )
@@ -70,6 +72,7 @@ const AdminCreateCompetitionForm = ({ addNewCompetition }) => {
         description: '',
         detailDescription: '',
         startDate: '',
+        winnerSelectionStartDate: '',
         endDate: '',
         prize: '',
       });
@@ -193,6 +196,19 @@ const AdminCreateCompetitionForm = ({ addNewCompetition }) => {
           type="date"
           name="startDate"
           value={formData.startDate}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded-md"
+          required
+        />
+      </div>
+
+      {/* Selection Date */}
+      <div className="mb-4">
+        <label className="block font-medium text-gray-700">Winner Selection Start Date</label>
+        <input
+          type="date"
+          name="winnerSelectionStartDate"
+          value={formData.winnerSelectionStartDate}
           onChange={handleChange}
           className="w-full px-3 py-2 border rounded-md"
           required

@@ -4,6 +4,7 @@ import Banner from '../components/competition_components/Banner'
 import ProgressBar from '../components/competition_components/ProgressBar'
 import Leaderboard from '../components/competition_components/Leaderboard'
 import WinnerAnnouncement from '../components/competition_components/WinnerAnnouncement'
+import Prize from '../components/competition_components/Prize'
 import { useParams } from 'react-router-dom'
 
 const CompetitionDetailPage = () => {
@@ -11,13 +12,15 @@ const CompetitionDetailPage = () => {
   const [competition, setCompetition] = useState(null)
   const [leaderboardData, setLeaderboardData] = useState([])
   const [winner, setWinner] = useState(null)
+  const [isEntryExisted, setIsEntryExisted] = useState(null)
+  const [submissionId, setSubmissionId] = useState(null)
   const [isCompetitionOver, setIsCompOver] = useState(false)
 
   const fetchCompetitionDetail = async () => {
     try {
       const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
-      console.log('Competition data:', data)
+      console.log('Prize given:', competition.prizeGiven)
       setIsCompOver(new Date(data.endDate) < new Date());
     } catch (error) {
       console.error('Error fetching competition details:', error);
@@ -36,8 +39,20 @@ const CompetitionDetailPage = () => {
     }
   }
 
+  const fetchEntryData = async () => {
+    const entryData = await competitionService.getEntryDetail(id)
+    if (!entryData.isEntrySubmitted) {
+      setIsEntryExisted(false)
+    } else {
+      setIsEntryExisted(true)
+      setSubmissionId(entryData.submissionId)
+      console.log("This runs")
+    }
+  }
+
   useEffect(() => {
     fetchCompetitionDetail(); // Gọi hàm khi component được mount
+    fetchEntryData()
     fetchCompetitionLeaderboard()
   }, [id]);
 
@@ -53,6 +68,8 @@ const CompetitionDetailPage = () => {
           startDate={competition?.startDate || 'No start date'}
           endDate={competition?.endDate || 'No end date'} 
           winnerSelectionDate={competition?.winnerSelectionStartDate || 'No selcetion date'}
+          isEntryExisted={isEntryExisted}
+          submissionId={submissionId}
         />
         <ProgressBar
           startDate={competition?.startDate || 'No start date'}
@@ -69,6 +86,10 @@ const CompetitionDetailPage = () => {
           score={winner.score}
         />
         ) : null}
+        <Prize 
+          prize={competition?.prize || 'No prize'} 
+          prizeGiven={competition?.prizeGiven ?? 'No prize given'}
+        />
         <Leaderboard entries={leaderboardData} />
       </div>
     </div>

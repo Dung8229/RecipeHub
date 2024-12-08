@@ -1,16 +1,35 @@
 import axios from 'axios'
+import tokenService from './token'
 
 const baseUrl = '/api/users'
 
 const getToken = () => {
-    const token = window.localStorage.getItem('token'); // Lấy token từ localStorage
-    return token
-}
+    // First check localStorage
+    const token = window.localStorage.getItem('token');
+    if (token) {
+      return token;
+    }
+  
+    // If not in localStorage, get from cookie
+    const tokenFromCookie = Cookies.get('token');
+    if (tokenFromCookie) {
+      return tokenFromCookie;
+    }
+    console.log("token from cookie: ", tokenFromCookie)
+  
+    return null;
+  }
 
+/////////////////Services cho admin/////////////////
 // Lấy danh sách người dùng
-export const getUsers = async () => {
+const getAllUsers = async () => {
+    const token = tokenService.getToken();
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+
     try {
-        const response = await axios.get(baseUrl);
+        const response = await axios.get(`${baseUrl}`, config);
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -19,15 +38,14 @@ export const getUsers = async () => {
 };
 
 // Xóa người dùng
-export const deleteUser = async (userId) => {
-    const token = window.localStorage.getItem('token');
-    // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
+const deleteUser = async (userId) => {
+    const token = tokenService.getToken();
     const config = {
         headers: { Authorization: `Bearer ${token}` },
-    }
+    };
 
     try {
-        const response = await axios.delete(`${baseUrl}/${userId}`, config); // Gửi thêm token qua config
+        const response = await axios.delete(`${baseUrl}/${userId}`, config);
         return response.data;
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -82,3 +100,25 @@ export const changePassword = async (userId, currentPassword, newPassword) => {
         throw error;
     }
 };
+const getUserData = async (userId) => {
+    const token = tokenService.getToken();
+    // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    }
+
+  try {
+    const response = await axios.get(`${baseUrl}/${userId}`, config);
+    console.log('User: ', response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user id:', error);
+    throw error;
+  }
+}
+
+export default {
+  getAllUsers,
+  deleteUser,
+  getUserData,
+}

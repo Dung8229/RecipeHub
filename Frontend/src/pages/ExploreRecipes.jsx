@@ -3,15 +3,20 @@ import Header from '../components/ExploreRecipeComponents/Header';
 import Sidebar from '../components/ExploreRecipeComponents/Sidebar';
 import RecipeList from '../components/ExploreRecipeComponents/RecipeList';
 import axios from 'axios';
+// import { addRecipeToShoppingList } from '../services/shoppinglists';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ExploreRecipes = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isFromShoppingList = location.state?.fromShoppingList;
+
   const [showAllRecipes, setShowAllRecipes] = useState(false);
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState({
     category: '',
     ingredient: '',
     cookingTime: '',
-    difficulty: '',
     searchTerm: '',
     sortBy: 'newest'
   });
@@ -60,13 +65,16 @@ const ExploreRecipes = () => {
     }));
   };
 
+  const handleRecipeSelect = (recipe) => {
+    navigate(`/recipes/${recipe.id}/information`);
+  };
+
   useEffect(() => {
     handleSearch();
   }, [filters]);
 
   return (
     <div className="w-full min-h-screen bg-white">
-      <Header />
       <main className="container mx-auto px-6 py-5 flex flex-col md:flex-row gap-6">
         <Sidebar 
           filters={filters}
@@ -81,6 +89,7 @@ const ExploreRecipes = () => {
           recipes={recipes} 
           showAllRecipes={showAllRecipes} 
           onViewMore={handleViewMore} 
+          onRecipeSelect={handleRecipeSelect}
         />
       </main>
     </div>

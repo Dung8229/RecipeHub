@@ -32,8 +32,8 @@ const Login = () => {
       })
       .then((data) => {
         // Lưu token vào localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.userlogin));
+        window.localStorage.setItem('token', data.token);
+        window.localStorage.setItem('user', JSON.stringify(data.userlogin));
         window.location.href = 'http://localhost:5173';
       })
       .catch((error) => {
@@ -151,6 +151,7 @@ const SocialLoginOptions = () => (
       GOOGLE
     </a>
   </div>
+  
 );
 
 export default Login;
