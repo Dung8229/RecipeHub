@@ -14,9 +14,6 @@ const imageUploadRouter = require('./controllers/imageUpload')
 const tokenRouter = require('./controllers/token')
 const shoppinglistRouter = require('./controllers/shoppinglist')
 const commentRouter = require('./controllers/commentController')
-const logger = require('./utils/logger')
-const middleware = require('./utils/middleware')
-const sequelize = require('./db')
 const recipesRouter = require('./controllers/recipes')
 const { setupGoogleAuth, setupFacebookAuth } = require('./auth/auth-setup');
 const path = require('path');
@@ -102,7 +99,7 @@ app.get('/auth/facebook/callback', (req, res, next) => {
 // Routes
 app.use('/api/users', usersRouter);
 app.use('/api/competitions', competitionsRouter);
-app.use('/api/shoppingList', shoppingListRouter)
+app.use('/api/shoppingList', shoppinglistRouter)
 
 app.use('/api/image', imageUploadRouter)
 app.use('/api/token', tokenRouter)
@@ -121,6 +118,7 @@ app.use('/api/recipes', recipeInstructionsRouter); // /api/recipes/:id/instructi
 app.use('/api/recipes', recipeComment); // /api/recipes/:id/comments
 app.use('/api/recipes', recipeRouter); // /api/recipes
 app.use('/api/recipes', recipeRatings); // /api/recipeRatings
+app.use('/api/recipes', recipesRouter)
 
 // Middleware xử lý lỗi
 app.use(middleware.unknownEndpoint);

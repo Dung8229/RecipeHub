@@ -4,7 +4,7 @@ const User = require('./user')
 const Recipe = require('./recipe')
 
 const RecipeComment = sequelize.define('RecipeComment', {
-    commentid: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

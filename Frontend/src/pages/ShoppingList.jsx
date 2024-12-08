@@ -48,10 +48,14 @@ const ShoppingList = () => {
       const response = await shoppinglistService.removeRecipe(recipeId); // Gọi service xóa công thức
       console.log('Recipe removed:', response); // Log kết quả trả về nếu cần
 
-      const ingredientsData = await shoppinglistService.getIngredients()
-      setIngredients(ingredientsData);
-
       setRecipes((prevRecipes) => prevRecipes.filter(recipe => recipe.id !== recipeId));
+
+      const servingsData = recipes.map(recipe => ({
+        recipeId: recipe.id, // Đảm bảo sử dụng đúng key
+        servings: recipe.servings
+      }));
+      const ingredientsData = await shoppinglistService.getIngredients(servingsData)
+      setIngredients(ingredientsData);
     } catch (error) {
       console.error('Failed to remove recipe:', error); // Log lỗi
       alert('Failed to remove recipe. Please try again.'); // Hiển thị thông báo lỗi nếu cần
@@ -270,7 +274,10 @@ const ShoppingList = () => {
         </div>
 
         {/* Selected Recipes Section */}
-        <div className="xl:w-1/3 w-full xl:sticky top-[200px] h-[calc(100vh-2rem)] overflow-y-auto">
+        <div 
+          className="xl:w-1/3 w-full xl:sticky top-[200px] overflow-y-auto"
+          style={{ height: `${145 + recipes.length * 72 + (recipes.length-1) * 8}px` }}
+        >
           <RecipeList 
             recipes={recipes} 
             handleRemoveRecipe={handleRemoveRecipe}
@@ -281,11 +288,6 @@ const ShoppingList = () => {
           />
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full h-[338px] bg-white">
-        {/* ... (Phần Footer giữ nguyên như trước) */}
-      </footer>
     </div>
   );
 };

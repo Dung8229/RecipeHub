@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { getFavourites, removeFavourite } from '../services/favourites.js';
 import { useNavigate } from 'react-router-dom';
-import { getUserInfo } from '../services/token';
+import tokenService from '../services/token';
+import { Link } from 'react-router-dom';
 const FavouritesPage = () => {
     const [favourites, setFavourites] = useState([]);
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
-            const userInfo = await getUserInfo();
+            const userInfo = await tokenService.getUserInfo();
             if (!userInfo) navigate('/login');
             setUserId(userInfo.id);
             const data = await getFavourites(userId);
@@ -42,27 +43,29 @@ const FavouritesPage = () => {
                     ) : (
                         favourites.map(fav => (
                             <div key={fav.recipeId} className="flex items-center bg-[#ffffff] px-4 py-3 shadow-md mb-4 rounded-lg">
-                                {/* Bên trái: Ảnh và thông tin */}
-                                <div className="flex items-center gap-4 flex-grow">
-                                    <div
-                                        className="w-14 h-14 bg-cover bg-center rounded-lg"
-                                        style={{ backgroundImage: `url(${fav.Recipe.image || '/path/to/placeholder.png'})` }}
-                                    ></div>
-                                    <div>
-                                        <p className="text-[#1c130d] text-base font-medium">{fav.Recipe.title}</p>
-                                        <p className="text-[#9c6d49] text-sm">Made by {fav.Recipe.User.username}</p>
-                                    </div>
-                                </div>
-
-                                {/* Nút Remove ở bên phải */}
-                                <button
-                                    className="text-base font-medium flex-shrink-0 ml-4"
-                                    onClick={() => handleRemoveClick(fav.recipeId)}
-                                >
-                                    Remove
-                                </button>
+                              {/* Bên trái: Ảnh và thông tin */}
+                              <div className="flex items-center gap-4 flex-grow">
+                                <Link to={`/recipes/${fav.recipeId}/information`} className="flex items-center gap-4 flex-grow">
+                                  <div
+                                    className="w-14 h-14 bg-cover bg-center rounded-lg"
+                                    style={{ backgroundImage: `url(${fav.Recipe.image || '/path/to/placeholder.png'})` }}
+                                  ></div>
+                                  <div>
+                                    <p className="text-[#1c130d] text-base font-medium">{fav.Recipe.title}</p>
+                                    <p className="text-[#9c6d49] text-sm">Made by {fav.Recipe.User.username}</p>
+                                  </div>
+                                </Link>
+                              </div>
+                          
+                              {/* Nút Remove ở bên phải */}
+                              <button
+                                className="text-base font-medium flex-shrink-0 ml-4"
+                                onClick={() => handleRemoveClick(fav.recipeId)}
+                              >
+                                Remove
+                              </button>
                             </div>
-                        ))
+                          ))
                     )}
                 </div>
             </div>

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTrendingRecipes, getLatestRecipes } from '../services/recipes'; // Ensure these functions are correctly imported
 import RecipeCard from './RecipeCard';
-import { useEffect, useState } from 'react';
 // File này để design cho từng mục chứa cái Recipe Card
 // Chẳng hạn cái HomePage nó có 2 mục là Trending Recipes và Most Popular Recipes
 
@@ -65,14 +64,14 @@ const RecipeSection = ({ title, type }) => {
   };
 
   return (
-    <section className="py-8 relative">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      <div className="flex overflow-hidden space-x-4" ref={scrollRef} style={{ scrollSnapType: 'x mandatory' }}>
+    <section className="py-8 relative mx-4">
+      <h1 className="text-6xl text-center text-slate-900 font-bold mb-4 font-handwriting">{title}</h1>
+      <div className="flex overflow-hidden px-1 space-x-4 bg-slate-200 py-4 md:mx-20 max-w-8xl" ref={scrollRef} style={{ scrollSnapType: 'x mandatory' }}>
         {recipes.map((recipe) => (
           <div
             key={recipe.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 cursor-pointer"
-            style={{ width: 'calc(100% / 3)' }} // Adjust the width to show 3 recipes at a time
+            className="bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-primaryHover transition-all duration-300"
+            style={{ width: 'calc(100% / 3 - 12px)' }} // Adjust the width to show 3 recipes at a time
             onClick={() => handleRecipeClick(recipe.id)}
           >
             <img src={recipe.image} alt={recipe.title} className="w-full h-48 object-cover" />

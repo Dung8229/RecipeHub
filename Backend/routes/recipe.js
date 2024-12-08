@@ -59,7 +59,7 @@ router.get('/popular', async (req, res) => {
 
 
 
-router.get('/:id', async (req, res) => {
+router.get('/forInformationPage/:id', async (req, res) => {
     try {
         const recipeId = req.params.id;
 
@@ -84,29 +84,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-
 // Route để thêm mới một công thức
-router.post('/', async (req, res) => {
-    try {
-        const { userId, title, image, imageType, summary, readyInMinutes, servings } = req.body;
-        const newRecipe = await Recipe.create({
-            userId,
-            title,
-            image,
-            imageType,
-            summary,
-            readyInMinutes,
-            servings,
-        });
-        res.status(201).json(newRecipe);
-    } catch (error) {
-        console.error('Error creating recipe:', error);
-        res.status(500).json({ error: 'Something went wrong' });
-    }
-});
-
-
-
-
 
 module.exports = router;

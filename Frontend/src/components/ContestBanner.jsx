@@ -4,7 +4,7 @@ const ContestBanner = ({ backgroundImage, title, description, link }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-full max-w-4xl rounded-lg overflow-hidden shadow-lg justify-center">
+    <div className="relative w-full mx-auto max-w-6xl rounded-lg overflow-hidden shadow-lg justify-center">
       <img src={backgroundImage} alt="Contest Image" className="w-full h-auto" />
       <div className="absolute inset-0 bg-black bg-opacity-25 flex flex-col justify-end items-start p-8">
         <h1 className="text-4xl font-bold text-white mb-2">{title}</h1>

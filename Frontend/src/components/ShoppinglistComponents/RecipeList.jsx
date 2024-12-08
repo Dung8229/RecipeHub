@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const RecipeList = ({ recipes, handleRemoveRecipe, handleRemoveAllRecipes, handleServingsChange, isDirty, handleSaveChanges }) => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const RecipeList = ({ recipes, handleRemoveRecipe, handleRemoveAllRecipes, handl
         ) : (
           // Render danh sách các recipe
           recipes.map((recipe) => (
-            <div
+            <div 
               key={recipe.id}
               className="h-[72px] px-4 py-2 bg-neutral-100 flex justify-between items-center 
                         border border-transparent hover:border-primary rounded-lg transition-all duration-300"
@@ -44,7 +45,11 @@ const RecipeList = ({ recipes, handleRemoveRecipe, handleRemoveAllRecipes, handl
                   />
                 </div>
                 <div>
-                  <h3 className="text-[#141414] text-base font-medium">{recipe.title}</h3>
+                  <h3 className="text-[#141414] text-base font-medium">
+                    <Link to={`/recipes/${recipe.id}/information`} className="hover:underline">
+                      {recipe.title}
+                    </Link>
+                  </h3>
                   <p className="text-[#707070] text-sm">by {recipe.username}</p>
                 </div>
               </div>
@@ -63,7 +68,10 @@ const RecipeList = ({ recipes, handleRemoveRecipe, handleRemoveAllRecipes, handl
                   className="w-20 text-center border border-gray-300 rounded-md p-1"
                 />
                 <button
-                  onClick={() => handleRemoveRecipe(recipe.id)}
+                  onClick={(e) => {
+                    e.preventDefault();  // Ngừng propagation để không trigger Link
+                    handleRemoveRecipe(recipe.id);
+                  }}
                   className="text-black hover:text-red-500 transition-colors"
                 >
                   <FaTimes />

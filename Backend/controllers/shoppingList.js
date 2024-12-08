@@ -43,87 +43,96 @@ const convertToGram = (amount, unit) => {
 
 // Lấy danh sách công thức trong shopping list
 shoppingListRouter.get('/recipes', middleware.authenticateJWT, async (req, res) => {
-  const userId = req.user.id; // Lấy userId từ req.user (đã được middleware authenticateJWT gán vào)
+    const userId = req.user.id; // Lấy userId từ req.user (đã được middleware authenticateJWT gán vào)
 
-  if (!userId) {
-    return res.status(400).json({ error: 'User ID is required' });
-  }
-
-  try {
-    // Truy vấn danh sách công thức từ shoppinglist_recipe, kết hợp với thông tin recipe từ bảng recipes
-    const shoppingListRecipes = await ShoppinglistRecipe.findAll({
-      where: { userId },
-      include: [{
-        model: Recipe,
-        attributes: ['id', 'userId', 'title', 'image', 'summary', 'servings'],
-        include: [{
-          model: User,
-          attributes: ['username'],
-        }],
-      }],
-    });
-
-    if (shoppingListRecipes.length === 0) {
-      return res.status(404).json({ message: 'No recipes found in shopping list.' });
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
     }
 
-    const recipes = shoppingListRecipes.map(item => {
-      const recipe = item.Recipe;
-      return {
-        id: recipe.id,
-        title: recipe.title,
-        image: recipe.image,
-        summary: recipe.summary,
-        servings: recipe.servings,
-        username: recipe.User.username,
-      };
-    })
+    try {
+        // Truy vấn danh sách công thức từ shoppinglist_recipe, kết hợp với thông tin recipe từ bảng recipes
+        const shoppingListRecipes = await ShoppinglistRecipe.findAll({
+            where: { userId },
+            include: [{
+                model: Recipe,
+                attributes: ['id', 'userId', 'title', 'image', 'summary', 'servings'],
+                include: [{
+                    model: User,
+                    attributes: ['username'],
+                }],
+            }],
+        });
 
-    return res.json({ recipes });
+        if (shoppingListRecipes.length === 0) {
+            return res.status(404).json({ message: 'No recipes found in shopping list.' });
+        }
 
-  } catch (error) {
-    console.error('Error fetching shopping list recipes:', error);
-    return res.status(500).json({ error: 'Failed to fetch shopping list recipes.' });
-  }
+        const recipes = shoppingListRecipes.map(item => {
+            const recipe = item.Recipe;
+            return {
+                id: recipe.id,
+                title: recipe.title,
+                image: recipe.image,
+                summary: recipe.summary,
+                servings: recipe.servings,
+                username: recipe.User.username,
+            };
+        })
+
+        return res.json({ recipes });
+        
+    } catch (error) {
+        console.error('Error fetching shopping list recipes:', error);
+        return res.status(500).json({ error: 'Failed to fetch shopping list recipes.' });
+    }
 });
 
 // Thêm công thức vào shopping list
-shoppingListRouter.post('/recipes', (req, res) => {
+shoppingListRouter.post('/recipes', middleware.authenticateJWT, (req, res) => {
+    const userId = req.user.id; // Lấy userId từ req.user (đã được middleware authenticateJWT gán vào)
 
-  try {
-    const { userId, recipeId } = req.body;
-    console.log('ADD LIST:', req.body);
-    ShoppinglistRecipe.create({ userId: userId, recipeId: recipeId });
-    res.status(201).json({ message: 'Recipe added to shopping list' });
-  } catch (error) {
-    logger.error('Error adding recipe to shopping list:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    try {
+        const { recipeId } = req.body;
+        ShoppinglistRecipe.create({ userId, recipeId });
+        res.status(201).json({ message: 'Recipe added to shopping list' });
+    } catch (error) {
+        logger.error('Error adding recipe to shopping list:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
 
 // Xóa công thức khỏi shopping list
-shoppingListRouter.delete('/recipes/:recipeId/user/:userId', async (req, res) => {
-  const recipeId = req.params.recipeId;
-  const userId = req.params.userId;
-  try {
-    // Thực hiện xóa công thức khỏi danh sách trong database
-    const deleted = await ShoppinglistRecipe.destroy({
-      where: {
-        userId: userId,
-        recipeId: recipeId,
-      },
-    });
+shoppingListRouter.delete('/recipes/:recipeId', middleware.authenticateJWT, async (req, res) => {
+    const userId = req.user.id;
+    const { recipeId } = req.params;
 
-    if (deleted === 0) {
-      return res.status(404).json({ message: 'Recipe not found in shopping list' });
+    if (!userId) {
+        return response.status(400).json({ error: 'User ID is required' }); // Sửa lại `response`
     }
 
-    // Thành công
-    return res.status(204).send(); // No Content
-  } catch (error) {
-    logger.error('Error removing recipe from shopping list:', error);
-    return res.status(500).json({ message: 'Internal Server Error' });
-  }
+    try {
+        // Thực hiện xóa công thức khỏi danh sách trong database
+        const deleted = await ShoppinglistRecipe.destroy({
+            where: {
+                userId: userId,
+                recipeId: recipeId,
+            },
+        });
+
+        if (deleted === 0) {
+            return res.status(404).json({ message: 'Recipe not found in shopping list' });
+        }
+
+        // Thành công
+        return res.status(204).send(); // No Content
+    } catch (error) {
+        logger.error('Error removing recipe from shopping list:', error);
+        return response.status(500).json({ message: 'Internal Server Error' });
+    }
 });
 
 // Xóa toàn bộ recipe khỏi shopping list

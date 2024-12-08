@@ -30,6 +30,7 @@ const App = () => {
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/home" element={<Layout><HomePage /></Layout>} />
         <Route path="/recipes/search" element={<Layout><ExploreRecipesPage /></Layout>} />
+        <Route path="/recipes/:id/information" element={<Layout><RecipeDetail /></Layout>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
@@ -79,16 +80,9 @@ const App = () => {
           </Route>
         </Route>
 
-        <Route path="/recipes/:id/information" element={<RecipeDetail />} />
-        <Route path="/manage" element={<RecipeManage />} />
-        <Route path="/favourite" element={<Favourite />} />
-        <Route path="/profile" element={
-          <>
-            <Profile />
-
-          </>
-        }
-        />
+        <Route path="/recipes/my-recipes" element={<ProtectedRoute element={<Layout><RecipeManage /></Layout>} />} />
+        <Route path="/favourite" element={<ProtectedRoute element={<Layout><Favourite /></Layout>} />} />
+        <Route path="/profile" element={<ProtectedRoute element={<Layout><Profile /></Layout>} />} />
         <Route path="/trangbaithi" element={<RecipeContestDetail />} />
 
       </ Routes>

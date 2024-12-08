@@ -1,10 +1,15 @@
 import axios from 'axios';
+import tokenService from './token'
 
 const baseUrl = '/api/shoppingList';
 
 export const addShoppingListRecipes = async (userId, recipeId) => {
+    const token = tokenService.getToken()
+
     try {
-        const response = await axios.post(`${baseUrl}/recipes`, { userId, recipeId });
+        const response = await axios.post(`${baseUrl}/recipes`, { userId, recipeId }, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching shopping list recipes:', error);
@@ -14,8 +19,11 @@ export const addShoppingListRecipes = async (userId, recipeId) => {
 
 export const deleteShoppingListRecipes = async (userId, recipeId) => {
     console.log('DELETE:', userId, recipeId);
+    const token = tokenService.getToken()
     try {
-        const response = await axios.delete(`${baseUrl}/recipes/${recipeId}/user/${userId}`);
+        const response = await axios.delete(`${baseUrl}/recipes/${recipeId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         return response.data;
     } catch (error) {
         console.error('Error deleting shopping list recipes:', error);

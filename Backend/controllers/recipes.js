@@ -393,11 +393,13 @@ recipeRouter.get('/ingredients', async (req, res) => {
 
 // POST /api/recipes - Tạo công thức mới
 recipeRouter.post('/', middleware.authenticateJWT, async (req, res) => {
+  console.log('this runs')
   const userId = req.user.id;
 
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required' });
   }
+  console.log("userId post: ", userId)
 
   const {
     title,
@@ -728,6 +730,7 @@ recipeRouter.post('/competition-entry', middleware.authenticateJWT, async (req, 
 recipeRouter.get('/my-recipe/:id', middleware.authenticateJWT, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id; // Middleware đã lưu thông tin user vào req.user
+  console.log('api get my recipe id:', id, userId)
 
   try {
     const recipe = await Recipe.findOne({

@@ -49,11 +49,12 @@ const User = sequelize.define('User', {
   image: {
     type: DataTypes.STRING,
     allowNull: true,
+    defaultValue: '/anonymous-avatar.png'
   },
-  display_name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  }
+  // display_name: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // }
 }, {
   tableName: 'users', // Tên bảng trong cơ sở dữ liệu
   timestamps: false

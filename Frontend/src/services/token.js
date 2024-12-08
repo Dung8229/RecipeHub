@@ -90,11 +90,11 @@ const getUserInfo = async (token = getToken()) => {
   }
 };
 
-const logout = () => {
+export const logout = () => {
   window.localStorage.removeItem('token');
 }
 
-const updateToken = async () => {
+export const updateToken = async () => {
   try {
     const token = window.localStorage.getItem('token');
 

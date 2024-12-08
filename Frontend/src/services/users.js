@@ -1,5 +1,6 @@
 import axios from 'axios'
 import tokenService from './token'
+import Cookies from 'js-cookie'
 
 const baseUrl = '/api/users'
 

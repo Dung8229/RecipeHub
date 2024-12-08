@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // React Router
 import { getMyRecipes, deleteRecipe } from '../services/myRecipes';
-import { getUserInfo } from '../services/token';
+import tokenService from '../services/token';
 const RecipeManage = () => {
     const [recipes, setRecipes] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -12,7 +12,7 @@ const RecipeManage = () => {
     useEffect(() => {
         const fetchUserRecipes = async () => {
             try {
-                const userInfo = await getUserInfo();
+                const userInfo = await tokenService.getUserInfo();
                 if (!userInfo) navigate('/login');
                 userId = userInfo.id;
                 console.log('User ID:', userId);
@@ -41,7 +41,7 @@ const RecipeManage = () => {
     const totalPages = Math.ceil(recipes.length / recipesPerPage);
 
     return (
-        <div className="min-h-screen bg-[#fcfaf8]">
+        <div className="max-w-6xl mx-auto bg-[#fcfaf8]">
             <div className="container mx-auto p-4">
                 {/* Tiêu đề */}
                 <h1 className="text-4xl font-bold text-[#1c130d] mb-6">My Recipes</h1>
@@ -73,14 +73,14 @@ const RecipeManage = () => {
                                             style={{
                                                 backgroundImage: `url(${recipe.image || '/path/to/placeholder.png'})`,
                                             }}
-                                            onClick={() => navigate(`/recipes/${recipe.id}/information`)} // Chuyển hướng khi nhấn ảnh
+                                            onClick={() => navigate(`/recipes/my-recipes/${recipe.id}/edit`)} // Chuyển hướng khi nhấn ảnh
                                         ></div>
 
                                         {/* Thông tin */}
                                         <div className="flex-grow px-4">
                                             <p
                                                 className="text-[#1c130d] text-lg font-medium cursor-pointer hover:underline"
-                                                onClick={() => navigate(`/recipes/${recipe.id}/information`)} // Chuyển hướng khi nhấn tên
+                                                onClick={() => navigate(`/recipes/my-recipes/${recipe.id}/edit`)} // Chuyển hướng khi nhấn tên
                                             >
                                                 {recipe.title}
                                             </p>

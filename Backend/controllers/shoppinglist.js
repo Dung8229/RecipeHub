@@ -97,7 +97,7 @@ shoppingListRouter.post('/recipes', middleware.authenticateJWT, (req, res) => {
 
     try {
         const { recipeId } = req.body;
-        shoppingList.push({ userId, recipeId });
+        ShoppinglistRecipe.create({ userId, recipeId });
         res.status(201).json({ message: 'Recipe added to shopping list' });
     } catch (error) {
         logger.error('Error adding recipe to shopping list:', error);
@@ -242,6 +242,22 @@ shoppingListRouter.post('/ingredients', middleware.authenticateJWT, async (req, 
   } catch (error) {
     console.error('Error fetching ingredients:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+shoppingListRouter.get('/check', async (req, res) => {
+  try {
+    //const { userId } = req.params; // Corrected destructuring
+    const { userId, recipeId } = req.query; // Extract from query
+    const isInList = await ShoppinglistRecipe.findOne({ where: { userId, recipeId } });
+    if (isInList) {
+      res.json({ isInList: true });
+    } else {
+      res.json({ isInList: false });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+    console.log(error);
   }
 });
 

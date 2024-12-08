@@ -20,7 +20,7 @@ const getDinnerRecipes = async () => {
 };
 
 export const getRecipeById = async (id) => {
-  const response = await axios.get(`${baseUrl}/${id}`);
+  const response = await axios.get(`${baseUrl}/forInformationPage/${id}`);
   return response.data;
 };
 

@@ -1,6 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import React, { useState, useEffect } from 'react';
 import recipeService from '../services/recipes';
 import ingredientService from '../services/ingredient';
@@ -585,7 +583,6 @@ const EditRecipePage = ({ recipeId }) => {
                     </form>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 };

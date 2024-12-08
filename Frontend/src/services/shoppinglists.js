@@ -65,6 +65,7 @@ const getRecipes = async () => {
 const getIngredients = async (servingsData) => {
   const token = tokenService.getToken();
   try {
+    console.log("Get ingre serving data:", servingsData)
     // Gửi data servings vào API cùng với header Authorization
     const response = await axios.post(
       `${baseUrl}/ingredients`, 

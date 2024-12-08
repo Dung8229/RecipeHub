@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updateUserImage, changePassword } from '../services/users';
-import { getUserInfo, updateToken, logout } from '../services/token';
+import { updateToken, logout } from '../services/token';
+import tokenService from '../services/token'
 import { postImage } from '../services/image';
 
 const Profile = ({ userId }) => {
@@ -19,7 +20,8 @@ const Profile = ({ userId }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const userInfo = await getUserInfo();
+                const userInfo = await tokenService.getUserInfo();
+                console.log('Profile user info:', userInfo)
                 setUser(userInfo);
 
                 if (!userInfo) {
@@ -44,7 +46,7 @@ const Profile = ({ userId }) => {
         }
         try {
             let imageUrl = await postImage(selectedFile);
-            imageUrl = 'http://localhost:3002/' + imageUrl;
+            imageUrl = 'http://localhost:3000/' + imageUrl;
 
             setUser((prevUser) => ({
                 ...prevUser,
@@ -97,7 +99,7 @@ const Profile = ({ userId }) => {
 
 
     return (
-        <div className="px-40 flex flex-1 justify-center py-5">
+        <div className="px-40 flex flex-1 justify-center">
             <div className="layout-content-container flex flex-col max-w-[960px] flex-1 ">
                 <div className="flex flex-wrap justify-between gap-3 p-4">
                     <p className="text-[#1c130d] text-[32px] font-bold leading-tight">Account settings</p>
@@ -260,7 +262,7 @@ const Profile = ({ userId }) => {
                         </svg>
                     </div>
                 </div>
-                <div onClick={() => navigateTo('/manage')} className="flex items-center gap-4  px-4 py-2 justify-between">
+                <div onClick={() => navigateTo('/recipes/my-recipes')} className="flex items-center gap-4  px-4 py-2 justify-between">
                     <div>
                         <p className="text-[#1c130d] text-base font-medium">Submitted recipes</p>
                         <p className="text-[#9c6d49] text-sm">View all of your submitted recipes</p>
@@ -271,7 +273,7 @@ const Profile = ({ userId }) => {
                         </svg>
                     </div>
                 </div>
-                <div onClick={() => navigateTo('/add')} className="flex items-center gap-4  px-4 py-2 justify-between">
+                <div onClick={() => navigateTo('/recipes/create')} className="flex items-center gap-4  px-4 py-2 justify-between">
                     <div>
                         <p className="text-[#1c130d] text-base font-medium">Add a recipe</p>
                         <p className="text-[#9c6d49] text-sm">Add a new recipe to your</p>

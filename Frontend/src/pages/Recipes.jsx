@@ -9,7 +9,7 @@ import { getRecipeById } from '../services/recipes';
 import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites';
 import { addShoppingListRecipes, deleteShoppingListRecipes, checkShoppingList } from '../services/shoppingList';
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { getUserInfo } from '../services/token';
+import tokenService from '../services/token';
 const Recipes = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -29,7 +29,7 @@ const Recipes = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userInfo = await getUserInfo();
+                const userInfo = await tokenService.getUserInfo();
 
                 if (userInfo) {
                     setUser(userInfo);
@@ -63,7 +63,10 @@ const Recipes = () => {
                 if (ingredientsRes.status === "fulfilled") setIngredients(ingredientsRes.value);
                 else console.warn("No ingredients found.");
 
-                if (commentsRes.status === "fulfilled") setComments(commentsRes.value);
+                if (commentsRes.status === "fulfilled") {
+                    console.log("comment:", commentsRes.value)
+                    setComments(commentsRes.value);
+                }
                 else console.warn("Unable to load comments.");
 
                 if (ratingsRes.status === "fulfilled") {
@@ -76,7 +79,10 @@ const Recipes = () => {
                 if (isFavRes.status === "fulfilled") setIsFavourite(isFavRes.value);
                 else console.warn("Unable to check favourite status.");
 
-                if (shoppingListRes.status === "fulfilled") setIsInShoppingList(shoppingListRes.value);
+                if (shoppingListRes.status === "fulfilled") {
+                    console.log("shopping list data:", shoppingListRes)
+                    setIsInShoppingList(shoppingListRes.value);
+                }
                 else console.warn("Shopping list status not available.");
 
                 if (userRatingRes.status === "fulfilled") setUserRating(userRatingRes.value.rating);
@@ -93,6 +99,8 @@ const Recipes = () => {
     const handleAddComment = async (commentText) => {
         try {
             const newComment = await addComment(id, commentText);
+            console.log("handle add comment:", newComment)
+            console.log("user comment:",user)
             setComments((prevComments) => [
                 ...prevComments,
                 { ...newComment, User: user }, // Add user info to the new comment

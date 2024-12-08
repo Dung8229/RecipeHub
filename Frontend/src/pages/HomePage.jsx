@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import ContestBanner from '../components/ContestBanner';
 import RecipeSection from '../components/RecipeSection';
+import { Link } from 'react-router-dom';
 function HomePage() {
   const contestBanners = [
     {
-      backgroundImage: 'http://localhost:3002/uploads/1733325761896-184013875.png',
+      backgroundImage: 'http://localhost:3000/uploads/1733325761896-184013875.png',
       title: 'Cooking Competition',
       description: 'Join the Tasty Cooking Challenge and compete for $1,000',
       link: '/competitions/open',
     },
     {
-      backgroundImage: 'http://localhost:3002/uploads/1733326615279-915184868.png',
+      backgroundImage: 'http://localhost:3000/uploads/1733326615279-915184868.png',
       title: 'Cooking Competition',
       description: 'Join the Delicious Cooking Contest and win amazing prizes',
       link: '/competitions/open',
     },
     {
-      backgroundImage: 'http://localhost:3002/uploads/1733326623467-738577660.png',
+      backgroundImage: 'http://localhost:3000/uploads/1733326623467-738577660.png',
       title: 'Cooking Competition',
       description: 'Participate in the Ultimate Cooking Battle and earn rewards',
       link: '/competitions/open',
@@ -38,11 +39,23 @@ function HomePage() {
   return (
     <div>
       <main className=''>
-        <ContestBanner />
-        <RecipeSection title= "Trending Recipes" />
-        <RecipeSection title= "Most Popular Recipes" />
+        <ContestBanner 
+          backgroundImage={contestBanners[currentBannerIndex].backgroundImage}
+          title={contestBanners[currentBannerIndex].title}
+          description={contestBanners[currentBannerIndex].description}
+          link={contestBanners[currentBannerIndex].link}/>
+        <RecipeSection title= "Trending Recipes" type="trending"/>
+        <RecipeSection title= "Most Recent Recipes" type="latest"/>
+        <div className="text-center mt-6">
+          <Link
+            to="/recipes/search"
+            className="inline-block bg-primary text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 hover:scale-105 transition-all duration-300 ease-in-out"
+          >
+            View More
+          </Link>
+        </div>
       </main>
-    </div>
+    </div>  
   );
 }
 

@@ -63,13 +63,12 @@ usersRouter.post('/login', async (req, res) => {
                 username: userlogin.username,
                 role: userlogin.role,
                 image: userlogin.image,
-
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' } // Token hết hạn sau 1 giờ
         );
         //Khu vực lưu  token và thông tin người dùng vào cookie
-        res.json({ token, userlogin: { id: userlogin.id, email: userlogin.email, username: userlogin.username, image: userlogin.image, display_name: userlogin.display_name } });
+        res.json({ token, userlogin: { id: userlogin.id, email: userlogin.email, username: userlogin.username, image: userlogin.image } });
     } catch (error) {
         logger.error('Error during login:', error);
         return res.status(500).json({ error: 'Failed to log in' });
