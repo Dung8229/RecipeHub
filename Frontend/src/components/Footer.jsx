@@ -10,7 +10,7 @@ const Footer = () => {
   const handleJoinUs = (event) => {
     event.preventDefault();
     const email = event.target.elements.email.value;
-    navigate('/login', { state: { isLogin: false, email } });
+    navigate('/register', { state: { isLogin: false, email } });
   };
 
   return (
@@ -65,9 +65,9 @@ const Footer = () => {
             {/* Liên kết */}
             <div className="space-y-2 text-sm text-gray-600">
                 <Link to="/home" className="block hover:underline">Home</Link>
-                <Link to="/recipes/search" className="block hover:underline">Search</Link>
+                <Link to="/recipes/search" className="block hover:underline">Search For A Recipe</Link>
                 <Link to="/competitions" className="block hover:underline">Competitions</Link>
-                <Link to="/recipes/create" className="block hover:underline">Create Recipe</Link>
+                <Link to="/recipes/create" className="block hover:underline">Create A Recipe</Link>
                 <Link to="/shopping-list" className="block hover:underline">Shopping List</Link>
             </div>
             

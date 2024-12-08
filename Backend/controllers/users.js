@@ -32,7 +32,8 @@ usersRouter.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             role: 'user',
-            verified: false
+            verified: false,
+            image: '/anoynymus-avatar.png'
         });
 
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
@@ -59,7 +60,8 @@ usersRouter.post('/login', async (req, res) => {
           { 
             id: userlogin.id, 
             username: userlogin.username, 
-            role: userlogin.role 
+            role: userlogin.role, 
+            image: userlogin.image,
           }, 
           process.env.JWT_SECRET, 
           { expiresIn: '1h' } // Token hết hạn sau 1 giờ

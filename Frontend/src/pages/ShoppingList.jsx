@@ -227,37 +227,6 @@ const ShoppingList = () => {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* Header */}
-      <header className="w-full h-[170px] bg-white">
-        <div className="w-full h-[106px] flex justify-center items-center gap-20">
-          <div className="text-[#ff8c00] text-8xl font-handwriting font-bold font-['Qwitcher Grypen']">
-            Recipehub
-          </div>
-          
-          <div className="relative w-[603px] h-[58px]">
-            <input 
-              type="text"
-              placeholder="Find a recipe or ingredient"
-              className="w-full h-full px-4 rounded-[10px] border border-black"
-            />
-            <button className="absolute right-0 w-[58px] h-full bg-[#ff8c00] rounded-tr-[10px] rounded-br-[10px] border border-black">
-              {/* Search icon */}
-            </button>
-          </div>
-
-          <div className="flex items-center gap-[15px]">
-            <img className="w-[58px] h-[58px]" src="/login-icon.png" alt="Login" />
-            <span className="text-black text-xl font-medium font-['Poppins']">LOG IN</span>
-          </div>
-        </div>
-
-        <nav className="h-16 flex justify-center items-center gap-[110px]">
-          {['HOME', 'DINNER', 'VEGETARIAN', 'CONTESTS', 'SHOPPING LIST', 'CONTACT'].map(item => (
-            <a key={item} className="text-black text-xl font-medium font-['Poppins']">{item}</a>
-          ))}
-        </nav>
-      </header>
-
       <main className="flex flex-col-reverse xl:flex-row px-6 py-5 gap-4 bg-neutral-100">
         {/* Shopping List Section */}
         <div className="flex-1 xl:w-2/3 w-full">
@@ -301,7 +270,7 @@ const ShoppingList = () => {
         </div>
 
         {/* Selected Recipes Section */}
-        <div className="xl:w-1/3 w-full xl:sticky top-5 h-[calc(100vh-2rem)] overflow-y-auto">
+        <div className="xl:w-1/3 w-full xl:sticky top-[200px] h-[calc(100vh-2rem)] overflow-y-auto">
           <RecipeList 
             recipes={recipes} 
             handleRemoveRecipe={handleRemoveRecipe}

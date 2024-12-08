@@ -4,8 +4,8 @@ const middleware = require('../utils/middleware');
 // Route lấy thông tin user từ token
 tokenRouter.get('/user-info', middleware.authenticateJWT, (req, res) => {
   // Trả thông tin từ token (id, username, role)
-  const { id, username, role } = req.user;
-  res.json({ id, username, role });
+  const { id, username, role, image } = req.user;
+  res.json({ id, username, role, image });
 });
 
 // Route check token có valid không

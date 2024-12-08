@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
+import tokenService from '../services/token'
 
 const Header = () => {
   const navigate = useNavigate();
@@ -22,12 +23,22 @@ const Header = () => {
 
   // Kiểm tra trạng thái đăng nhập khi component mount
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
-    const userLogin = localStorage.getItem('userLogin');
-    if (authToken && userLogin) {
-      setIsLoggedIn(true);
-      setUser(JSON.parse(userLogin));
-    }
+    const fetchUserData = async () => {
+      try {
+          const userLoginData = await tokenService.getUserInfo();
+          console.log('User Login:', userLoginData);
+          if (!userLoginData.id) {
+            setIsLoggedIn(false)
+          } else {
+            setIsLoggedIn(true);
+            setUser(userLoginData);
+          }
+      } catch (error) {
+          console.error('Error fetching user data:', error);
+      }
+  };
+
+  fetchUserData();
   }, []);
 
   const handleSearch = (e) => {
@@ -47,8 +58,7 @@ const Header = () => {
 
   const handleLogout = () => {
     // Xóa token và thông tin user khỏi localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userLogin');
+    window.localStorage.removeItem('token');
     setIsLoggedIn(false);
     setUser(null);
     // Chuyển hướng về trang login
@@ -91,18 +101,24 @@ const Header = () => {
         <div className="flex items-center ml-2 space-x-2">
           {isLoggedIn ? (
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">
+              <span 
+                onClick={() => navigate('/profile')} 
+                className="cursor-pointer text-sm text-gray-600 hover:text-primaryHover">
                 {user?.username || 'User'}
               </span>
               <div 
                 onClick={() => navigate('/profile')} 
                 className="cursor-pointer hover:text-primaryHover"
               >
-                <FontAwesomeIcon icon={faUser} className="text-primary"/>
+                <img 
+                  src={user?.image || '/anonymous-avatar.png'} 
+                  alt="User avatar" 
+                  className="w-8 h-8 rounded-full object-cover" 
+                />
               </div>
               <button 
                 onClick={handleLogout}
-                className="text-text hover:text-primaryHover text-sm"
+                className="cursor-pointer text-text hover:text-primaryHover text-sm"
               >
                 Log Out
               </button>
@@ -131,10 +147,13 @@ const Header = () => {
       {/* Phần dưới với Navigation, hiển thị trên màn hình lớn */}
       <nav className="container mx-auto max-w-full mt-4 hidden md:flex justify-center space-x-10">
         <Link to="/home" className="text-lg hover:text-primaryHover">Home</Link>
-        <Link to="/recipes/search" className="text-lg hover:text-primaryHover">Search</Link>
+        <Link to="/recipes/search" className="text-lg hover:text-primaryHover">Search For A Recipe</Link>
         <Link to="/competitions/open" className="text-lg hover:text-primaryHover">Competitions</Link>
-        <Link to="/recipes/create" className="text-lg hover:text-primaryHover">Create Recipe</Link>
+        <Link to="/recipes/create" className="text-lg hover:text-primaryHover">Create A Recipe</Link>
         <Link to="/shopping-list" className="text-lg hover:text-primaryHover">Shopping List</Link>
+        {user && user.role === "admin" ? 
+        <Link to="/admin/dashboard/users" className="text-lg hover:text-primaryHover">Admin Dashboard</Link>
+        : null}
       </nav>
     </header>
   );

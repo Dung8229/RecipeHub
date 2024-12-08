@@ -75,7 +75,6 @@ const ExploreRecipes = () => {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      <Header />
       <main className="container mx-auto px-6 py-5 flex flex-col md:flex-row gap-6">
         <Sidebar 
           filters={filters}
