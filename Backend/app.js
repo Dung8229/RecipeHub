@@ -27,7 +27,6 @@ const recipeComment = require('./routes/recipeComment');
 const recipeRouter = require('./routes/recipe');
 const favouritesRouter = require('./routes/favourite');
 const recipeRatings = require('./routes/recipeRating');
-const path = require('path');
 
 // Serve static files
 app.use(express.static('public'));
