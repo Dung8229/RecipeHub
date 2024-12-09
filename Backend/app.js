@@ -27,6 +27,7 @@ const recipeComment = require('./routes/recipeComment');
 const recipeRouter = require('./routes/recipe');
 const favouritesRouter = require('./routes/favourite');
 const recipeRatings = require('./routes/recipeRating');
+const path = require('path');
 
 // Serve static files
 app.use(express.static('public'));
@@ -119,6 +120,16 @@ app.use('/api/recipes', recipeComment); // /api/recipes/:id/comments
 app.use('/api/recipes', recipeRouter); // /api/recipes
 app.use('/api/recipes', recipeRatings); // /api/recipeRatings
 app.use('/api/recipes', recipesRouter)
+
+// Đường dẫn tuyệt đối đến thư mục `dist`
+const distPath = path.join(__dirname, 'dist');
+
+// Sử dụng middleware để phục vụ file tĩnh
+app.use(express.static(distPath));
+// Trả về index.html cho tất cả các route khác
+app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+});
 
 // Middleware xử lý lỗi
 app.use(middleware.unknownEndpoint);
