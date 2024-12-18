@@ -7,6 +7,7 @@ const middleware = require('../utils/middleware')
 
 // Route để lấy tất cả các comment của một công thức nấu ăn theo ID
 router.get('/:id/comments', async (req, res) => {
+    console.log('API get comments was called')
     try {
         const recipeId = req.params.id;
         const comments = await RecipeComment.findAll({

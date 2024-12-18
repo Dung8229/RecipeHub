@@ -1,136 +1,52 @@
+const Recipe = require('./models/recipe');  // Đảm bảo import model Recipe
+const RecipeRating = require('./models/recipe_rating')
 const User = require('./models/user')
-const Recipe = require('./models/recipe')
-const RecipeIngredient = require('./models/recipe_ingredient')
-const Ingredient = require('./models/ingredient')
-const RecipeComment = require('./models/recipe_comment')
-const { Sequelize } = require('sequelize')
+const RecipeAverageRating = require('./models/recipe_averagerating')
+const sequelize = require('./db')
 
-async function getRecipes() {
-    try {
-        const recipes = await Recipe.findAll({
-            where: {
-                id: {
-                    [Sequelize.Op.between]: [100010, 100020] // Lấy các id từ 100010 đến 100020
-                }
-            },
-            include: [{
-                model: User, // Tham chiếu đến model User
-                attributes: ['username'] // Chỉ lấy trường username
-            }],
-            attributes: ['readyInMinutes', 'summary'], // Chỉ lấy các trường cần thiết từ Recipe
-        });
+// Hàm async để tính toán và cập nhật rating trung bình cho mỗi công thức
+async function updateRecipeAverageRatings() {
+  // Lấy tất cả các recipeId từ bảng recipes
+  const recipes = await Recipe.findAll({ attributes: ['id'] });
 
-        // Chuyển đổi dữ liệu để trả về đúng định dạng
-        const result = recipes.map(recipe => ({
-            readyInMinutes: recipe.readyInMinutes,
-            summary: recipe.summary,
-            username: recipe.User.username // Truy cập username từ quan hệ
-        }));
+  for (let i = 0; i < recipes.length; i++) {
+    const recipeId = recipes[i].id;
 
-        return result;
-
-    } catch (error) {
-        console.error('Error fetching recipes:', error);
-        throw error;
-    }
-}
-
-async function getIngredientsOfRecipe(recipeId) {
-    try {
-        const ingredients = await RecipeIngredient.findAll({
-            where: { recipeId },
-            include: [
-                {
-                    model: Ingredient,
-                    attributes: ['name', 'image'], // Các thuộc tính của Ingredient mà bạn muốn lấy
-                },
-            ],
-            attributes: ['amount', 'unit', 'original'], // Các thuộc tính của RecipeIngredient mà bạn muốn lấy
-        });
-
-        const result = ingredients.map(ingredient => ({
-            amount: ingredient.amount,
-            unit: ingredient.unit,
-            original: ingredient.original,
-            ingredient: {
-                name: ingredient.Ingredient.name,
-                image: ingredient.Ingredient.image,
-            },
-        }));
-
-        return result;
-    } catch (error) {
-        console.error('Error fetching ingredients:', error);
-        throw error;
-    }
-}
-
-async function getIngredientsOfRecipe(recipeId) {
-    try {
-        const ingredients = await RecipeIngredient.findAll({
-            where: { recipeId },
-            include: [
-                {
-                    model: Ingredient,
-                    attributes: ['name', 'image'], // Các thuộc tính của Ingredient mà bạn muốn lấy
-                },
-            ],
-            attributes: ['amount', 'unit', 'original'], // Các thuộc tính của RecipeIngredient mà bạn muốn lấy
-        });
-
-        const result = ingredients.map(ingredient => ({
-            amount: ingredient.amount,
-            unit: ingredient.unit,
-            original: ingredient.original,
-            ingredient: {
-                name: ingredient.Ingredient.name,
-                image: ingredient.Ingredient.image,
-            },
-        }));
-
-        return result;
-    } catch (error) {
-        console.error('Error fetching ingredients:', error);
-        throw error;
-    }
-}
-
-async function getCommentsOfRecipe(recipeId) {
-    try {
-        const comments = await RecipeComment.findAll({
-            where: { recipeId },
-            include: [
-                {
-                    model: User,
-                    attributes: ['username'],
-                },
-            ],
-            attributes: ['commentText'],
-        });
-
-        const result = comments.map(comment => ({
-            commentText: comment.commentText,
-            username: comment.User.username,
-        }));
-
-        return result;
-    } catch (error) {
-        console.error('Error fetching comments:', error);
-        throw error;
-    }
-}
-
-// Gọi hàm và in ra kết quả
-getIngredientsOfRecipe(100000).then(ingredients => {
-    console.log(ingredients);
-    getIngredientsOfRecipe(100000).then(ingredients => {
-        console.log(ingredients);
-    }).catch(err => {
-        console.error(err);
+    // Tính toán tổng số rating và rating trung bình cho mỗi công thức
+    const ratings = await RecipeRating.findAll({
+      where: { recipeId: recipeId },
+      attributes: [
+        [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'], // Tính trung bình rating
+        [sequelize.fn('COUNT', sequelize.col('rating')), 'totalRatings'] // Tính tổng số lượt đánh giá
+      ],
     });
 
-    getCommentsOfRecipe(100000).then(comments => {
-        console.log(comments);
-    }).catch(err => {
-        console.error(err);
-    });
+    if (ratings.length > 0) {
+      const averageRating = ratings[0].dataValues.averageRating || 0;
+      const totalRatings = ratings[0].dataValues.totalRatings || 0;
+
+      // Kiểm tra nếu công thức đã có bản ghi trong bảng RecipeAverageRating, nếu có thì cập nhật, nếu không thì tạo mới
+      const existingRating = await RecipeAverageRating.findOne({ where: { recipeId: recipeId } });
+
+      if (existingRating) {
+        // Cập nhật rating trung bình và tổng số lượt đánh giá
+        await existingRating.update({
+          averageUserRating: averageRating,
+          totalUserRatings: totalRatings,
+        });
+      } else {
+        // Tạo mới bản ghi trong RecipeAverageRating
+        await RecipeAverageRating.create({
+          recipeId: recipeId,
+          averageUserRating: averageRating,
+          totalUserRatings: totalRatings,
+        });
+      }
+    }
+  }
+
+  console.log('Recipe average ratings updated.');
+}
+
+// Gọi hàm async để thực hiện
+updateRecipeAverageRatings().catch((err) => console.error('Error updating ratings:', err));

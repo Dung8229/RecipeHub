@@ -113,9 +113,9 @@ app.use('/api/comments', commentRouter)
 // Sử dụng Express để phục vụ file tĩnh từ thư mục `uploads`
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use('/api/recipes', recipeComment); // /api/recipes/:id/comments
 app.use('/api/recipes', recipeIngredientsRouter); // /api/recipes/:id/ingredients
 app.use('/api/recipes', recipeInstructionsRouter); // /api/recipes/:id/instructions
-app.use('/api/recipes', recipeComment); // /api/recipes/:id/comments
 app.use('/api/recipes', recipeRouter); // /api/recipes
 app.use('/api/recipes', recipeRatings); // /api/recipeRatings
 app.use('/api/recipes', recipesRouter)
@@ -127,6 +127,7 @@ const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 // Trả về index.html cho tất cả các route khác
 app.get('*', (req, res) => {
+    console.log('This was called!')
     res.sendFile(path.join(distPath, 'index.html'));
 });
 

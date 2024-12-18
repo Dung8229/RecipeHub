@@ -330,13 +330,20 @@ const Recipes = () => {
 
                     <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Comments</h3>
 
-                    {comments.map(comment => (
+                    {comments
+                    ?.filter(comment => comment && comment.commentText) // Lọc bình luận hợp lệ
+                    .map(comment => (
                         <div className="flex w-full flex-row items-start justify-start gap-3 p-4" key={comment.id}>
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style={{ backgroundImage: `url(${formatImageUrl(comment.User.image)})` }}></div>
-                            <div>
-                                <p className="text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">{comment.User?.username}</p>
-                                <p>{comment.commentText}</p>
-                            </div>
+                        <div
+                            className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0"
+                            style={{ backgroundImage: `url(${formatImageUrl(comment.User?.image)})` }} // Đảm bảo không lỗi khi User hoặc image null
+                        ></div>
+                        <div>
+                            <p className="text-[#1c130d] text-sm font-bold leading-normal tracking-[0.015em]">
+                            {comment.User?.username || 'Unknown User'} {/* Hiển thị tên hoặc fallback */}
+                            </p>
+                            <p>{comment.commentText}</p>
+                        </div>
                         </div>
                     ))}
 
