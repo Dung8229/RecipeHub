@@ -44,6 +44,19 @@ const AdminCreateCompetitionForm = ({ addNewCompetition }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const { startDate, winnerSelectionStartDate, endDate } = formData;
+
+    // Kiểm tra tính hợp lệ của ngày
+    if (new Date(winnerSelectionStartDate) <= new Date(startDate)) {
+      alert('Winner selection date must be after the start date.');
+      return;
+    }
+
+    if (new Date(endDate) <= new Date(winnerSelectionStartDate)) {
+      alert('End date must be after the winner selection date.');
+      return;
+    }
+
     try {
       // Gọi hàm create với các tham số từ formData
       const newCompetition = await competitionService.create(

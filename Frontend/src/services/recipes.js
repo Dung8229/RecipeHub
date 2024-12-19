@@ -129,7 +129,6 @@ const create = async (formData) => {
       let image;
       if (formData.imageFile) {
           image = await imageService.postImage(formData.imageFile);
-          // image = 'http://localhost:3000/' + image
           image = image.replace('\\', '/')
       } else if (formData.imageURL) {
           image = formData.imageURL;
@@ -179,7 +178,6 @@ const update = async (id, formData) => {
         let image;
         if (formData.imageFile) {
             image = await imageService.postImage(formData.imageFile);
-            // image = 'http://localhost:3000/' + image
             image = image.replace('\\', '/')
         } else if (formData.imageURL) {
             image = formData.imageURL;
@@ -233,7 +231,6 @@ const createCompetitionEntry = async (formData, competitionId) => {
     let image;
     if (formData.imageFile) {
       image = await imageService.postImage(formData.imageFile);
-      // image = 'http://localhost:3000/' + image;
       image = image.replace('\\', '/');
     } else if (formData.imageURL) {
       image = formData.imageURL;

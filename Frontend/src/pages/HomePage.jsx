@@ -5,19 +5,19 @@ import { Link } from 'react-router-dom';
 function HomePage() {
   const contestBanners = [
     {
-      backgroundImage: 'http://localhost:3000/uploads/1733325761896-184013875.png',
+      backgroundImage: '/heroes_banner/1.png',
       title: 'Cooking Competition',
       description: 'Join the Tasty Cooking Challenge and compete for $1,000',
       link: '/competitions/open',
     },
     {
-      backgroundImage: 'http://localhost:3000/uploads/1733326615279-915184868.png',
+      backgroundImage: '/heroes_banner/2.png',
       title: 'Cooking Competition',
       description: 'Join the Delicious Cooking Contest and win amazing prizes',
       link: '/competitions/open',
     },
     {
-      backgroundImage: 'http://localhost:3000/uploads/1733326623467-738577660.png',
+      backgroundImage: '/heroes_banner/3.png',
       title: 'Cooking Competition',
       description: 'Participate in the Ultimate Cooking Battle and earn rewards',
       link: '/competitions/open',

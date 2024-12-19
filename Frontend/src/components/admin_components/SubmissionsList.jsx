@@ -44,13 +44,27 @@ const SubmissionsList = ({ competitionId }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Submission List</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-        {submissions.map((submission) => (
-          <SubmissionListItem key={submission.submissionId} submission={submission} handleRemove={handleRemove} />
-        ))}
-      </div>
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+      <h2 className="text-2xl text-center font-semibold mt-6 mb-4">Submission List</h2>
+      {submissions.length === 0 ? (
+        <p className="text-center text-gray-500">There's no submissions.</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {submissions.map((submission) => (
+              <SubmissionListItem
+                key={submission.submissionId}
+                submission={submission}
+                handleRemove={handleRemove}
+              />
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </div>
   );
 };

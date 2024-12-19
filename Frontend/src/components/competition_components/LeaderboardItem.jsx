@@ -42,7 +42,7 @@ const LeaderboardItem = ({ rank, username, recipeTitle, recipeImage, totalVotes,
 
   return (
     <div
-      className={`flex mx-auto justify-between items-center p-4 mb-2 cursor-pointer ${getContainerSize()} ${getRankClasses()}`}
+      className={`flex mx-auto justify-between items-center p-4 mb-2cursor-pointer ${getContainerSize()} ${getRankClasses()}`}
       onClick={onClick}
     >
       <div className="flex items-center">

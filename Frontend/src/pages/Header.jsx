@@ -39,7 +39,6 @@ const Profile = ({ userId }) => {
         }
         try {
             let imageUrl = await postImage(selectedFile);
-            imageUrl = 'http://localhost:3000/' + imageUrl;
             //imageUrl = (url) => url.replace(/\\/g, '/');
 
             console.log(imageUrl)

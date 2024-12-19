@@ -14,7 +14,7 @@ const UNIT = [
 ];
 
 const CreateEntryForCompetitionPage = () => {
-    const navigate = useNavigate
+    const navigate = useNavigate()
     const { id } = useParams();
     const [competition, setCompetition] = useState(null);
     const [formData, setFormData] = useState({
