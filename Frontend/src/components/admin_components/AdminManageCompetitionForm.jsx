@@ -19,7 +19,7 @@ const AdminManageCompetitionForm = ({ id }) => {
     try {
       const competitionDetails = await competitionService.getDetail(id);
   
-      if (competitionDetails.image.includes('localhost')) {
+      if (competitionDetails.image.includes('uploads')) {
         // Nếu là đường dẫn file, tải file ảnh về và tạo File object
         const response = await fetch(`/uploads/${competitionDetails.image.split('/').pop()}`); // Tải ảnh về
         const blob = await response.blob(); // Chuyển ảnh thành blob

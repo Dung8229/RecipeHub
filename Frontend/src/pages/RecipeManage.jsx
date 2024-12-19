@@ -52,7 +52,7 @@ const RecipeManage = () => {
                         <div className="flex flex-col items-center justify-center h-96">
                             <p className="text-2xl text-gray-600 mb-4">You have not created any recipe</p>
                             <button
-                                onClick={() => navigate('/create')}
+                                onClick={() => navigate('recipes/create')}
                                 className="px-6 py-2 bg-[#f47f25] text-white rounded-lg text-lg"
                             >
                                 Create your new recipe

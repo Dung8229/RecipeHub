@@ -67,7 +67,8 @@ app.get('/auth/google/callback', (req, res, next) => {
         
         console.log('Setting token:', jwtToken); // Log token được tạo
         
-        return res.redirect('http://localhost:5173');
+        const home = process.env.HOMEPAGE_URL || 'http://localhost:3000'  // Mặc định là localhost nếu không có giá trị biến môi trường
+        return res.redirect(home);
     })(req, res, next);
 });
 // Route cho xác thực Facebook
@@ -92,7 +93,8 @@ app.get('/auth/facebook/callback', (req, res, next) => {
         
         console.log('Setting token:', jwtToken);
         
-        return res.redirect('http://localhost:5173');
+        const home = process.env.HOMEPAGE_URL || 'http://localhost:3000';  // Mặc định là localhost nếu không có giá trị biến môi trường
+        return res.redirect(home);
     })(req, res, next);
 });
 
