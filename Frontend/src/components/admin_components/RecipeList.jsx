@@ -114,20 +114,56 @@ function RecipeList() {
         >
           <i className="fas fa-chevron-left"></i>
         </button>
-        
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
-          <button
-            key={number}
-            onClick={() => setCurrentPage(number)}
-            className={`w-8 h-8 rounded-full ${
-              currentPage === number 
-                ? 'bg-orange-100 text-orange-500' 
-                : 'hover:bg-gray-100'
-            }`}
-          >
-            {number}
-          </button>
-        ))}
+
+        {/* Hiển thị số trang */}
+        {totalPages > 5 ? (
+          <>
+            <button
+              onClick={() => setCurrentPage(1)}
+              className={`w-8 h-8 rounded-full ${currentPage === 1 ? 'bg-orange-100 text-orange-500' : 'hover:bg-gray-100'}`}
+            >
+              1
+            </button>
+            <button
+              onClick={() => setCurrentPage(2)}
+              className={`w-8 h-8 rounded-full ${currentPage === 2 ? 'bg-orange-100 text-orange-500' : 'hover:bg-gray-100'}`}
+            >
+              2
+            </button>
+            {currentPage > 3 && <span className="flex items-center">...</span>}
+            {currentPage > 2 && currentPage < totalPages - 1 && (
+              <button
+                onClick={() => setCurrentPage(currentPage)}
+                className={`w-8 h-8 rounded-full bg-orange-100 text-orange-500`}
+              >
+                {currentPage}
+              </button>
+            )}
+            {currentPage < totalPages - 2 && <span className="flex items-center">...</span>}
+            <button
+              onClick={() => setCurrentPage(totalPages - 1)}
+              className={`w-8 h-8 rounded-full ${currentPage === totalPages - 1 ? 'bg-orange-100 text-orange-500' : 'hover:bg-gray-100'}`}
+            >
+              {totalPages - 1}
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              className={`w-8 h-8 rounded-full ${currentPage === totalPages ? 'bg-orange-100 text-orange-500' : 'hover:bg-gray-100'}`}
+            >
+              {totalPages}
+            </button>
+          </>
+        ) : (
+          Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+            <button
+              key={number}
+              onClick={() => setCurrentPage(number)}
+              className={`w-8 h-8 rounded-full ${currentPage === number ? 'bg-orange-100 text-orange-500' : 'hover:bg-gray-100'}`}
+            >
+              {number}
+            </button>
+          ))
+        )}
 
         <button
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
@@ -137,6 +173,7 @@ function RecipeList() {
           <i className="fas fa-chevron-right"></i>
         </button>
       </div>
+
     </div>
   );
 }

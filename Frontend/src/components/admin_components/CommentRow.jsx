@@ -17,22 +17,22 @@ const CommentRow = ({ comment, setComments }) => {
   };
 
   return (
-    <tr className="hover:bg-gray-100">
-      <td className="p-2 border-b">{comment.id}</td>
-      <td className="p-2 border-b">{comment.username}</td>
-      <td className="p-2 border-b">
+    <tr className="hover:bg-gray-50">
+      <td className="px-6 py-4 text-sm text-gray-900">{comment.id}</td>
+      <td className="px-6 py-4 text-sm text-gray-900">{comment.username}</td>
+      <td className="px-6 py-4 text-sm text-gray-500">
         <div className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
           {comment.content}
         </div>
       </td>
-      <td className="p-2 border-b">{comment.recipeName}</td>
-      <td className="p-2 border-b">
+      <td className="px-6 py-4 text-sm text-gray-900">{comment.recipeName}</td>
+      <td className="px-6 py-4 text-sm text-gray-900">
         {new Date(comment.createdAt).toLocaleDateString('en-US')}
       </td>
-      <td className="p-2 border-b text-center">
+      <td className="px-6 py-4 text-center">
         <button 
           onClick={handleDelete} 
-          className="text-yellow-700 hover:bg-orange-300 px-2 py-1 rounded-full font-bold"
+          className="text-orange-500 hover:text-orange-700 font-medium bg-orange-50 px-4 py-2 rounded-lg"
         >
           Delete
         </button>
