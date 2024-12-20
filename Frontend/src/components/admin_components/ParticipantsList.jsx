@@ -48,20 +48,26 @@ const ParticipantsList = ({ competitionId }) => {
   return (
     <div>
       <h2 className="text-2xl font-semibold mt-6 mb-4 text-center">Participants List</h2>
-      <ul>
-        {participants.map((participant) => (
-          <ParticipantListItem
-            key={participant.userId}
-            participant={participant}
-            handleRemove={handleRemove}
+      {participants.length === 0 ? (
+        <p className="text-center text-gray-500">There's no participants.</p>
+      ) : (
+        <>
+          <ul>
+            {participants.map((participant) => (
+              <ParticipantListItem
+                key={participant.userId}
+                participant={participant}
+                handleRemove={handleRemove}
+              />
+            ))}
+          </ul>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
-        ))}
-      </ul>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+        </>
+      )}
     </div>
   );
 };

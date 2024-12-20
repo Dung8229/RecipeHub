@@ -826,6 +826,7 @@ recipeRouter.delete('/:id', async (req, res) => {
     await RecipeIngredient.destroy({ where: { recipeId: id } });
     await RecipeTag.destroy({ where: { recipe_id: id } });
     await RecipeComment.destroy({ where: { recipeId: id } });
+    await RecipeAverageRating.destroy({ where: { recipeId: id } })
     await RecipeRating.destroy({ where: { recipeId: id } });
     await ShoppinglistRecipe.destroy({ where: { recipeId: id } });
     

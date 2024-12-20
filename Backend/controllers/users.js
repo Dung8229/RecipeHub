@@ -33,7 +33,7 @@ usersRouter.post('/register', async (req, res) => {
             password: hashedPassword,
             role: 'user',
             verified: false,
-            image: '/anoynymus-avatar.png'
+            image: '/anonymous-avatar.png'
         });
 
         return res.status(201).json({ message: 'User registered successfully', user: newUser });

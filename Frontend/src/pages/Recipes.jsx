@@ -204,7 +204,7 @@ const Recipes = () => {
 
         <div >
             <div className="px-40 flex flex-1 justify-center h-full py-5">
-                <div className="layout-content-container flex flex-col max-w-[960px] h-full flex-1">
+                <div className="layout-content-container flex flex-col max-w-6xl h-full flex-1">
                     <div className="printable">
                         <div
                             className="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-[#fcfaf8] w-full rounded-xl aspect-[16/9] @[480px]:rounded-xl"

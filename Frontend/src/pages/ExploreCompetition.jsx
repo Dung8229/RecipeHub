@@ -80,9 +80,17 @@ const ExploreCompetitionPage = () => {
             activeItem === '/competitions/upcoming' ? upcomingComps :
             activeItem === '/competitions/open' ? openComps :
             closedComps // Mặc định là closedComps nếu không phải 'upcoming' hoặc 'open'
-          ).map((competition) => (
-            <ListItemCompetition key={competition.id} competition={competition} />
-          ))}
+          ).length === 0 ? (
+            <p className="text-center text-gray-500">More competitions coming soon!</p>
+          ) : (
+            (
+              activeItem === '/competitions/upcoming' ? upcomingComps :
+              activeItem === '/competitions/open' ? openComps :
+              closedComps
+            ).map((competition) => (
+              <ListItemCompetition key={competition.id} competition={competition} />
+            ))
+          )}
         </List>
       </div>
     </div>

@@ -93,7 +93,6 @@ const create = async (title, imageFile = null, imageURL = "", description, detai
       if (imageFile) {
         // Gọi API để upload ảnh và lấy đường dẫn
         image = await imageService.postImage(imageFile); // Giả sử imageService.postImage là hàm upload ảnh
-        image = 'http://localhost:3000/' + image
         image = image.replace('\\', '/')
       } else if (imageURL) {
         // Nếu không có file, sử dụng imageURL đã được cung cấp
@@ -133,7 +132,6 @@ const update = async (id, title, imageFile = null, imageURL = "", description, d
     if (imageFile) {
       // Gọi API để upload ảnh và lấy đường dẫn
       image = await imageService.postImage(imageFile); // Giả sử imageService.postImage là hàm upload ảnh
-      image = 'http://localhost:3000/' + image
       image = image.replace('\\', '/')
     } else if (imageURL) {
       // Nếu không có file, sử dụng imageURL đã được cung cấp

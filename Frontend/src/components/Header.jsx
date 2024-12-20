@@ -53,7 +53,7 @@ const Header = () => {
   };
 
   const handleRegisterClick = () => {
-    navigate('/login', { state: { isLogin: false } });
+    navigate('/register', { state: { isLogin: false } });
   };
 
   const handleLogout = () => {

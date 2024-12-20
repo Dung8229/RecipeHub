@@ -118,8 +118,44 @@ const getUserData = async (userId) => {
   }
 }
 
+const login = async ( email, password ) => {
+    const response = await fetch(`${baseUrl}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to log in');
+    }
+    return response.json();
+};
+
+const register = async ({ username, email, password }) => {
+    try {
+      const response = await fetch(`${baseUrl}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to register');
+      }
+  
+      return await response.json(); // Trả về dữ liệu phản hồi từ API
+    } catch (error) {
+      console.error('Error login:', error);
+      throw error; // Ném lỗi để xử lý ở component
+    }
+};
+
 export default {
   getAllUsers,
   deleteUser,
   getUserData,
+  login, 
+  register,
 }

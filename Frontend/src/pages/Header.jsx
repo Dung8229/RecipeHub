@@ -39,7 +39,6 @@ const Profile = ({ userId }) => {
         }
         try {
             let imageUrl = await postImage(selectedFile);
-            imageUrl = 'http://localhost:3002/' + imageUrl;
             //imageUrl = (url) => url.replace(/\\/g, '/');
 
             console.log(imageUrl)
@@ -61,7 +60,7 @@ const Profile = ({ userId }) => {
         setPasswordError('');
         setPasswordSuccess('');
 
-        if (!currentPassword || !newPassword || !confirmPassword) Ơ
+        if (!currentPassword || !newPassword || !confirmPassword)
         {
             setPasswordError('Please fill in all fields');
 

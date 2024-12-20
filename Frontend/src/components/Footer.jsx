@@ -66,7 +66,7 @@ const Footer = () => {
             <div className="space-y-2 text-sm text-gray-600">
                 <Link to="/home" className="block hover:underline">Home</Link>
                 <Link to="/recipes/search" className="block hover:underline">Search For A Recipe</Link>
-                <Link to="/competitions" className="block hover:underline">Competitions</Link>
+                <Link to="/competitions/open" className="block hover:underline">Competitions</Link>
                 <Link to="/recipes/create" className="block hover:underline">Create A Recipe</Link>
                 <Link to="/shopping-list" className="block hover:underline">Shopping List</Link>
             </div>

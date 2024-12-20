@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   useEffect(() => {
     const fetchFilterData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/recipes/filter-data');
+        const response = await axios.get('/api/recipes/filter-data');
         setFilterData(response.data);
       } catch (error) {
         console.error('Error fetching filter data:', error);

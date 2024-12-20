@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isPasswordStrong } from '../../../Backend/utils/password-utils';
+import userService from '../services/users'
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -13,7 +17,7 @@ const Register = () => {
     setError('');
   };
 
-  const handleSignup = (event) => {
+  const handleSignup = async (event) => {
     event.preventDefault();
     const { username, email, password, confirmPassword } = formData;
 
@@ -26,26 +30,15 @@ const Register = () => {
       return;
     }
 
-    fetch('/api/users/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then(err => {
-            setError(err.error || 'Failed to register');
-            throw new Error(err.error || 'Failed to register');
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        window.location.href = '/login';
-      })
-      .catch((error) => {
-        console.error('Registration error:', error);
-      });
+
+    try {
+      const data = await userService.register({ username, email, password }); // Gọi service register
+      navigate('/login'); // Chuyển hướng đến trang đăng nhập
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error.message || 'Failed to register');
+    }
+
   };
 
   return (
@@ -169,14 +162,16 @@ const InputField = ({ label, id, type, name, value, onChange, placeholder, class
 
 const SocialLoginOptions = () => (
   <div className="flex justify-between w-full">
-    <a href="
-    /auth/facebook"
-      className="w-[48%] h-[63px] bg-[#1877f2] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#1665d8] transition-colors hidden">
+
+    <a href="/auth/facebook"
+      className="hidden w-[48%] h-[63px] bg-[#1877f2] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#1665d8] transition-colors">
       <i className="fa-brands fa-facebook-f mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
       FACEBOOK
     </a>
     <a href="/auth/google"
+
       className="w-[100%] h-[63px] bg-[#db4437] rounded-lg flex items-center justify-center text-white text-xl font-bold hover:bg-[#c53929] transition-colors">
+
       <i className="fa-brands fa-google mr-2 text-2xl border-3 border-white rounded-full p-2"></i>
       GOOGLE
     </a>

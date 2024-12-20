@@ -19,7 +19,7 @@ const AdminManageCompetitionForm = ({ id }) => {
     try {
       const competitionDetails = await competitionService.getDetail(id);
   
-      if (competitionDetails.image.includes('localhost')) {
+      if (competitionDetails.image.includes('uploads')) {
         // Nếu là đường dẫn file, tải file ảnh về và tạo File object
         const response = await fetch(`/uploads/${competitionDetails.image.split('/').pop()}`); // Tải ảnh về
         const blob = await response.blob(); // Chuyển ảnh thành blob
@@ -88,6 +88,19 @@ const AdminManageCompetitionForm = ({ id }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { startDate, winnerSelectionStartDate, endDate } = formData;
+
+    // Kiểm tra tính hợp lệ của ngày
+    if (new Date(winnerSelectionStartDate) <= new Date(startDate)) {
+      alert('Winner selection date must be after the start date.');
+      return;
+    }
+
+    if (new Date(endDate) <= new Date(winnerSelectionStartDate)) {
+      alert('End date must be after the winner selection date.');
+      return;
+    }
 
     try {
       

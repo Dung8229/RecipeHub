@@ -46,7 +46,6 @@ const Profile = ({ userId }) => {
         }
         try {
             let imageUrl = await postImage(selectedFile);
-            imageUrl = 'http://localhost:3000/' + imageUrl;
 
             setUser((prevUser) => ({
                 ...prevUser,
