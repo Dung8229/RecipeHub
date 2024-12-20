@@ -328,6 +328,20 @@ const deleteRecipe = async (recipeId) => {
     throw error;
   }
 };
+
+export const getRecipeTags = async (recipeId) => {
+  try {
+    // Gọi API để lấy tags của công thức
+    const response = await axios.get(`${baseUrl}/${recipeId}/tags`);
+    console.log('Reicpe Tag:', response.data)
+    // Trả về dữ liệu tags nếu thành công
+    return response.data;
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    console.error('Error fetching recipe tags:', error);
+    throw error;  // Hoặc có thể trả về một giá trị mặc định như [] hoặc message lỗi
+  }
+};
 //////////////////////////////////////////////////
 
 export default { 

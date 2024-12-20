@@ -145,7 +145,7 @@ usersRouter.get('/', async (req, res) => {
 
 // Lấy thông tin người dùng theo ID
 usersRouter.get('/:id', middleware.authenticateJWT, async (req, res) => {
-    const { id } = req.user.id;
+    const { id } = req.params;
     try {
         const user = await User.findOne({ where: { id } });
         if (!user) {

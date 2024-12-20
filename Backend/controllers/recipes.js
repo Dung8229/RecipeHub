@@ -20,20 +20,6 @@ const middleware = require('../utils/middleware')
 const db = require('../db')
 
 defineAssociations()
-// Hàm để xác định độ khó dựa trên readyInMinutes và servings
-const calculateDifficulty = (readyInMinutes, servings) => {
-  if (readyInMinutes <= 15 && servings <= 2) {
-    return 'beginner';
-  } else if (readyInMinutes <= 30 && servings <= 4) {
-    return 'intermediate';
-  } else if (readyInMinutes <= 45 && servings <= 6) {
-    return 'advanced';
-  } else if (readyInMinutes <= 60 && servings <= 8) {
-    return 'expert';
-  } else {
-    return 'masterchef';
-  }
-};
 
 // Route để lấy dữ liệu cho bộ lọc
 recipeRouter.get('/filter-data', async (req, res) => {
@@ -92,11 +78,6 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) 
               [Op.like]: `%${term}%`
             }
           },
-          // {
-          //   '$Ingredients.name$': {
-          //     [Op.like]: `%${term}%`
-          //   }
-          // },
           {
             '$RecipeIngredients->Ingredient.name$': {
               [Op.like]: `%${term}%`
@@ -150,10 +131,6 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) 
         model: RecipeTag, // Tham chiếu đến model RecipeTag
         attributes: ['tag'] // Chỉ lấy trường tag
       },
-      // {
-      //   model: Ingredient,
-      //   attributes: ['name']
-      // },
       {
         model: RecipeIngredient,
         include: [
@@ -187,23 +164,9 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) 
         'rating'
       ]
     ],
-    // group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'Ingredients.id'],
     group: ['Recipe.id', 'User.id', 'RecipeTags.id', 'RecipeIngredients.id', 'RecipeIngredients->Ingredient.id'],
     // order: order
   });
-
-  // // Thêm giá trị difficulty vào từng công thức
-  // const recipesWithDifficulty = recipes.map(recipe => ({
-  //   ...recipe.get(), // Lấy tất cả các thuộc tính của recipe
-  //   difficulty: calculateDifficulty(recipe.readyInMinutes, recipe.servings) || 'unknown' // Thêm difficulty, mặc định là 'unknown' nếu không có
-  // }));
-
-  // Lọc theo độ khó nếu có
-  // if (difficulty) {
-  //   return recipesWithDifficulty.filter(recipe => recipe.difficulty === difficulty);
-  // }
-
-  // return recipesWithDifficulty;
   return recipes
 };
 
@@ -821,7 +784,6 @@ recipeRouter.delete('/:id', async (req, res) => {
     }
 
     // Xóa các bản ghi liên quan
-    // Xóa các bản ghi liên quan
     await RecipeInstruction.destroy({ where: { recipeId: id } });
     await RecipeIngredient.destroy({ where: { recipeId: id } });
     await RecipeTag.destroy({ where: { recipe_id: id } });
@@ -829,6 +791,7 @@ recipeRouter.delete('/:id', async (req, res) => {
     await RecipeAverageRating.destroy({ where: { recipeId: id } })
     await RecipeRating.destroy({ where: { recipeId: id } });
     await ShoppinglistRecipe.destroy({ where: { recipeId: id } });
+    await CompetitionEntry.destroy({ where: { submissionId: id } })
     
     await recipe.destroy();
     res.status(200).json({ message: 'Recipe deleted successfully' });
@@ -839,5 +802,30 @@ recipeRouter.delete('/:id', async (req, res) => {
 });
 
 ///////////////////////////////////////////////
+
+// Route để lấy tags của một công thức
+recipeRouter.get('/:id/tags', async (req, res) => {
+  const recipeId = req.params.id;
+
+  try {
+    // Truy vấn tags của công thức với id tương ứng
+    const tags = await RecipeTag.findAll({
+      where: {
+        recipe_id: recipeId
+      },
+    });
+
+    // Nếu không tìm thấy tags
+    if (tags.length === 0) {
+      return res.status(404).json({ message: 'No tags found for this recipe' });
+    }
+
+    // Trả về tags dưới dạng JSON
+    res.json(tags);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 module.exports = recipeRouter;

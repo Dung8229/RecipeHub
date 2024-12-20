@@ -20,7 +20,7 @@ const CompetitionDetailPage = () => {
     try {
       const data = await competitionService.getDetail(id) // Gọi dịch vụ với id
       setCompetition(data); // Cập nhật state với dữ liệu nhận được
-      console.log('Prize given:', competition.prizeGiven)
+      // console.log('Prize given:', competition.prizeGiven)
       setIsCompOver(new Date(data.endDate) < new Date());
     } catch (error) {
       console.error('Error fetching competition details:', error);
@@ -80,6 +80,7 @@ const CompetitionDetailPage = () => {
         <WinnerAnnouncement
           username={winner.username}
           profilePic={winner.userImage}
+          recipeId={winner.recipeId}
           recipeTitle={winner.recipeTitle}
           recipeImage={winner.recipeImage}
           totalVotes={winner.totalVotes}
