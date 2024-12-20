@@ -27,7 +27,6 @@ const ExploreRecipes = () => {
         searchTerm: query.search,
       }));
     }
-    console.log('Search:', filters.searchTerm)
   }, [location.search]);
 
   const [sortBy, setSortBy] = useState('rating')

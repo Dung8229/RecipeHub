@@ -59,7 +59,10 @@ const Recipes = () => {
                 // Xử lý từng kết quả
                 const [recipeRes, instructionsRes, ingredientsRes, commentsRes, ratingsRes, tagsRes, isFavRes, shoppingListRes, userRatingRes] = results;
 
-                if (recipeRes.status === "fulfilled") setRecipe(recipeRes.value);
+                if (recipeRes.status === "fulfilled") {
+                    setRecipe(recipeRes.value);
+                    console.log("recipe:", recipeRes.value)
+                }
                 else console.error("Error fetching recipe:", recipeRes.reason);
 
                 if (instructionsRes.status === "fulfilled") setInstructions(instructionsRes.value);

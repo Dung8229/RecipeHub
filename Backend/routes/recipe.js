@@ -38,4 +38,29 @@ router.get('/trending', async (req, res) => {
     }
 });
 
+router.get('/forInformationPage/:id', async (req, res) => {
+    try {
+        const recipeId = req.params.id;
+
+        // Tăng lượt xem
+        const [recipe] = await Promise.all([
+            Recipe.findByPk(recipeId, {
+                attributes: ['id', 'userId', 'title', 'image', 'imageType', 'summary', 'readyInMinutes', 'servings', 'views'],
+            }),
+            Recipe.increment('views', { where: { id: recipeId } }),
+        ]);
+
+        // Kiểm tra nếu không tìm thấy công thức
+        if (!recipe) {
+            return res.status(404).json({ error: 'Recipe not found' });
+        }
+
+        // Trả về dữ liệu công thức
+        res.json(recipe);
+    } catch (error) {
+        console.error('Error fetching recipe:', error);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+});
+
 module.exports = router;
