@@ -278,7 +278,7 @@ const EditRecipePage = ({ recipeId }) => {
         <div>
             {/* <Header /> */}
             <main className="">
-                <div className="p-8 bg-gray-100 max-w-5xl mx-auto">
+                <div className="p-8 bg-gray-100 max-w-6xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6">Edit Recipe</h1>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Tiêu đề */}
