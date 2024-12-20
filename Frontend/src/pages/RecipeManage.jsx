@@ -16,7 +16,6 @@ const RecipeManage = () => {
                 if (!userInfo) navigate('/login');
                 userId = userInfo.id;
                 console.log('User ID:', userId);
-                userId = 1;
                 const userRecipes = await getMyRecipes(userId);
                 setRecipes(userRecipes);
             } catch (error) {
