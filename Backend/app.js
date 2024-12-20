@@ -67,7 +67,7 @@ app.get('/auth/google/callback', (req, res, next) => {
         
         console.log('Setting token:', jwtToken); // Log token được tạo
         
-        return res.redirect('http://localhost:5173');
+        return res.redirect('/');
     })(req, res, next);
 });
 // Route cho xác thực Facebook
@@ -92,7 +92,7 @@ app.get('/auth/facebook/callback', (req, res, next) => {
         
         console.log('Setting token:', jwtToken);
         
-        return res.redirect('http://localhost:5173');
+        return res.redirect('/');
     })(req, res, next);
 });
 
