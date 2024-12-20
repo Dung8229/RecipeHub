@@ -43,6 +43,7 @@ export const getTrendingRecipes = async () => {
 const getRecipeDetails = async (recipeId) => {
   try {
     const response = await axios.get(`${baseUrl}/${recipeId}`);
+    console.log('Recipe details:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching recipe details:', error);
@@ -74,37 +75,37 @@ const addRecipeRating = async (recipeId, userId, rating) => {
 // Thêm bình luận cho công thức
 const addRecipeComment = async (recipeId, userId, commentText) => {
   try {
-      const response = await axios.post(`${baseUrl}/${recipeId}/comment`, {
-          userId,
-          commentText
-      });
-      return response.data;
+    const response = await axios.post(`${baseUrl}/${recipeId}/comment`, {
+      userId,
+      commentText
+    });
+    return response.data;
   } catch (error) {
-      console.error('Error adding recipe comment:', error);
-      throw error;
+    console.error('Error adding recipe comment:', error);
+    throw error;
   }
 };
 
 // Lấy các công thức nổi bật (cái này chatgpt gợi ý thôi chứ mình không biết có cách nào khác không)
 const getHighlightedRecipes = async () => {
   try {
-      const response = await axios.get(`${baseUrl}/highlighted`);
-      return response.data;
+    const response = await axios.get(`${baseUrl}/highlighted`);
+    return response.data;
   } catch (error) {
-      console.error('Error fetching highlighted recipes:', error);
-      throw error;
+    console.error('Error fetching highlighted recipes:', error);
+    throw error;
   }
 };
 
 // Lấy tất cả nguyên liệu
 const getAllIngredients = async () => {
-    try {
-        const response = await axios.get(`${baseUrl}/ingredients`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching ingredients:', error);
-        throw error;
-    }
+  try {
+    const response = await axios.get(`${baseUrl}/ingredients`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching ingredients:', error);
+    throw error;
+  }
 };
 
 // Tìm kiếm nguyên liệu
@@ -136,89 +137,90 @@ const create = async (formData) => {
           throw new Error("Image is required. ");
       }
 
-      // Chuẩn bị dữ liệu gửi lên server
-      const recipeData = {
-          title: formData.title,
-          image,
-          summary: formData.summary,
-          readyInMinutes: parseInt(formData.readyInMinutes),
-          servings: parseInt(formData.servings),
-          ingredients: formData.ingredients.map(ing => ({
-              amount: parseFloat(ing.amount),
-              unit: ing.unit,
-              name: ing.name,
-              id: ing.id
-          })),
-          instructions: formData.instructions.map(inst => ({
-              stepNumber: inst.stepNumber,
-              content: inst.content
-          })),
-          tags: formData.tags.filter(tag => tag.trim() !== '')
-      };
+    // Chuẩn bị dữ liệu gửi lên server
+    const recipeData = {
+      title: formData.title,
+      image,
+      summary: formData.summary,
+      readyInMinutes: parseInt(formData.readyInMinutes),
+      servings: parseInt(formData.servings),
+      ingredients: formData.ingredients.map(ing => ({
+        amount: parseFloat(ing.amount),
+        unit: ing.unit,
+        name: ing.name,
+        id: ing.id
+      })),
+      instructions: formData.instructions.map(inst => ({
+        stepNumber: inst.stepNumber,
+        content: inst.content
+      })),
+      tags: formData.tags.filter(tag => tag.trim() !== '')
+    };
 
-      console.log('Recipe create data:', recipeData)
+    console.log('Recipe create data:', recipeData)
 
-      const response = await axios.post(baseUrl, recipeData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Gửi token qua header
-        },
-      });
-      return response.data;
+    const response = await axios.post(baseUrl, recipeData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+    return response.data;
   } catch (error) {
-      console.error('Error creating new recipe', error);
-      throw error;
+    console.error('Error creating new recipe', error);
+    throw error;
   }
 };
 
 // Cập nhật công thức
 const update = async (id, formData) => {
   const token = tokenService.getToken()
-    try {
-        // Xử lý ảnh
-        let image;
-        if (formData.imageFile) {
-            image = await imageService.postImage(formData.imageFile);
-            image = image.replace('\\', '/')
-        } else if (formData.imageURL) {
-            image = formData.imageURL;
-        } else if (formData.image) {
-            image = formData.image; // Giữ nguyên ảnh cũ nếu không có ảnh mới
-        } else {
-            throw new Error("Image is required.");
-        }
-  
-        // Chuẩn bị dữ liệu gửi lên server
-        const recipeData = {
-            title: formData.title,
-            image,
-            summary: formData.summary,
-            readyInMinutes: parseInt(formData.readyInMinutes),
-            servings: parseInt(formData.servings),
-            ingredients: formData.ingredients.map(ing => ({
-                amount: parseFloat(ing.amount),
-                unit: ing.unit,
-                name: ing.name,
-                id: ing.id
-            })),
-            instructions: formData.instructions.map(inst => ({
-                stepNumber: inst.stepNumber,
-                content: inst.content
-            })),
-            tags: formData.tags.filter(tag => tag.trim() !== '')
-        };
-
-        console.log('Update recipe data: ', recipeData)
-  
-        const response = await axios.put(`${baseUrl}/${id}`, recipeData, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Gửi token qua header
-          },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error updating recipe:', error);
-        throw error;
+  try {
+    // Xử lý ảnh
+    let image;
+    if (formData.imageFile) {
+      image = await imageService.postImage(formData.imageFile);
+      // image = 'http://localhost:3000/' + image
+      image = image.replace('\\', '/')
+    } else if (formData.imageURL) {
+      image = formData.imageURL;
+    } else if (formData.image) {
+      image = formData.image; // Giữ nguyên ảnh cũ nếu không có ảnh mới
+    } else {
+      throw new Error("Image is required.");
     }
+
+    // Chuẩn bị dữ liệu gửi lên server
+    const recipeData = {
+      title: formData.title,
+      image,
+      summary: formData.summary,
+      readyInMinutes: parseInt(formData.readyInMinutes),
+      servings: parseInt(formData.servings),
+      ingredients: formData.ingredients.map(ing => ({
+        amount: parseFloat(ing.amount),
+        unit: ing.unit,
+        name: ing.name,
+        id: ing.id
+      })),
+      instructions: formData.instructions.map(inst => ({
+        stepNumber: inst.stepNumber,
+        content: inst.content
+      })),
+      tags: formData.tags.filter(tag => tag.trim() !== '')
+    };
+
+    console.log('Update recipe data: ', recipeData)
+
+    const response = await axios.put(`${baseUrl}/${id}`, recipeData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token qua header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating recipe:', error);
+    throw error;
+  }
 };
 
 const createCompetitionEntry = async (formData, competitionId) => {
@@ -274,7 +276,7 @@ const getMyRecipe = async (id) => {
       }
     });
     console.log('My recipe: ', response.data)
-    
+
     return response.data;
   } catch (error) {
     // Xử lý các loại lỗi cụ thể
@@ -344,8 +346,8 @@ export const getRecipeTags = async (recipeId) => {
 };
 //////////////////////////////////////////////////
 
-export default { 
-  getAllIngredients,  
+export default {
+  getAllIngredients,
   create,
   update,
   getDinnerRecipes,

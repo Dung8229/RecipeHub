@@ -82,7 +82,7 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) 
             '$RecipeIngredients->Ingredient.name$': {
               [Op.like]: `%${term}%`
             }
-          }          
+          }
         ]
       });
     });
@@ -172,12 +172,12 @@ const searchRecipes = async ({ searchTerm, category, ingredient, cookingTime }) 
 
 // Route tìm kiếm công thức
 recipeRouter.get('/search', async (req, res) => {
-  const { searchTerm, category, ingredient, cookingTime} = req.query;
+  const { searchTerm, category, ingredient, cookingTime } = req.query;
 
-  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime});
+  console.log('Search parameters:', { searchTerm, category, ingredient, cookingTime });
 
   try {
-    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime});
+    const recipes = await searchRecipes({ searchTerm, category, ingredient, cookingTime });
     return res.json(recipes);
   } catch (error) {
     console.error('Error searching recipes:', error);
@@ -189,8 +189,8 @@ recipeRouter.get('/search', async (req, res) => {
 const getDinnerRecipes = async (req, res) => {
   try {
     const dinnerRecipes = await Recipe.findAll({
-      where: { 
-        '$RecipeTags.tag$': 'dinner' 
+      where: {
+        '$RecipeTags.tag$': 'dinner'
       },
       include: [
         {
@@ -207,10 +207,10 @@ const getDinnerRecipes = async (req, res) => {
         }
       ],
       attributes: [
-        'id', 
-        'title', 
-        'image', 
-        'readyInMinutes', 
+        'id',
+        'title',
+        'image',
+        'readyInMinutes',
         'servings'
       ]
     });
@@ -299,7 +299,7 @@ recipeRouter.post('/:recipeId/comment', async (req, res) => {
     res.status(201).json(newComment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: '~~~~~@@@@@@Server error at Controller' });
   }
 });
 
@@ -326,31 +326,31 @@ recipeRouter.get('/highlighted', async (req, res) => {
 // GET /api/recipes/ingredients - Lấy tất cả nguyên liệu
 recipeRouter.get('/ingredients', async (req, res) => {
   try {
-      // Lấy danh sách ingredients và số lượng công thức sử dụng
-      const ingredients = await Ingredient.findAll({
-          include: [{
-              model: RecipeIngredient,
-              attributes: []  // Không lấy thông tin chi tiết của RecipeIngredient
-          }],
-          attributes: [
-              'id',
-              'name',
-              'image',
-              [sequelize.fn('COUNT', sequelize.col('RecipeIngredients.id')), 'recipeCount']
-          ],
-          group: ['Ingredient.id'],
-          order: [
-              ['name', 'ASC']  // Sắp xếp theo tên
-          ]
-      });
+    // Lấy danh sách ingredients và số lượng công thức sử dụng
+    const ingredients = await Ingredient.findAll({
+      include: [{
+        model: RecipeIngredient,
+        attributes: []  // Không lấy thông tin chi tiết của RecipeIngredient
+      }],
+      attributes: [
+        'id',
+        'name',
+        'image',
+        [sequelize.fn('COUNT', sequelize.col('RecipeIngredients.id')), 'recipeCount']
+      ],
+      group: ['Ingredient.id'],
+      order: [
+        ['name', 'ASC']  // Sắp xếp theo tên
+      ]
+    });
 
-      res.json(ingredients);
+    res.json(ingredients);
   } catch (error) {
-      console.error('Lỗi khi lấy danh sách nguyên liệu:', error);
-      res.status(500).json({ 
-          error: 'Lỗi khi lấy danh sách nguyên liệu',
-          details: error.message 
-      });
+    console.error('Lỗi khi lấy danh sách nguyên liệu:', error);
+    res.status(500).json({
+      error: 'Lỗi khi lấy danh sách nguyên liệu',
+      details: error.message
+    });
   }
 });
 
@@ -466,7 +466,7 @@ recipeRouter.put('/:id', middleware.authenticateJWT, async (req, res) => {
     if (recipe.userId !== userId) {
       return res.status(403).json({ error: 'You are not authorized to update this recipe' });
     }
-    
+
     // Cập nhật thông tin chung của công thức
     await recipe.update({
       title,
@@ -570,122 +570,122 @@ recipeRouter.post('/competition-entry', middleware.authenticateJWT, async (req, 
   }
 
   const {
-      title,
-      image,
-      summary,
-      readyInMinutes,
-      servings,
-      ingredients,
-      instructions,
-      tags,
-      competitionId
+    title,
+    image,
+    summary,
+    readyInMinutes,
+    servings,
+    ingredients,
+    instructions,
+    tags,
+    competitionId
   } = req.body;
 
   try {
-      const result = await db.transaction(async (t) => {
-          // 1. Tạo recipe mới với isSubmission = true
-          const recipe = await Recipe.create({
-              userId,
-              title,
-              image,
-              summary,
-              readyInMinutes,
-              servings,
-              isSubmission: true
-          }, { transaction: t });
+    const result = await db.transaction(async (t) => {
+      // 1. Tạo recipe mới với isSubmission = true
+      const recipe = await Recipe.create({
+        userId,
+        title,
+        image,
+        summary,
+        readyInMinutes,
+        servings,
+        isSubmission: true
+      }, { transaction: t });
 
-          // 2. Tạo các thành phần phụ của recipe
-          const ingredientPromises = ingredients.map(async (ing) => {
-              let ingredient;
-              if (ing.id) {
-                  ingredient = await Ingredient.findByPk(ing.id, { transaction: t });
-              }
-              
-              if (!ingredient) {
-                  [ingredient] = await Ingredient.findOrCreate({
-                      where: { name: ing.name },
-                      defaults: { name: ing.name },
-                      transaction: t
-                  });
-              }
+      // 2. Tạo các thành phần phụ của recipe
+      const ingredientPromises = ingredients.map(async (ing) => {
+        let ingredient;
+        if (ing.id) {
+          ingredient = await Ingredient.findByPk(ing.id, { transaction: t });
+        }
 
-              return RecipeIngredient.create({
-                  recipeId: recipe.id,
-                  ingredientId: ingredient.id,
-                  amount: ing.amount,
-                  unit: ing.unit,
-                  original: `${ing.amount} ${ing.unit} ${ing.name}`
-              }, { transaction: t });
+        if (!ingredient) {
+          [ingredient] = await Ingredient.findOrCreate({
+            where: { name: ing.name },
+            defaults: { name: ing.name },
+            transaction: t
           });
+        }
 
-          const instructionPromises = instructions.map((inst) => 
-              RecipeInstruction.create({
-                  recipeId: recipe.id,
-                  stepNumber: inst.stepNumber,
-                  content: inst.content
-              }, { transaction: t })
-          );
+        return RecipeIngredient.create({
+          recipeId: recipe.id,
+          ingredientId: ingredient.id,
+          amount: ing.amount,
+          unit: ing.unit,
+          original: `${ing.amount} ${ing.unit} ${ing.name}`
+        }, { transaction: t });
+      });
 
-          const tagPromises = tags.map((tag) =>
-              RecipeTag.create({
-                  recipe_id: recipe.id,
-                  tag: tag.trim()
-              }, { transaction: t })
-          );
+      const instructionPromises = instructions.map((inst) =>
+        RecipeInstruction.create({
+          recipeId: recipe.id,
+          stepNumber: inst.stepNumber,
+          content: inst.content
+        }, { transaction: t })
+      );
 
-          await Promise.all([
-              Promise.all(ingredientPromises),
-              Promise.all(instructionPromises),
-              Promise.all(tagPromises)
-          ]);
+      const tagPromises = tags.map((tag) =>
+        RecipeTag.create({
+          recipe_id: recipe.id,
+          tag: tag.trim()
+        }, { transaction: t })
+      );
 
-          // 3. Tạo competition entry
-          const existingEntry = await CompetitionEntry.findOne({
-            where: {
-              competitionId,
-              userId,
-            }
-          });
-          
-          if (existingEntry) {
-            existingEntry.submissionId = recipe.id;
-            await existingEntry.save();
-          } else {
-            await CompetitionEntry.create({
-              competitionId,
-              userId,
-              submissionId: recipe.id, // Đặt submissionId là recipeId
-            });
+      await Promise.all([
+        Promise.all(ingredientPromises),
+        Promise.all(instructionPromises),
+        Promise.all(tagPromises)
+      ]);
+
+      // 3. Tạo competition entry
+      const existingEntry = await CompetitionEntry.findOne({
+        where: {
+          competitionId,
+          userId,
+        }
+      });
+
+      if (existingEntry) {
+        existingEntry.submissionId = recipe.id;
+        await existingEntry.save();
+      } else {
+        await CompetitionEntry.create({
+          competitionId,
+          userId,
+          submissionId: recipe.id, // Đặt submissionId là recipeId
+        });
+      }
+
+      // 4. Lấy recipe đầy đủ để trả về
+      const fullRecipe = await Recipe.findByPk(recipe.id, {
+        include: [
+          {
+            model: RecipeIngredient,
+            include: [Ingredient]
+          },
+          {
+            model: RecipeInstruction,
+            order: [['stepNumber', 'ASC']]
+          },
+          {
+            model: RecipeTag
           }
-
-          // 4. Lấy recipe đầy đủ để trả về
-          const fullRecipe = await Recipe.findByPk(recipe.id, {
-              include: [
-                  {
-                      model: RecipeIngredient,
-                      include: [Ingredient]
-                  },
-                  {
-                      model: RecipeInstruction,
-                      order: [['stepNumber', 'ASC']]
-                  },
-                  {
-                      model: RecipeTag
-                  }
-              ],
-              transaction: t
-          });
-
-          return fullRecipe;
+        ],
+        transaction: t
       });
 
-      res.status(201).json(result);
+      return fullRecipe;
+    });
+
+    res.status(201).json(result);
   } catch (error) {
-      console.error('Lỗi khi tạo bài dự thi:', error);
-      res.status(500).json({ 
-          error: 'Lỗi khi tạo bài dự thi',
-          details: error.message 
-      });
+    console.error('Lỗi khi tạo bài dự thi:', error);
+    res.status(500).json({
+      error: 'Lỗi khi tạo bài dự thi',
+      details: error.message
+    });
   }
 });
 
@@ -697,7 +697,7 @@ recipeRouter.get('/my-recipe/:id', middleware.authenticateJWT, async (req, res) 
 
   try {
     const recipe = await Recipe.findOne({
-      where: { 
+      where: {
         id,
         userId // Đảm bảo chỉ lấy công thức thuộc về user đang đăng nhập
       },
@@ -723,8 +723,8 @@ recipeRouter.get('/my-recipe/:id', middleware.authenticateJWT, async (req, res) 
     res.json(recipe);
   } catch (error) {
     console.error('Error fetching user recipe:', error);
-    res.status(500).json({ 
-      error: 'Error fetching user recipe' 
+    res.status(500).json({
+      error: 'Error fetching user recipe'
     });
   }
 });
