@@ -44,7 +44,7 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/recipes/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      navigate(`/recipes/search?search=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
 

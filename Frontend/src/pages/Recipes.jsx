@@ -5,11 +5,14 @@ import { getRecipeInstructions } from '../services/recipeInstructions';
 import { getRecipeIngredients } from '../services/recipeIngredients';
 import { getRecipeComments, addComment } from '../services/recipeComments';
 import { getRecipeRatings, addOrUpdateRating, getUserRating } from '../services/recipeRatings';
-import { getRecipeById } from '../services/recipes';
+import { getRecipeById, getRecipeTags } from '../services/recipes';
 import { addFavourite, removeFavourite, checkFavourite } from '../services/favourites';
 import { addShoppingListRecipes, deleteShoppingListRecipes, checkShoppingList } from '../services/shoppingList';
 import { FaStar, FaRegStar } from "react-icons/fa";
 import tokenService from '../services/token';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+
 const Recipes = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -24,6 +27,7 @@ const Recipes = () => {
     const [hoverRating, setHoverRating] = useState(0);
     const [user, setUser] = useState(null);
     const [isInShoppingList, setIsInShoppingList] = useState(false);
+    const [tags, setTags] = useState([])
     const printRef = useRef();
     let userId;
     useEffect(() => {
@@ -46,13 +50,14 @@ const Recipes = () => {
                     getRecipeIngredients(id),
                     getRecipeComments(id),
                     getRecipeRatings(id),
+                    getRecipeTags(id),
                     checkFavourite(userId, id),
                     checkShoppingList(userId, id),
                     getUserRating(userId, id),
                 ]);
 
                 // Xử lý từng kết quả
-                const [recipeRes, instructionsRes, ingredientsRes, commentsRes, ratingsRes, isFavRes, shoppingListRes, userRatingRes] = results;
+                const [recipeRes, instructionsRes, ingredientsRes, commentsRes, ratingsRes, tagsRes, isFavRes, shoppingListRes, userRatingRes] = results;
 
                 if (recipeRes.status === "fulfilled") setRecipe(recipeRes.value);
                 else console.error("Error fetching recipe:", recipeRes.reason);
@@ -84,6 +89,11 @@ const Recipes = () => {
                     setIsInShoppingList(shoppingListRes.value);
                 }
                 else console.warn("Shopping list status not available.");
+
+                if (tagsRes.status === "fulfilled") {
+                    console.log("Tags data:", tagsRes)
+                    setTags(tagsRes.value);
+                }
 
                 if (userRatingRes.status === "fulfilled") setUserRating(userRatingRes.value.rating);
                 else console.warn("Unable to fetch user rating.");
@@ -206,24 +216,35 @@ const Recipes = () => {
             <div className="px-40 flex flex-1 justify-center h-full py-5">
                 <div className="layout-content-container flex flex-col max-w-6xl h-full flex-1">
                     <div className="printable">
-                        <div
-                            className="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-[#fcfaf8] w-full rounded-xl aspect-[16/9] @[480px]:rounded-xl"
-                            style={{ backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 25% ), url(${recipe.image})` }}
-                        >
-                            <div className="flex p-4">
-                                <p className="text-white tracking-light text-[28px] font-bold leading-tight">{recipe.title}</p>
-                                <div className="flex px-4 py-3 justify-start">
-
-                                </div>
-                            </div>
-
+                    <div className="relative w-full h-auto max-h-fit overflow-hidden rounded-xl">
+                        <img 
+                            src={recipe.image} 
+                            alt={recipe.title} 
+                            className="w-full h-full object-cover" // object-cover giúp ảnh không bị méo và đầy đủ
+                        />
+                        <div className="absolute bottom-0 p-4 bg-black bg-opacity-50 rounded-t-xl">
+                            <p className="text-white text-5xl font-bold font-handwriting">
+                                {recipe.title}
+                            </p>
                         </div>
+                    </div>
+
 
                         <div ref={printRef}>
-                            <div className="flex items-center justify-between px-4">
-                                {/* Serving Info */}
-                                <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">
-                                    Serving: {recipe.servings}
+                            {/* Tags Section moved above Serving Info */}
+                            <div className="px-4 py-3 flex items-center justify-between">
+                                <div className="flex flex-wrap gap-3 mt-3">
+                                    {tags.length > 0 ? (
+                                        tags.map((tag, index) => (
+                                            <button
+                                                key={index}
+                                                // onClick={() => handleTagClick(tag.tag)}
+                                                className="px-4 py-2 bg-slate-200 rounded-full text-sm font-medium transition-colors duration-200 ease-in-out"
+                                            >
+                                                {tag.tag}
+                                            </button>
+                                        ))
+                                    ) : null}
                                 </div>
 
                                 {/* Buttons Section */}
@@ -238,11 +259,7 @@ const Recipes = () => {
                                             width="32"
                                             height="32"
                                             viewBox="0 0 24 24"
-                                            fill={isFavourite ? "#f47f25" : "none"}
-                                            stroke="#f47f25"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
+                                            fill={isFavourite ? "#f47f25" : "rgb(254 215 170 / var(--tw-text-opacity, 1))"}
                                         >
                                             <path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                                         </svg>
@@ -250,23 +267,36 @@ const Recipes = () => {
 
                                     {/* Shopping Button */}
                                     <button onClick={handleAddShoppingList} className="flex items-center justify-center cursor-pointer w-8 h-8">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="32"
-                                            height="32"
-                                            viewBox="0 0 576 512"
-                                            fill={isInShoppingList ? "#f47f25" : "#fff"}
-                                            stroke="#f47f25"
-                                        >
-                                            <path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96zM252 160c0 11 9 20 20 20l44 0 0 44c0 11 9 20 20 20s20-9 20-20l0-44 44 0c11 0 20-9 20-20s-9-20-20-20l-44 0 0-44c0-11-9-20-20-20s-20 9-20 20l0 44-44 0c-11 0-20 9-20 20z" />
-                                        </svg>
+                                        <FontAwesomeIcon 
+                                            icon={faCartPlus} 
+                                            className={isInShoppingList ? "w-[32px] h-[32px] text-primaryHover" : "w-[32px] h-[32px] text-orange-200"}/>
                                     </button>
                                 </div>
                             </div>
+                            <div className="flex items-center justify-between px-4 mt-4">
+                                {/* Average Rating */}
+                                <div className="flex flex-col gap-4 items-start">
+                                    <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">
+                                        Average Rating: {averageRating.toFixed(2)}/5
+                                    </h3>
+                                    <div className="flex items-center ">
+                                        <div className="text-[#9c6d49]"></div>
+                                        <div className="flex">
+                                            {renderStars(averageRating, null, null, null, 32)} {/* Display average rating as stars */}
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Serving Info */}
+                                    <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                                        Serving: {recipe.servings}
+                                    </div>
+                                    <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                                        Ready Time: {recipe.readyInMinutes} minutes
+                                    </div>
+                            </div>
 
 
-                            <div className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Ready Time: {recipe.readyInMinutes} minutes</div>
-                            <h2 className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Description</h2>
+                            <h2 className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 mt-4">Description</h2>
                             <div className="px-4">
                                 <p dangerouslySetInnerHTML={{ __html: recipe.summary }}></p>
                             </div>
@@ -279,13 +309,17 @@ const Recipes = () => {
                                     </li>
                                 ))}
                             </div>
-                            <h2 className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Cooking Directions</h2>
+                            <h2 className="text-[#1c130d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Instructions</h2>
                             <div className="px-4">
-                                {instructions.map(instruction => (
-                                    <li key={instruction.id}>
-                                        Step {instruction.stepNumber}: {instruction.content}
-                                    </li>
-                                ))}
+                                {instructions.length > 0 ? (
+                                    instructions.map((instruction) => (
+                                        <li key={instruction.id}>
+                                            Step {instruction.stepNumber}: {instruction.content}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <p>No instructions available.</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -297,20 +331,7 @@ const Recipes = () => {
                         </button>
                     </div>
 
-                    <div className="flex flex-col gap-8 px-4 py-3 justify-start">
-                        {/* Average Rating */}
-                        <div className="flex flex-col gap-4 items-start">
-                            <h3 className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">
-                                Average Rating: {averageRating.toFixed(2)}/5
-                            </h3>
-                            <div className="flex items-center ">
-                                <div className="text-[#9c6d49]"></div>
-                                <div className="flex">
-                                    {renderStars(averageRating, null, null, null, 32)} {/* Display average rating as stars */}
-                                </div>
-                            </div>
-                        </div>
-
+                    <div className="flex flex-col gap-8 px-4 py-3 justify-start">                
                         {/* User Rating */}
                         <div className="flex flex-col gap-4 items-start">
                             <p className="text-[#1c130d] text-lg font-bold leading-tight tracking-[-0.015em]">

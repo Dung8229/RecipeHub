@@ -1,4 +1,6 @@
-const WinnerAnnouncement = ({ username, profilePic, recipeTitle, recipeImage, totalVotes, score }) => {
+import { Link } from "react-router-dom";
+
+const WinnerAnnouncement = ({ username, profilePic, recipeId, recipeTitle, recipeImage, totalVotes, score }) => {
   return (
     <div className="bg-gray-100 max-w-6xl mx-auto rounded-lg shadow-lg w-full mx-auto mb-6 h-96 p-4">
       <h2 className="text-4xl font-bold text-center mt-6 mb-0 text-gray-800">
@@ -18,12 +20,16 @@ const WinnerAnnouncement = ({ username, profilePic, recipeTitle, recipeImage, to
 
         {/* Cột 2: Ảnh món ăn và tên món ăn (căn giữa) */}
         <div className="flex flex-col items-center justify-center">
-          <img 
-            src={recipeImage} 
-            alt={`${recipeTitle}`} 
-            className="max-w-64 max-h-40 rounded-lg object-cover border-4 border-white shadow-lg mb-2"
-          />
-          <h3 className="text-2xl text-center font-semibold text-gray-700">{recipeTitle}</h3>
+          <Link to={`/recipes/${recipeId}/information`}>
+            <img 
+              src={recipeImage} 
+              alt={recipeTitle} 
+              className="max-w-64 max-h-40 rounded-lg object-cover border-4 border-white shadow-lg mb-2"
+            />
+          </Link>
+          <Link to={`/recipes/${recipeId}/information`}>
+            <h3 className="text-2xl text-center font-semibold text-gray-700">{recipeTitle}</h3>
+          </Link>
         </div>
 
         {/* Cột 3: Votes và Score (căn dưới cạnh trái) */}

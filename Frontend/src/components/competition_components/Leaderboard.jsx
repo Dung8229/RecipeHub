@@ -40,7 +40,7 @@ const Leaderboard = ({ entries }) => {
         </div>
       ) : (
         <div className="pb-6">
-          <ul className="max-w-4xl mx-auto">
+          <ul className="max-w-5xl mx-auto space-y-2">
             {entries.slice(0, visibleEntries).map((entry, index) => (
               <LeaderboardItem
                 key={entry.id}
@@ -55,9 +55,9 @@ const Leaderboard = ({ entries }) => {
             ))}
           </ul>
           {visibleEntries < entries.length && (
-            <div className="flex justify-center">
+            <div className="flex justify-center z-20">
               <button
-                className="bg-blue-500 text-white py-2 px-4 rounded my-4"
+                className="bg-blue-500 hover:bg-blue-900 text-white py-2 px-4 rounded my-4 z-20"
                 onClick={handleSeeMore}
               >
                 See More
