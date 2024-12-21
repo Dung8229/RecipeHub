@@ -20,7 +20,7 @@ passport.use(new GoogleStrategy({
         
         // Get email and avatar
         const email = profile.emails?.[0]?.value;
-        const avatar = profile.photos?.[0]?.value;
+        const image = profile.photos?.[0]?.value;
 
         if (!email) {
             return done(new Error('No email found in profile'));
@@ -36,15 +36,15 @@ passport.use(new GoogleStrategy({
                 email: email,
                 password: hashedPassword,
                 token: jwtToken,
-                avatar: avatar || null, // Save avatar URL
+                image: image || null,
                 provider: 'google'
             });
             return done(null, user);
         } else {
             // Update existing user's avatar if it doesn't have one
-            if (!existingUser.avatar && avatar) {
+            if (image && (!existingUser.image || existingUser.image !== image)) {
                 await existingUser.update({ 
-                    avatar: avatar,
+                    image: image,
                     googleId: profile.id,
                     provider: 'google'
                 });
@@ -96,13 +96,13 @@ passport.use(new FacebookStrategy({
             return done(null, user);
         } else {
             // Update existing user's avatar if it doesn't have one
-            if (!existingUser.avatar && avatar) {
-                await existingUser.update({ 
+            if (avatar && (!existingUser.avatar || existingUser.avatar !== avatar)) {
+                await existingUser.update({
                     avatar: avatar,
                     facebookId: profile.id,
-                    provider: 'facebook'
+                    provider: 'facebook',
                 });
-            }
+            }            
             return done(null, existingUser);
         }
     } catch (error) {

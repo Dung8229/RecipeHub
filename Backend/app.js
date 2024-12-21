@@ -55,7 +55,7 @@ app.get('/auth/google/callback', (req, res, next) => {
             return res.redirect('/login');
         }
         
-        const jwtToken = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const jwtToken = jwt.sign({ id: user.id, username: user.username, role: user.role, image: user.image }, process.env.JWT_SECRET, { expiresIn: '1h' });
         
         // Set cookie và log token
         res.cookie('token', jwtToken, { 

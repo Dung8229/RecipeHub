@@ -118,6 +118,23 @@ const getUserData = async (userId) => {
   }
 }
 
+const getImage = async (userId) => {
+  const token = tokenService.getToken();
+    // Tạo header cho token, token này sẽ được gửi đến backend để backend kiểm tra xem có phải admin không
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+
+  try {
+    const response = await axios.get(`${baseUrl}/${userId}`, config);
+    console.log('User: ', response.data)
+    return response.data.image;
+  } catch (error) {
+    console.error('Error fetching user id:', error);
+    throw error;
+  }
+}
+
 const login = async ( email, password ) => {
     const response = await fetch(`${baseUrl}/login`, {
       method: 'POST',
@@ -158,4 +175,5 @@ export default {
   getUserData,
   login, 
   register,
+  getImage,
 }
