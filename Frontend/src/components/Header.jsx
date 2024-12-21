@@ -4,6 +4,7 @@ import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import tokenService from '../services/token'
+import logo from '../assets/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -56,10 +57,6 @@ const Header = () => {
     navigate('/register', { state: { isLogin: false } });
   };
 
-  const handleLogoClick = () => {
-    navigate('/home')
-  }
-
   const handleLogout = () => {
     // Xóa token và thông tin user khỏi localStorage
     window.localStorage.removeItem('token');
@@ -74,12 +71,21 @@ const Header = () => {
       {/* Phần trên với Logo, Search Bar và Log In */}
       <div className="container mx-auto flex justify-between items-center px-4 md:px-0">
         
-        {/* Logo */}
-        <Link to="/home">
-          <div className="font-handwriting text-3xl md:text-8xl text-orange-400 transition-transform transform hover:scale-110 hover:text-orange-600">
-            Recipehub
-          </div>
-        </Link>
+        <div className='flex flex-row items-center flex-start'>
+          <Link to="/home">
+            <img 
+              src={logo} 
+              alt="Recipehub Logo" 
+              className="hidden md:block md:h-24 transition-transform transform hover:scale-110" 
+            />
+          </Link>
+          {/* Logo */}
+          <Link to="/home">
+            <div className="hidden lg:block font-handwriting text-3xl md:text-8xl text-orange-400 transition-transform transform hover:scale-110 hover:text-orange-600">
+              Recipehub
+            </div>
+          </Link>
+        </div>
 
         {/* Search Bar */}
         <div className="flex border rounded-lg overflow-hidden border-black">

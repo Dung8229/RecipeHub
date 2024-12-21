@@ -2,14 +2,27 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isPasswordStrong } from '../../../Backend/utils/password-utils';
 import userService from '../services/users'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import qs from 'qs'
 
 const Register = () => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+    if (query.email) {
+      setFormData((prev) => ({
+        ...prev,
+        email: query.email,
+      }));
+    }
+  }, [location.search]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;

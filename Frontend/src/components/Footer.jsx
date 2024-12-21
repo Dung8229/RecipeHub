@@ -2,15 +2,17 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { useNavigate, Link } from 'react-router-dom';
-
+import { useState } from 'react';
 
 const Footer = () => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleJoinUs = (event) => {
     event.preventDefault();
-    const email = event.target.elements.email.value;
-    navigate('/register', { state: { isLogin: false, email } });
+    if (searchTerm.trim()) {
+        navigate(`/register?email=${encodeURIComponent(searchTerm.trim())}`);
+    }
   };
 
   return (
@@ -31,6 +33,7 @@ const Footer = () => {
                         <input
                             type="email"
                             name="email"
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Email Address"
                             className="border w-72 border-gray-300 p-2 rounded-lg"
                         />

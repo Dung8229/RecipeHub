@@ -14,10 +14,12 @@ const AdminManageCompetitionForm = ({ id }) => {
     endDate: '',
     prize: '',
   })
+  const [prizeGiven, setPrizeGiven] = useState(false)
 
   const fetchCompetitionDetails = async (id) => {
     try {
       const competitionDetails = await competitionService.getDetail(id);
+      setPrizeGiven(competitionDetails.prizeGiven)
   
       if (competitionDetails.image.includes('uploads')) {
         // Nếu là đường dẫn file, tải file ảnh về và tạo File object
@@ -101,6 +103,13 @@ const AdminManageCompetitionForm = ({ id }) => {
       alert('End date must be after the winner selection date.');
       return;
     }
+
+    if (prizeGiven) {
+      const userConfirmed = confirm("You have already awarded a prize. Are you sure about changing this competition's details?");
+      if (!userConfirmed) {
+        return;
+      }
+    }    
 
     try {
       
