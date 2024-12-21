@@ -6,11 +6,13 @@ const User = require('../models/user');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 
+const DOMAIN = process.env.HOMEPAGE_URL || 'http://localhost:3000';
+
 // Google Strategy Configuration
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/auth/google/callback',
+    callbackURL: `${DOMAIN}/auth/google/callback`,
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const jwtToken = jwt.sign({ id: profile.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -60,7 +62,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/auth/facebook/callback',
+    callbackURL: '${DOMAIN}/auth/facebook/callback',
     profileFields: ['id', 'displayName', 'email', 'photos'],
 }, async (accessToken, refreshToken, profile, done) => {
     try {
