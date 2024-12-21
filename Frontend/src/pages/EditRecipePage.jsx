@@ -44,29 +44,63 @@ const EditRecipePage = ({ recipeId }) => {
         const loadRecipe = async () => {
             try {
                 const recipe = await recipeService.getMyRecipe(id);
-                setFormData({
-                    title: recipe.title,
-                    imageURL: '',
-                    imageFile: null,
-                    imageSource: 'url',
-                    image: recipe.image,
-                    summary: recipe.summary,
-                    readyInMinutes: recipe.readyInMinutes,
-                    servings: recipe.servings,
-                    ingredients: recipe.RecipeIngredients.map(ri => ({
-                        id: ri.Ingredient.id,
-                        amount: ri.amount,
-                        unit: ri.unit,
-                        name: ri.Ingredient.name
-                    })),
-                    instructions: recipe.RecipeInstructions.sort((a, b) => 
-                        a.stepNumber - b.stepNumber
-                    ).map(inst => ({
-                        stepNumber: inst.stepNumber,
-                        content: inst.content
-                    })),
-                    tags: recipe.RecipeTags.map(tag => tag.tag)
-                });
+                console.log('Recipe edit:', recipe)
+
+                if (recipe.image.includes('uploads')) {
+                    // Nếu là đường dẫn file, tải file ảnh về và tạo File object
+                    const response = await fetch(`/uploads/${recipe.image.split('/').pop()}`); // Tải ảnh về
+                    const blob = await response.blob(); // Chuyển ảnh thành blob
+                    const file = new File([blob], recipe.image.split('/').pop(), { type: blob.type }); // Tạo File object
+              
+                    setFormData({
+                        title: recipe.title,
+                        imageURL: '',
+                        imageFile: file,
+                        imageSource: 'file',
+                        image: recipe.image,
+                        summary: recipe.summary,
+                        readyInMinutes: recipe.readyInMinutes,
+                        servings: recipe.servings,
+                        ingredients: recipe.RecipeIngredients.map(ri => ({
+                            id: ri.Ingredient.id,
+                            amount: ri.amount,
+                            unit: ri.unit,
+                            name: ri.Ingredient.name
+                        })),
+                        instructions: recipe.RecipeInstructions.sort((a, b) => 
+                            a.stepNumber - b.stepNumber
+                        ).map(inst => ({
+                            stepNumber: inst.stepNumber,
+                            content: inst.content
+                        })),
+                        tags: recipe.RecipeTags.map(tag => tag.tag)
+                    })
+                  } else {
+                    // Nếu là URL, chỉ cần lưu URL vào state
+                    setFormData({
+                        title: recipe.title,
+                        imageURL: recipe.image,
+                        imageFile: null,
+                        imageSource: 'url',
+                        image: recipe.image,
+                        summary: recipe.summary,
+                        readyInMinutes: recipe.readyInMinutes,
+                        servings: recipe.servings,
+                        ingredients: recipe.RecipeIngredients.map(ri => ({
+                            id: ri.Ingredient.id,
+                            amount: ri.amount,
+                            unit: ri.unit,
+                            name: ri.Ingredient.name
+                        })),
+                        instructions: recipe.RecipeInstructions.sort((a, b) => 
+                            a.stepNumber - b.stepNumber
+                        ).map(inst => ({
+                            stepNumber: inst.stepNumber,
+                            content: inst.content
+                        })),
+                        tags: recipe.RecipeTags.map(tag => tag.tag)
+                    });
+                }
             } catch (error) {
                 if (error.message === 'Vui lòng đăng nhập để tiếp tục') {
                     alert('Vui lòng đăng nhập để chỉnh sửa công thức');

@@ -56,6 +56,10 @@ const Header = () => {
     navigate('/register', { state: { isLogin: false } });
   };
 
+  const handleLogoClick = () => {
+    navigate('/home')
+  }
+
   const handleLogout = () => {
     // Xóa token và thông tin user khỏi localStorage
     window.localStorage.removeItem('token');
@@ -71,9 +75,11 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-4 md:px-0">
         
         {/* Logo */}
-        <div className="font-handwriting text-3xl md:text-8xl text-orange-400 transition-transform transform hover:scale-110 hover:text-orange-600">
-          Recipehub
-        </div>
+        <Link to="/home">
+          <div className="font-handwriting text-3xl md:text-8xl text-orange-400 transition-transform transform hover:scale-110 hover:text-orange-600">
+            Recipehub
+          </div>
+        </Link>
 
         {/* Search Bar */}
         <div className="flex border rounded-lg overflow-hidden border-black">
