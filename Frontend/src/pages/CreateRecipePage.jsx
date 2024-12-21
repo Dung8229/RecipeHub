@@ -57,11 +57,10 @@ const CreateRecipePage = () => {
                 type === 'file'
                     ? files[0]
                     : name === 'imageSource'
-                    ? value === 'url'
-                        ? ''
-                        : value
+                    ? value
                     : value,
-            ...(name === 'imageSource' && { imageFile: null, imageURL: '' }),
+            ...(name === 'imageSource' && { imageFile: null }),
+            ...(name === 'imageSource' && value === 'url' && { imageURL: '' }),
         }));
     };
 //////////Ingredients
@@ -300,7 +299,7 @@ const CreateRecipePage = () => {
                 {/* Thời gian và khẩu phần */}
                 <div className="grid grid-cols-3 gap-4">
                     <div>
-                        <label className="block font-medium mb-2">Thời gian nấu (phút)</label>
+                        <label className="block font-medium mb-2">Ready in minutes?</label>
                         <input
                             type="number"
                             name="readyInMinutes"
@@ -308,10 +307,11 @@ const CreateRecipePage = () => {
                             onChange={handleChange}
                             className="w-full px-3 py-2 border rounded-md"
                             required
+                            min="0" // Thêm thuộc tính min để ngăn nhập số âm
                         />
                     </div>
                     <div>
-                        <label className="block font-medium mb-2">Khẩu phần (người)</label>
+                        <label className="block font-medium mb-2">How many people can serve?</label>
                         <input
                             type="number"
                             name="servings"
@@ -319,24 +319,9 @@ const CreateRecipePage = () => {
                             onChange={handleChange}
                             className="w-full px-3 py-2 border rounded-md"
                             required
+                            min="0"
                         />
                     </div>
-                    {/* <div>
-                        <label className="block font-medium mb-2">Độ khó</label>
-                        <select
-                            name="difficulty"
-                            value={formData.difficulty}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border rounded-md"
-                            required
-                        >
-                            <option value="beginer">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                            <option value="expert">Expert</option>
-                            <option value="masterchef">Masterchef</option>
-                        </select>
-                    </div> */}
                 </div>
 
                 {/* Nguyên liệu */}
@@ -430,7 +415,7 @@ const CreateRecipePage = () => {
                     {selectedIngredient && (
                         <div className="mt-4">
                         <h4>Selected Ingredient: {selectedIngredient.name}</h4>
-                        {/* Form chọn đơn vị */}
+                        {/* Form chọn ��ơn vị */}
                         <select
                             value={unit}
                             onChange={(e) => setUnit(e.target.value)}
@@ -522,12 +507,14 @@ const CreateRecipePage = () => {
                 </div>
 
                 {/* Nút Submit */}
-                <button
-                    type="submit"
-                    className="w-full py-3 bg-primary text-white rounded-md hover:bg-primaryHover"
-                >
-                    Submit a new one
-                </button>
+                <div className='flex items-center justify-center'>
+                    <button
+                        type="submit"
+                        className="w-96 py-3 bg-primary text-white rounded-md hover:bg-primaryHover"
+                    >
+                        Submit a new one
+                    </button>
+                </div>
             </form>
         </div>
     );
