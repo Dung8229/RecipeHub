@@ -127,13 +127,6 @@ const Register = () => {
             placeholder="Confirm Password"
           />
 
-          <div className="flex items-center hidden">
-            <input type="checkbox" id="accept-terms" required className="mr-2" />
-            <label htmlFor="accept-terms">
-              I agree to the <a href="#0" className="text-orange-500 hover:text-orange-600">Terms</a>
-            </label>
-          </div>
-
           <button
             type="submit"
             className="w-full h-[63px] bg-orange-500 text-white text-xl font-bold rounded-lg cursor-pointer hover:bg-orange-600 transition-colors"
