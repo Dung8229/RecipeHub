@@ -244,7 +244,7 @@ const CreateEntryForCompetitionPage = () => {
 
     return (
         <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Tạo Bài Dự Thi</h1>
+            <h1 className="text-3xl font-bold mb-6">Create your entry</h1>
             
             {/* Hiển thị thông tin cuộc thi */}
             <div className="mb-6 p-4 bg-gray-100 rounded-lg">
@@ -253,7 +253,7 @@ const CreateEntryForCompetitionPage = () => {
                     <h2 className="text-xl font-semibold mb-2">{competition.title || 'No title available'}</h2>
                     <p className="mb-2">{competition.description || 'No description available'}</p>
                     <div className="prose max-w-none">
-                        <h3 className="text-lg font-semibold mb-2">Chi tiết cuộc thi:</h3>
+                        <h3 className="text-lg font-semibold mb-2">Competition detail description:</h3>
                         {/* Sử dụng dangerouslySetInnerHTML nếu competition.detailDescription có dữ liệu */}
                         <div dangerouslySetInnerHTML={{ __html: competition.detailDescription || 'No details available' }} />
                     </div>
@@ -268,7 +268,7 @@ const CreateEntryForCompetitionPage = () => {
                 {/* ... các trường form giống như trong CreateRecipePage ... */}
                 {/* Tiêu đề */}
                 <div>
-                    <label className="block font-medium mb-2">Tên món ăn</label>
+                    <label className="block font-medium mb-2">Title</label>
                     <input
                         type="text"
                         name="title"
@@ -281,7 +281,7 @@ const CreateEntryForCompetitionPage = () => {
 
                 {/* Phần upload ảnh */}
                 <div>
-                    <label className="block font-medium mb-2">Hình ảnh món ăn</label>
+                    <label className="block font-medium mb-2">Recipe image</label>
                     <div className="flex space-x-4 mb-2">
                         <label>
                             <input
@@ -338,7 +338,7 @@ const CreateEntryForCompetitionPage = () => {
 
                 {/* Mô tả tổng quan */}
                 <div>
-                    <label className="block font-medium mb-2">Mô tả tổng quan (Summary)</label>
+                    <label className="block font-medium mb-2">Summary</label>
                     <textarea
                         name="summary"
                         value={formData.summary}
@@ -352,7 +352,7 @@ const CreateEntryForCompetitionPage = () => {
                 {/* Thời gian và khẩu phần */}
                 <div className="grid grid-cols-3 gap-4">
                     <div>
-                        <label className="block font-medium mb-2">Thời gian nấu (phút)</label>
+                        <label className="block font-medium mb-2">Ready in minutes?</label>
                         <input
                             type="number"
                             name="readyInMinutes"
@@ -363,7 +363,7 @@ const CreateEntryForCompetitionPage = () => {
                         />
                     </div>
                     <div>
-                        <label className="block font-medium mb-2">Khẩu phần (người)</label>
+                        <label className="block font-medium mb-2">How many people can serve?</label>
                         <input
                             type="number"
                             name="servings"
@@ -503,7 +503,7 @@ const CreateEntryForCompetitionPage = () => {
 
                 {/* Hướng dẫn nấu Instruction */}
                 <div>
-                    <label className="block font-medium mb-2">Các bước thực hiện</label>
+                    <label className="block font-medium mb-2">Instruction</label>
                     {formData.instructions.map((instruction, index) => (
                         <div key={index} className="flex gap-2 mb-2">
                             <span className="px-3 py-2 bg-gray-100 rounded-md">
