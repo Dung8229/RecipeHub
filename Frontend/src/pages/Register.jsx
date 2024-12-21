@@ -126,6 +126,7 @@ const Register = () => {
             onChange={handleInputChange}
             placeholder="Confirm Password"
           />
+           {/* Test */}
 
           <button
             type="submit"
